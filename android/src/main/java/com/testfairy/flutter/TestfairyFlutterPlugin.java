@@ -1,31 +1,19 @@
-package com.example.testfairyflutter;
+package com.testfairy.flutter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.location.Location;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 
-import com.testfairy.DistributionStatus;
-import com.testfairy.DistributionStatusListener;
 import com.testfairy.FeedbackContent;
 import com.testfairy.FeedbackOptions;
-import com.testfairy.SessionStateListener;
 import com.testfairy.TestFairy;
-import com.testfairy.d.e;
-import com.testfairy.modules.audio.AudioSample;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.flutter.plugin.common.FlutterException;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -49,7 +37,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 
 	/** Plugin registration. (Mandatory)*/
 	public static void registerWith(Registrar registrar) {
-		final MethodChannel channel = new MethodChannel(registrar.messenger(), "testfairy_flutter");
+		final MethodChannel channel = new MethodChannel(registrar.messenger(), "testfairy");
 		final TestfairyFlutterPlugin testfairyFlutterPlugin = new TestfairyFlutterPlugin();
 
 		testfairyFlutterPlugin.methodChannelWeakReference = new WeakReference<>(channel);

@@ -1,4 +1,4 @@
-package com.example.testfairyflutterexample;
+package com.testfairy.flutterexample;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

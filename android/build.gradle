@@ -1,4 +1,4 @@
-group 'com.example.testfairyflutter'
+group 'com.testfairy.flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {

@@ -3,7 +3,7 @@
 @implementation TestfairyFlutterPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"testfairy_flutter"
+      methodChannelWithName:@"testfairy"
             binaryMessenger:[registrar messenger]];
   TestfairyFlutterPlugin* instance = [[TestfairyFlutterPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];

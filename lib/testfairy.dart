@@ -14,7 +14,7 @@ class TestFairy {
   // Private internals
 
   static const MethodChannel _channel =
-      const MethodChannel('testfairy_flutter');
+      const MethodChannel('testfairy');
   static Timer screenshotTimer;
 
   static Future<dynamic> methodCallHandler(MethodCall call) async {

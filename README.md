@@ -1,4 +1,4 @@
-# testfairy_flutter
+# testfairy-flutter
 TestFairy integration for Flutter, bundles with the native SDK. 
 
 ## Installation
@@ -8,7 +8,7 @@ TestFairy integration for Flutter, bundles with the native SDK.
 Include the library and run your main app like this.
 
 ```dart
-import 'package:testfairy/testfairy_flutter.dart';
+import 'package:testfairy/testfairy.dart';
 
 void main() {
   runZoned(
@@ -17,9 +17,9 @@ void main() {
         FlutterError.onError = (details) => TestFairy.logError(details.exception);
 
         // Do any other SDK setup here
-        TestFairy.begin('TOKEN');
+        await TestFairy.begin('TOKEN');
 
-        await runApp(TestfairyExampleApp());
+        runApp(TestfairyExampleApp());
       } catch (error) {
         TestFairy.logError(error);
       }

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:ui';
 import 'dart:core';
-import 'package:testfairy/testfairy_flutter.dart';
+import 'package:testfairy/testfairy.dart';
 
 // App Globals
 const String APP_TOKEN = 'SDK-gLeZiE9i';
 
 // Test Globals
 List<String> logs = List();
-var onNewLog = () {}; // This will be overriden once the app launches
+Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
@@ -19,9 +19,9 @@ void main() {
           FlutterError.onError =
               (details) => TestFairy.logError(details.exception);
 
-          // Call Testfairy.begin() or any other setup code here.
+          // Call `await TestFairy.begin()` or any other setup code here.
 
-          await runApp(TestfairyExampleApp());
+          runApp(TestfairyExampleApp());
         } catch (error) {
           TestFairy.logError(error);
         }
@@ -345,6 +345,9 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       await TestFairy.begin(APP_TOKEN);
       var version = await TestFairy.getVersion();
+
+      assert(version != null);
+
       print("SDK Version: " + version);
 
       assert(version.split(".").length == 3);
@@ -367,7 +370,11 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await Future.delayed(const Duration(seconds: 2));
 
       var url = await TestFairy.getSessionUrl();
+
+      assert(url != null);
+
       print("Session Url: " + url);
+
       assert(url.contains("http"));
 
       await TestFairy.stop();
