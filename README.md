@@ -15,7 +15,7 @@ dependencies:
 ```
 
 ```dart
-// inside you main.dart
+// inside your main.dart
 
 import 'package:testfairy/testfairy.dart';
 
