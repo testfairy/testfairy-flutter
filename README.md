@@ -1,4 +1,4 @@
-# testfairy-flutter
+# testfairy
 TestFairy integration for Flutter, bundles with the native SDK. 
 
 ## Installation
@@ -7,7 +7,16 @@ TestFairy integration for Flutter, bundles with the native SDK.
 ## Quick Start
 Include the library and run your main app like this.
 
+```yaml
+# inside pubspec.yaml
+
+dependencies:
+  testfairy: any
+```
+
 ```dart
+// inside you main.dart
+
 import 'package:testfairy/testfairy.dart';
 
 void main() {
