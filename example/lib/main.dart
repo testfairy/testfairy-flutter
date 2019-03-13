@@ -1,0 +1,644 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:ui';
+import 'dart:core';
+import 'package:testfairy/testfairy_flutter.dart';
+
+// App Globals
+const String APP_TOKEN = 'SDK-gLeZiE9i';
+
+// Test Globals
+List<String> logs = List();
+var onNewLog = () {}; // This will be overriden once the app launches
+
+// Test App initializations (You can copy and edit for your own app)
+void main() {
+  runZoned(
+      () async {
+        try {
+          FlutterError.onError =
+              (details) => TestFairy.logError(details.exception);
+
+          // Call Testfairy.begin() or any other setup code here.
+
+          await runApp(TestfairyExampleApp());
+        } catch (error) {
+          TestFairy.logError(error);
+        }
+      },
+      onError: TestFairy.logError,
+      zoneSpecification: new ZoneSpecification(
+        print: (self, parent, zone, message) {
+          TestFairy.log(message);
+
+          // Below 3 lines can be removed safely in your app, they there for testing purposes.
+          parent.print(zone, message);
+          logs.add(message);
+          onNewLog();
+        },
+      ));
+}
+
+// Test App
+class TestfairyExampleApp extends StatefulWidget {
+  @override
+  _TestfairyExampleAppState createState() => _TestfairyExampleAppState();
+}
+
+// Test App State
+class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
+  String errorMessage = 'No error yet.';
+  String testName = '';
+  bool testing = false;
+
+//  GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
+
+  @override
+  void initState() {
+    super.initState();
+
+    onNewLog = () => setState(() {});
+
+    print(
+        "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Some debug info and a bunch of buttons, each running a test case.
+    return MaterialApp(
+        showPerformanceOverlay: true,
+        home: Scaffold(
+            appBar: AppBar(
+              title: const Text('Testfairy Plugin Example App'),
+            ),
+            body: Center(
+                child: SingleChildScrollView(
+                    key: Key('scroller'),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('-'),
+                        testing
+                            ? Text('Testing ' + testName, key: Key('testing'))
+                            : Text('Not testing', key: Key('notTesting')),
+                        Text('-'),
+                        Text(errorMessage, key: Key('errorMessage')),
+                        Text('-'),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: () => setState(() {
+                                  errorMessage = "No error yet.";
+                                  logs.clear();
+                                  print(
+                                      "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                                }),
+                            child: Text('Clear Logs')),
+                        Text('-'),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onLifecycleTests,
+                            key: Key('lifecycleTests'),
+                            child: Text('Lifecycle Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onServerEndpointTest,
+                            key: Key('serverEndpointTest'),
+                            child: Text('Server Endpoint Test')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onFeedbackTests,
+                            key: Key('feedbackTests'),
+                            child: Text('Feedback Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onFeedbackShakeTest,
+                            key: Key('feedbackShakeTest'),
+                            child: Text('Feedback Shake Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onVersionTest,
+                            key: Key('versionTest'),
+                            child: Text('Version Test')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onSessionUrlTest,
+                            key: Key('sessionUrlTest'),
+                            child: Text('Session Url Test')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onAddCheckpointTest,
+                            key: Key('addCheckpointTest'),
+                            child: Text('Add Checkpoint Test')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onAddEventTest,
+                            key: Key('addEventTest'),
+                            child: Text('Add Event Test')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onIdentityTests,
+                            key: Key('identityTests'),
+                            child: Text('Identity Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onLogTests,
+                            key: Key('logTests'),
+                            child: Text('Log Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onDeveloperOptionsTests,
+                            key: Key('developerOptionsTests'),
+                            child: Text('Developer Options Tests')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onFeedbackOptionsTest,
+                            key: Key('feedbackOptionsTests'),
+                            child: Text('Feedback Options Tests')),
+//              FlatButton(
+//                  color: Color.fromRGBO(0, 100, 100, 1.0),
+//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
+//                  onPressed: onTakeScreenshot,
+//                  key: Key('takeScreenshot'),
+//                  child: Text('Take Screenshot')
+//              ),
+//              FlatButton(
+//                  color: Color.fromRGBO(0, 100, 100, 1.0),
+//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
+//                  onPressed: onStartTakingScreenshots,
+//                  key: Key('startTakingScreenshots'),
+//                  child: Text('Start Taking Screenshots')
+//              ),
+//              FlatButton(
+//                  color: Color.fromRGBO(0, 100, 100, 1.0),
+//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
+//                  onPressed: onStopTakingScreenshots,
+//                  key: Key('stopTakingScreenshots'),
+//                  child: Text('Stop Taking Screenshots')
+//              ),
+//              Text('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n '),
+//              Text('Hide Me!', key: hiddenWidgetKey),
+                        Column(children: logs.map((l) => new Text(l)).toList())
+                      ],
+                    )))));
+  }
+
+  // Must call this before you begin a test
+  void beginTest(String name) {
+    setState(() {
+      testing = true;
+      testName = name;
+
+      print('Testing ' + name);
+    });
+  }
+
+  // Must call this after you end a test
+  void endTest() {
+    setState(() {
+      testing = false;
+
+      print('Done ' + testName);
+
+      testName = "";
+    });
+  }
+
+  // Call this inside a test if an error occurs
+  void setError(Error error) {
+    setState(() {
+      errorMessage = error.toString();
+      print(errorMessage);
+    });
+
+    void stopSDK() async {
+      try {
+        await TestFairy.stop();
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    stopSDK();
+  }
+
+  // Tests
+
+  void onLifecycleTests() async {
+    if (testing) return;
+
+    beginTest("Lifecycle");
+
+    try {
+      print('Calling begin,pause,resume,stop,begin,stop in this order.');
+
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.pause();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.resume();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.beginWithOptions(APP_TOKEN, {'metrics': 'cpu'});
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onServerEndpointTest() async {
+    if (testing) return;
+
+    beginTest("Server Endpoint");
+
+    try {
+      print(
+          'Setting dummy server endpoint expecting graceful offline sessions.');
+      await TestFairy.setServerEndpoint("http://example.com");
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 1));
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+      await TestFairy.setServerEndpoint("https://api.TestFairy.com/services/");
+      await Future.delayed(const Duration(seconds: 1));
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 1));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onFeedbackTests() async {
+    if (testing) return;
+
+    beginTest("Feedbacks");
+
+    try {
+      print('Showing feedback form.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.sendUserFeedback("Dummy feedback from Flutter");
+      await TestFairy.showFeedbackForm();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.bringFlutterToFront();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onFeedbackShakeTest() async {
+    if (testing) return;
+
+    beginTest("Feedback Shake");
+
+    try {
+      await TestFairy.enableFeedbackForm("shake");
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+      print("Listening shakes for 20 seconds. ");
+      print(
+          "You can either shake your device manually during this time to open the feedback screen and wait for it to close automatically.");
+      print("Or, you can skip this test by simply waiting a little more.");
+      await Future.delayed(const Duration(seconds: 20));
+      print("No longer listening shakes");
+      await TestFairy.disableFeedbackForm();
+      await TestFairy.bringFlutterToFront();
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onVersionTest() async {
+    if (testing) return;
+
+    beginTest("Version");
+
+    try {
+      await TestFairy.begin(APP_TOKEN);
+      var version = await TestFairy.getVersion();
+      print("SDK Version: " + version);
+
+      assert(version.split(".").length == 3);
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onSessionUrlTest() async {
+    if (testing) return;
+
+    beginTest("Session Url");
+
+    try {
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      var url = await TestFairy.getSessionUrl();
+      print("Session Url: " + url);
+      assert(url.contains("http"));
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  // TODO : Enable this once video is fixed on Android
+//  void onTakeScreenshot() async {
+//    if (testing) return;
+//
+//    beginTest("Take Screenshot");
+//
+//    try {
+//      await TestFairy.takeScreenshot();
+//    } catch (e) {
+//      setError(e);
+//    }
+//
+//    endTest();
+////    RenderBox ro = hiddenWidgetKey.currentContext.findRenderObject();
+////
+////    var pos = ro.localToGlobal(Offset.zero);
+////    pos = Offset(pos.dx * window.devicePixelRatio, pos.dy * window.devicePixelRatio);
+////    print('Position is: ');
+////    print(pos.toString());
+////
+////    var size = hiddenWidgetKey.currentContext.size;
+////    size = Size(size.width * window.devicePixelRatio, size.height * window.devicePixelRatio);
+////    print('Size is: ');
+////    print(size.toString());
+//
+////    await TestFairy.takeScreenshot();
+//  }
+//
+//  void onStartTakingScreenshots() async {
+//    if (testing) return;
+//
+//    beginTest("Start Taking Screenshots");
+//
+//    try {
+//      await TestFairy.startTakingScreenshots();
+//      await TestFairy.startTakingScreenshots();
+//    } catch (e) {
+//      setError(e);
+//    }
+//
+//    endTest();
+//  }
+//
+//  void onStopTakingScreenshots() async {
+//    if (testing) return;
+//
+//    beginTest("Stop Taking Screenshots");
+//
+//    try {
+//      await TestFairy.stopTakingScreenshots();
+//      await TestFairy.stopTakingScreenshots();
+//    } catch (e) {
+//      setError(e);
+//    }
+//
+//    endTest();
+//  }
+
+  void onAddCheckpointTest() async {
+    if (testing) return;
+
+    beginTest("Add Checkpoint");
+
+    try {
+      print('Adding some checkpoints.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.addCheckpoint("Hello-check-1");
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.addCheckpoint("Hello-check-2");
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onAddEventTest() async {
+    if (testing) return;
+
+    beginTest("Add Event");
+
+    try {
+      print('Adding some user events.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.addEvent("Hello-event-1");
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.addEvent("Hello-event-2");
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onIdentityTests() async {
+    if (testing) return;
+
+    beginTest("Identity");
+
+    try {
+      print(
+          'Setting correlation id and identifying multiple times, expecting graceful failures.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.setCorrelationId("1234567flutter");
+
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+
+      ///
+
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.identify("1234567flutter");
+
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+
+      ///
+
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.identifyWithTraits(
+          "1234567flutter", {'someTrait': 'helloTrait'});
+
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+
+      ///
+
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.setUserId("user1");
+      await TestFairy.setUserId("user2");
+      await TestFairy.setUserId("user3");
+
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+
+      ///
+      print('Setting some attributes and a screen name.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      await TestFairy.setScreenName('TestfairyExampleApp-ScreenName');
+      await TestFairy.setAttribute('dummyAttr', 'dummyValue');
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onLogTests() async {
+    if (testing) return;
+
+    beginTest("Log");
+
+    try {
+      print('Logging heavily expecting no visible stutter or crash.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      for (var i = 0; i < 1000; i++) {
+        await TestFairy.log(i.toString());
+      }
+
+      print('Logging some dummy error.');
+
+      await TestFairy.logError(AssertionError('No worries'));
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onDeveloperOptionsTests() async {
+    if (testing) return;
+
+    beginTest("Developer Options");
+
+    try {
+      print('Testing crash handlers, metrics and max session length.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      print('Last session crashed: ' +
+          (await TestFairy.didLastSessionCrash()).toString());
+
+      print('Enable/disable crash handler.');
+      await TestFairy.enableCrashHandler();
+      await TestFairy.disableCrashHandler();
+
+      print('Enable/disable cpu metric.');
+      await TestFairy.enableMetric('cpu');
+      await TestFairy.disableMetric('cpu');
+
+      await TestFairy.stop();
+      await Future.delayed(const Duration(seconds: 1));
+
+      print(
+          'Setting up a short unsupported session length, expecting graceful fallback to default.');
+      await TestFairy.setMaxSessionLength(3.0);
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 4));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onFeedbackOptionsTest() async {
+    if (testing) return;
+
+    beginTest("Feedback Options");
+
+    try {
+      print('Testing feedback popup with custom options and callbacks.');
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      TestFairy.setFeedbackOptions(onFeedbackSent: (fc) {
+        print('onFeedbackSent: ' + fc.toString());
+      }, onFeedbackCancelled: () {
+        print('onFeedbackCancelled');
+      }, onFeedbackFailed: (fc) {
+        print('onFeedbackFailed: ' + fc.toString());
+      });
+      TestFairy.showFeedbackForm();
+
+      print('Showing the feedback form. Enter some feedback and send/cancel.');
+      print('Or wait 20 seconds to skip this test.');
+      await Future.delayed(const Duration(seconds: 20));
+
+      await TestFairy.bringFlutterToFront();
+
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+}
