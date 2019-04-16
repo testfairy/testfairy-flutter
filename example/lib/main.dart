@@ -96,6 +96,11 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                                       "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                                 }),
                             child: Text('Clear Logs')),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onCoolButton,
+                            child: Text('Cool Button')),
                         Text('-'),
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
@@ -219,7 +224,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
   }
 
   // Call this inside a test if an error occurs
-  void setError(Error error) {
+  void setError(error) {
     setState(() {
       errorMessage = error.toString();
       print(errorMessage);
@@ -227,13 +232,35 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
     void stopSDK() async {
       try {
-        await TestFairy.stop();
+//        await TestFairy.stop(); // TODO
       } catch (e) {
         print(e);
       }
     }
 
     stopSDK();
+  }
+
+  void onCoolButton() async {
+    if (testing) {
+      print('already testing');
+      return;
+    }
+
+    beginTest("Cool Button");
+
+    try {
+      print("A");
+      await TestFairy.beginWithOptions(APP_TOKEN, {'metrics': 'cpu'});
+      print("B");
+      await Future.delayed(const Duration(seconds: 2));
+      print("C");
+//      await TestFairy.stop(); // TODO
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
   }
 
   // Tests

@@ -114,11 +114,11 @@ class TestFairy {
   }
 
   static Future<void> logError(dynamic error) async {
-    await _channel.invokeMethod('logError', error.toString());
+//    await _channel.invokeMethod('logError', error.toString()); // TODO
   }
 
   static Future<void> log(String message) async {
-    await _channel.invokeMethod('log', message);
+//    await _channel.invokeMethod('log', message); // TODO
   }
 
   static Future<void> setScreenName(String name) async {
