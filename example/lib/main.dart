@@ -232,7 +232,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
     void stopSDK() async {
       try {
-//        await TestFairy.stop(); // TODO
+        await TestFairy.stop();
       } catch (e) {
         print(e);
       }
@@ -251,11 +251,16 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
     try {
       print("A");
-      await TestFairy.beginWithOptions(APP_TOKEN, {'metrics': 'cpu'});
+      await TestFairy.begin(APP_TOKEN);
       print("B");
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 5));
       print("C");
-//      await TestFairy.stop(); // TODO
+      await TestFairy.takeScreenshot();
+      print("D");
+      await Future.delayed(const Duration(seconds: 2));
+      print("E");
+      await TestFairy.stop();
+      print("F");
     } catch (e) {
       setError(e);
     }
@@ -652,14 +657,14 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future.delayed(const Duration(seconds: 2));
 
-      TestFairy.setFeedbackOptions(onFeedbackSent: (fc) {
+      await TestFairy.setFeedbackOptions(onFeedbackSent: (fc) {
         print('onFeedbackSent: ' + fc.toString());
       }, onFeedbackCancelled: () {
         print('onFeedbackCancelled');
       }, onFeedbackFailed: (fc) {
         print('onFeedbackFailed: ' + fc.toString());
       });
-      TestFairy.showFeedbackForm();
+      await TestFairy.showFeedbackForm();
 
       print('Showing the feedback form. Enter some feedback and send/cancel.');
       print('Or wait 20 seconds to skip this test.');

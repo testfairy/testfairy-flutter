@@ -6,7 +6,6 @@
 //    private WeakReference<MethodChannel> methodChannelWeakReference = new WeakReference<>(null);
 //    private WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
 //    private WeakReference<FlutterView> flutterViewWeakReference = new WeakReference<>(null);
-    
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -40,6 +39,88 @@
             result(nil);
         } else if ([@"getVersion" isEqualToString:call.method]) {
             result([self version]);
+        } else if ([@"sendUserFeedback" isEqualToString:call.method]) {
+            [self sendUserFeedback:call.arguments];
+            result(nil);
+        } else if ([@"addCheckpoint" isEqualToString:call.method]) {
+            [self addCheckpoint:call.arguments];
+            result(nil);
+        } else if ([@"addEvent" isEqualToString:call.method]) {
+            [self addEvent:call.arguments];
+            result(nil);
+        } else if ([@"setCorrelationId" isEqualToString:call.method]) {
+            [self setCorrelationId:call.arguments];
+            result(nil);
+        } else if ([@"identifyWithTraits" isEqualToString:call.method]) {
+            [self identify: [args valueForKey:@"id"] withTraits:[args valueForKey:@"traits"]];
+            result(nil);
+        } else if ([@"identify" isEqualToString:call.method]) {
+            [self identify:call.arguments];
+            result(nil);
+        } else if ([@"setUserId" isEqualToString:call.method]) {
+            [self setUserId:call.arguments];
+            result(nil);
+        } else if ([@"setAttribute" isEqualToString:call.method]) {
+            [self setAttribute:[args valueForKey:@"key"] withValue:[args valueForKey:@"value"]];
+            result(nil);
+        } else if ([@"getSessionUrl" isEqualToString:call.method]) {
+            result([self sessionUrl]);
+        } else if ([@"showFeedbackForm" isEqualToString:call.method]) {
+            [self showFeedbackForm];
+            result(nil);
+        } else if ([@"stop" isEqualToString:call.method]) {
+            [self stop];
+            result(nil);
+        } else if ([@"resume" isEqualToString:call.method]) {
+            [self resume];
+            result(nil);
+        } else if ([@"pause" isEqualToString:call.method]) {
+            [self pause];
+            result(nil);
+        } else if ([@"log" isEqualToString:call.method]) {
+            [self log:call.arguments];
+            result(nil);
+        } else if ([@"setScreenName" isEqualToString:call.method]) {
+            [self setScreenName:call.arguments];
+            result(nil);
+        } else if ([@"didLastSessionCrash" isEqualToString:call.method]) {
+            result([self didLastSessionCrash]);
+        } else if ([@"enableCrashHandler" isEqualToString:call.method]) {
+            [self enableCrashHandler];
+            result(nil);
+        } else if ([@"disableCrashHandler" isEqualToString:call.method]) {
+            [self disableCrashHandler];
+            result(nil);
+        } else if ([@"enableMetric" isEqualToString:call.method]) {
+            [self enableMetric:call.arguments];
+            result(nil);
+        } else if ([@"disableMetric" isEqualToString:call.method]) {
+            [self disableMetric:call.arguments];
+            result(nil);
+        } else if ([@"enableVideo" isEqualToString:call.method]) {
+            [self enableVideo:[args valueForKey:@"policy"] quality:[args valueForKey:@"quality"] framesPerSecond:[args valueForKey:@"framesPerSecond"]];
+            result(nil);
+        } else if ([@"disableVideo" isEqualToString:call.method]) {
+            [self disableVideo];
+            result(nil);
+        } else if ([@"enableFeedbackForm" isEqualToString:call.method]) {
+            [self enableFeedbackForm:call.arguments];
+            result(nil);
+        } else if ([@"disableFeedbackForm" isEqualToString:call.method]) {
+            [self disableFeedbackForm];
+            result(nil);
+        } else if ([@"setMaxSessionLength" isEqualToString:call.method]) {
+            [self setMaxSessionLength: call.arguments];
+            result(nil);
+        } else if ([@"bringFlutterToFront" isEqualToString:call.method]) {
+            [self bringFlutterToFront];
+            result(nil);
+        } else if ([@"takeScreenshot" isEqualToString:call.method]) {
+            [self takeScreenshot];
+            result(nil);
+        } else if ([@"logError" isEqualToString:call.method]) {
+            [self logError:call.arguments];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -54,120 +135,6 @@
     }
     
 //    switch (call.method) {
-//        case "sendUserFeedback":
-//            sendUserFeedback((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "addCheckpoint":
-//            addCheckpoint((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "addEvent":
-//            addEvent((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "setCorrelationId":
-//            setCorrelationId((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "identifyWithTraits":
-//            identifyWithTraits((String) args.get("id"), (Map) args.get("traits"));
-//            result.success(null);
-//            break;
-//        case "identify":
-//            identify((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "setUserId":
-//            setUserId((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "setAttribute":
-//            setAttribute((String) args.get("key"), (String) args.get("value"));
-//            result.success(null);
-//            break;
-//        case "getSessionUrl":
-//            result.success(getSessionUrl());
-//            break;
-//        case "showFeedbackForm":
-//            showFeedbackForm();
-//            result.success(null);
-//            break;
-//        case "stop":
-//            stop();
-//            result.success(null);
-//            break;
-//        case "resume":
-//            resume();
-//            result.success(null);
-//            break;
-//        case "pause":
-//            pause();
-//            result.success(null);
-//            break;
-//        case "log":
-//            log((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "setScreenName":
-//            setScreenName((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "didLastSessionCrash":
-//            result.success(didLastSessionCrash());
-//            break;
-//        case "enableCrashHandler":
-//            enableCrashHandler();
-//            result.success(null);
-//            break;
-//        case "disableCrashHandler":
-//            disableCrashHandler();
-//            result.success(null);
-//            break;
-//        case "enableMetric":
-//            enableMetric((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "disableMetric":
-//            disableMetric((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "enableVideo":
-//            enableVideo(
-//                        (String) args.get("policy"),
-//                        (String) args.get("quality"),
-//                        (double) args.get("framesPerSecond")
-//                        );
-//            result.success(null);
-//            break;
-//        case "disableVideo":
-//            disableVideo();
-//            result.success(null);
-//            break;
-//        case "enableFeedbackForm":
-//            enableFeedbackForm((String) call.arguments());
-//            result.success(null);
-//            break;
-//        case "disableFeedbackForm":
-//            disableFeedbackForm();
-//            result.success(null);
-//            break;
-//        case "setMaxSessionLength":
-//            setMaxSessionLength((double) call.arguments());
-//            result.success(null);
-//            break;
-//        case "bringFlutterToFront":
-//            bringFlutterToFront();
-//            result.success(null);
-//            break;
-//        case "takeScreenshot":
-//            takeScreenshot();
-//            result.success(null);
-//            break;
-//        case "logError":
-//            logError((String) call.arguments());
-//            result.success(null);
-//            break;
 //        case "setFeedbackOptions":
 //            setFeedbackOptions(
 //                               (String) args.get("browserUrl"),
@@ -262,8 +229,8 @@
     [TestFairy setScreenName:name];
 }
 
-- (BOOL) didLastSessionCrash {
-    return [TestFairy didLastSessionCrash];
+- (NSNumber*) didLastSessionCrash {
+    return [NSNumber numberWithBool:[TestFairy didLastSessionCrash]];
 }
 
 - (void) enableCrashHandler {
@@ -309,7 +276,9 @@
     
     UINavigationController* nav = rootVC.navigationController;
     if (nav != nil) {
-        [[[nav viewControllers] lastObject] showViewController:rootVC sender:nil];
+        [nav popToRootViewControllerAnimated:true];
+    } else {
+        [rootVC dismissViewControllerAnimated:true completion:nil];
     }
 }
 
@@ -320,7 +289,7 @@
 @end
 
 /*
- 
+ // TODO
  private void setFeedbackOptions(String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
  FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
  

@@ -114,11 +114,11 @@ class TestFairy {
   }
 
   static Future<void> logError(dynamic error) async {
-//    await _channel.invokeMethod('logError', error.toString()); // TODO
+    await _channel.invokeMethod('logError', error.toString());
   }
 
   static Future<void> log(String message) async {
-//    await _channel.invokeMethod('log', message); // TODO
+    await _channel.invokeMethod('log', message);
   }
 
   static Future<void> setScreenName(String name) async {
@@ -146,19 +146,20 @@ class TestFairy {
   }
 
   // TODO : fix these on Android
-//  static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
-//    var args = {
-//      'policy': policy,
-//      'quality': quality,
-//      'framesPerSecond': framesPerSecond
-//    };
-//
-//    await _channel.invokeMethod('enableVideo', args);
-//  }
-//
-//  static Future<void> disableVideo() async {
-//    await _channel.invokeMethod('disableVideo');
-//  }
+  static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
+    var args = {
+      'policy': policy,
+      'quality': quality,
+      'framesPerSecond': framesPerSecond
+    };
+
+    await _channel.invokeMethod('enableVideo', args);
+  }
+
+  static Future<void> disableVideo() async {
+    await _channel.invokeMethod('disableVideo');
+  }
+  //////////////////////////////////////////////////////////////
 
   static Future<void> enableFeedbackForm(String method) async {
     await _channel.invokeMethod('enableFeedbackForm', method);
@@ -246,17 +247,18 @@ class TestFairy {
 
 // Screenshots
 
-//  static Future<void> takeScreenshot() async {
-//    await _channel.invokeMethod('takeScreenshot');
-////    PermissionStatus res = await SimplePermissions.requestPermission(Permission. WriteExternalStorage);
-////
-////    if (res == PermissionStatus.authorized) {
-////      await _channel.invokeMethod('takeScreenshot');
-////    } else {
-////      print("Storage permission error on takeScreenshot");
-////    }
-//  }
+  static Future<void> takeScreenshot() async {
+    await _channel.invokeMethod('takeScreenshot');
+//    PermissionStatus res = await SimplePermissions.requestPermission(Permission. WriteExternalStorage);
 //
+//    if (res == PermissionStatus.authorized) {
+//      await _channel.invokeMethod('takeScreenshot');
+//    } else {
+//      print("Storage permission error on takeScreenshot");
+//    }
+  }
+//
+
 //  static Future<void> startTakingScreenshots() async {
 //    stopTakingScreenshots();
 //
