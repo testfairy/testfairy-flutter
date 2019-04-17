@@ -43,6 +43,48 @@ void main() {
 
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)
+
+### Features supported by both Android and iOS
+
+* `begin`
+* `beginWithOptions`
+* `setServerEndpoint`
+* `getVersion`
+* `sendUserFeedback`
+* `addCheckpoint`
+* `addEvent`
+* `setCorrelationId`
+* `identifyWithTraits`
+* `identify`
+* `setUserId`
+* `setAttribute`
+* `getSessionUrl`
+* `showFeedbackForm`
+* `stop`
+* `resume`
+* `pause`
+* `log`
+* `setScreenName`
+* `didLastSessionCrash`
+* `enableCrashHandler`
+* `disableCrashHandler`
+* `enableMetric`
+* `disableMetric`
+* `enableFeedbackForm`
+* `disableFeedbackForm`
+* `setMaxSessionLength`
+* `bringFlutterToFront`
+
+### Features supported by only iOS
+
+* `enableVideo`
+* `disableVideo`
+* `takeScreenshot`
+
+### Features supported by only Android
+
+* `setFeedbackOptions`
+* `logError`
  
 ## Development
 1. Install [Flutter](https://flutter.io/docs).
