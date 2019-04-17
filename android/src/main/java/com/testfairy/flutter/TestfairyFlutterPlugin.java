@@ -150,18 +150,18 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 					disableMetric((String) call.arguments());
 					result.success(null);
 					break;
-				case "enableVideo":
-					enableVideo(
-							(String) args.get("policy"),
-							(String) args.get("quality"),
-							(double) args.get("framesPerSecond")
-					);
-					result.success(null);
-					break;
-				case "disableVideo":
-					disableVideo();
-					result.success(null);
-					break;
+//				case "enableVideo":
+//					enableVideo(
+//							(String) args.get("policy"),
+//							(String) args.get("quality"),
+//							(double) args.get("framesPerSecond")
+//					);
+//					result.success(null);
+//					break;
+//				case "disableVideo":
+//					disableVideo();
+//					result.success(null);
+//					break;
 				case "enableFeedbackForm":
 					enableFeedbackForm((String) call.arguments());
 					result.success(null);
@@ -178,10 +178,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 					bringFlutterToFront();
 					result.success(null);
 					break;
-				case "takeScreenshot":
-					takeScreenshot();
-					result.success(null);
-					break;
+//				case "takeScreenshot":
+//					takeScreenshot();
+//					result.success(null);
+//					break;
 				case "logError":
 					logError((String) call.arguments());
 					result.success(null);

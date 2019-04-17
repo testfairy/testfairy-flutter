@@ -186,6 +186,7 @@ class TestFairy {
   static int feedbackOptionsIdCounter = 0;
   static var feedbackOptionsCallbacks = {};
 
+  // TODO : implement this on iOS
   static Future<void> setFeedbackOptions(
       {String browserUrl,
       bool emailFieldVisible: true,
@@ -245,8 +246,9 @@ class TestFairy {
         ['onFeedbackFailed'](opts);
   }
 
-// Screenshots
+  // Screenshots
 
+  // TODO : implement this on Android
   static Future<void> takeScreenshot() async {
     await _channel.invokeMethod('takeScreenshot');
 //    PermissionStatus res = await SimplePermissions.requestPermission(Permission. WriteExternalStorage);
@@ -274,10 +276,9 @@ class TestFairy {
 //    }
 //  }
 
-// TODO : implement the integrations below
-
+// TODO : implement the integrations below on both platform
 //  addNetworkEvent
-//
 //  hideView
+////////////////////////////////////////////////////////////
 
 }

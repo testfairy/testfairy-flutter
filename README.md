@@ -56,6 +56,7 @@ void main() {
 9. Run `./docs.sh` to generate documentation for offline usage.
 
 ## TODO
-1. Add iOS support.
-2. Add video support on Android.
-3. Add network logging.
+1. Add video and screenshot support on Android.
+2. Add feedback options support for iOS.
+3. Add `hideView` for both platforms. 
+4. Add network logging for both platforms.
