@@ -4,15 +4,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Environment;
 import android.util.Log;
 
 import com.testfairy.FeedbackContent;
 import com.testfairy.FeedbackOptions;
 import com.testfairy.TestFairy;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -30,10 +37,64 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		}
 	}
 
+	private static class FlutterViewMethodChannelPair {
+		public WeakReference<FlutterView> flutterViewWeakReference;
+		public WeakReference<MethodChannel> methodChannelWeakReference;
+
+		public FlutterViewMethodChannelPair(FlutterView flutterView, MethodChannel methodChannel) {
+			this.flutterViewWeakReference = new WeakReference<>(flutterView);
+			this.methodChannelWeakReference = new WeakReference<>(methodChannel);
+		}
+
+		public boolean isValid() {
+			return flutterViewWeakReference.get() != null && methodChannelWeakReference.get() != null;
+		}
+	}
+
 	private WeakReference<Context> contextWeakReference = new WeakReference<>(null);
 	private WeakReference<MethodChannel> methodChannelWeakReference = new WeakReference<>(null);
 	private WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
 	private WeakReference<FlutterView> flutterViewWeakReference = new WeakReference<>(null);
+
+	static private Map<WeakReference<Context>, FlutterViewMethodChannelPair> contextChannelMapping = new ConcurrentHashMap<>();
+
+	static private FlutterViewMethodChannelPair getActiveFlutterViewMethodChannelPair() {
+		List<Runnable> cleanUp = new ArrayList<>();
+		FlutterViewMethodChannelPair result = null;
+
+		for (final WeakReference<Context> c : contextChannelMapping.keySet()) {
+			final FlutterViewMethodChannelPair flutterViewMethodChannelPair = contextChannelMapping.get(c);
+
+			if (c.get() != null && flutterViewMethodChannelPair.isValid()) {
+				if (c.get() == flutterViewMethodChannelPair.flutterViewWeakReference.get().getContext()) {
+					result = flutterViewMethodChannelPair;
+				}
+			} else {
+				cleanUp.add(new Runnable() {
+					@Override
+					public void run() {
+						contextChannelMapping.remove(c);
+					}
+				});
+			}
+		}
+
+		for (Runnable r : cleanUp) r.run();
+
+		return result;
+	}
+
+	static private void takeScreenshot() {
+		FlutterViewMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+
+		if (activeFlutterViewMethodChannelPair != null) {
+			MethodChannel methodChannel = activeFlutterViewMethodChannelPair.methodChannelWeakReference.get();
+
+			if (methodChannel != null) {
+				methodChannel.invokeMethod("takeScreenshot", null, null);
+			}
+		}
+	}
 
 	/** Plugin registration. (Mandatory)*/
 	public static void registerWith(Registrar registrar) {
@@ -46,6 +107,11 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		testfairyFlutterPlugin.flutterViewWeakReference = new WeakReference<>(registrar.view());
 
 		channel.setMethodCallHandler(testfairyFlutterPlugin);
+
+		contextChannelMapping.put(
+				new WeakReference<Context>(registrar.activity()),
+				new FlutterViewMethodChannelPair(registrar.view(), channel)
+		);
 	}
 
 	@Override
@@ -57,6 +123,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			}
 
 			switch (call.method) {
+				case "sendScreenshot":
+					sendScreenshot((byte[]) args.get("pixels"), (int) args.get("width"), (int) args.get("height"));
+					result.success(null);
+					break;
 				case "begin":
 					begin((String) call.arguments());
 					result.success(null);
@@ -150,18 +220,18 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 					disableMetric((String) call.arguments());
 					result.success(null);
 					break;
-//				case "enableVideo":
-//					enableVideo(
-//							(String) args.get("policy"),
-//							(String) args.get("quality"),
-//							(double) args.get("framesPerSecond")
-//					);
-//					result.success(null);
-//					break;
-//				case "disableVideo":
-//					disableVideo();
-//					result.success(null);
-//					break;
+				case "enableVideo":
+					enableVideo(
+							(String) args.get("policy"),
+							(String) args.get("quality"),
+							(double) args.get("framesPerSecond")
+					);
+					result.success(null);
+					break;
+				case "disableVideo":
+					disableVideo();
+					result.success(null);
+					break;
 				case "enableFeedbackForm":
 					enableFeedbackForm((String) call.arguments());
 					result.success(null);
@@ -178,10 +248,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 					bringFlutterToFront();
 					result.success(null);
 					break;
-//				case "takeScreenshot":
-//					takeScreenshot();
-//					result.success(null);
-//					break;
 				case "logError":
 					logError((String) call.arguments());
 					result.success(null);
@@ -402,23 +468,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		});
 	}
 
-	private void takeScreenshot() {
-		withFlutterView(new FlutterViewConsumer<Void>() {
-			@Override
-			public Void consume(FlutterView flutterView) {
-				Bitmap bitmap = flutterView.getBitmap();
-
-				if (bitmap != null) {
-					// TODO : send to testfairy
-
-					bitmap.recycle();
-				}
-
-				return null;
-			}
-		});
-	}
-
 	private void setFeedbackOptions(String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
 		FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
 
@@ -479,6 +528,15 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		TestFairy.setFeedbackOptions(builder.build());
 	}
 
+	static private void sendScreenshot(byte[] pixels, int width, int height) {
+		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		ByteBuffer buffer = ByteBuffer.wrap(pixels);
+		bmp.copyPixelsFromBuffer(buffer);
+
+		// TODO : send to testfairy
+		saveImage(bmp, "tfss-" + System.currentTimeMillis());
+	}
+
 //	private void addNetworkEvent(
 //			URI uri,
 //			String method,
@@ -491,26 +549,22 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 //	) {
 //		// TODO
 //	}
-//
-//	private void hideView(Integer view) {
-//		// TODO
-//	}
 
-	//	private void saveImage(Bitmap finalBitmap, String image_name) {
-//		String root = Environment.getExternalStorageDirectory().toString();
-//		File myDir = new File(root);
-//		myDir.mkdirs();
-//		String fname = "Image-" + image_name+ ".jpg";
-//		File file = new File(myDir, fname);
-//		if (file.exists()) file.delete();
-//		Log.i("LOAD", root + fname);
-//		try {
-//			FileOutputStream out = new FileOutputStream(file);
-//			finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-//			out.flush();
-//			out.close();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+	private static void saveImage(Bitmap finalBitmap, String image_name) {
+		String root = Environment.getExternalStorageDirectory().toString();
+		File myDir = new File(root);
+		myDir.mkdirs();
+		String fname = "Image-" + image_name+ ".jpg";
+		File file = new File(myDir, fname);
+		if (file.exists()) file.delete();
+		Log.i("TestFairy", "Saved image to " + root + "/" + fname);
+		try {
+			FileOutputStream out = new FileOutputStream(file);
+			finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+			out.flush();
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

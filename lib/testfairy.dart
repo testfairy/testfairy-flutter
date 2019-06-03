@@ -1,6 +1,17 @@
 import 'dart:async';
+import 'dart:core';
+import 'dart:io';
+import 'dart:math' as math;
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
 //import 'package:simple_permissions/simple_permissions.dart';
 
 class FeedbackOptions {
@@ -15,7 +26,8 @@ class TestFairy {
 
   static const MethodChannel _channel =
       const MethodChannel('testfairy');
-  static Timer screenshotTimer;
+  static bool isMethodCallHandlerSet = false;
+  static List<GlobalKey> _hiddenWidgets = [];
 
   static Future<dynamic> methodCallHandler(MethodCall call) async {
     switch (call.method) {
@@ -28,22 +40,134 @@ class TestFairy {
       case 'callOnFeedbackFailed':
         callOnFeedbackFailed(call.arguments);
         break;
+      case 'getHiddenRects':
+        return getHiddenRects();
+      case 'lock':
+        return lock();
+      case 'unlock':
+        return unlock();
+      case 'takeScreenshot':
+        takeScreenshot();
+        break;
       default:
-        print('Ignoring invoke from native. This normally shouldn\'t happen.');
+        print('TestFairy: Ignoring invoke from native. This normally shouldn\'t happen.');
     }
   }
 
   static void prepareTwoWayInvoke() {
-    _channel.setMethodCallHandler(methodCallHandler);
+    if (!isMethodCallHandlerSet) {
+      _channel.setMethodCallHandler(methodCallHandler);
+      isMethodCallHandlerSet = true;
+    }
+  }
+
+  static void lock() {
+    GestureBinding.instance.lockEvents((){ return Future.value(null); });
+    RendererBinding.instance.lockEvents((){ return Future.value(null); });
+    PaintingBinding.instance.lockEvents((){ return Future.value(null); });
+    SchedulerBinding.instance.lockEvents((){ return Future.value(null); });
+    ServicesBinding.instance.lockEvents((){ return Future.value(null); });
+    WidgetsBinding.instance.lockEvents((){ return Future.value(null); });
+  }
+
+  static void unlock() {
+    GestureBinding.instance.unlocked();
+    RendererBinding.instance.unlocked();
+    PaintingBinding.instance.unlocked();
+    SchedulerBinding.instance.unlocked();
+    ServicesBinding.instance.unlocked();
+    WidgetsBinding.instance.unlocked();
+  }
+
+  static List<Map<String, int>> getHiddenRects() {
+    List<Map<String, int>> rects = [];
+
+    _hiddenWidgets.forEach((gk) {
+      RenderBox ro = gk.currentContext.findRenderObject();
+
+      var pos = ro.localToGlobal(Offset.zero);
+      pos = Offset(pos.dx * ui.window.devicePixelRatio, pos.dy * ui.window.devicePixelRatio);
+//      print('Position is: ');
+//      print(pos.toString());
+
+      var size = gk.currentContext.size;
+      size = Size(size.width * ui.window.devicePixelRatio, size.height * ui.window.devicePixelRatio);
+//      print('Size is: ');
+//      print(size.toString());
+
+      rects.add({
+        'x': pos.dx.toInt(),
+        'y': pos.dy.toInt(),
+        'w': size.width.toInt(),
+        'h': size.height.toInt()
+      });
+    });
+
+    return rects;
+  }
+
+  static Future<void> takeScreenshot() async {
+    var ps = WidgetsBinding.instance.window.physicalSize;
+    double width = ps.width;
+    double height = ps.height;
+
+    await WidgetsBinding.instance.endOfFrame;
+
+    var rects = getHiddenRects();
+
+    var screenshot = await WidgetInspectorService.instance.screenshot(
+        WidgetsBinding.instance.renderViewElement.findRenderObject(),
+        width: width,
+        height: height
+    );
+
+    ByteData byteData = await screenshot.toByteData(format: ui.ImageByteFormat.rawRgba);
+
+    rects.forEach((r) {
+      var x = r['x'];
+      var y = r['y'];
+      var w = r['w'];
+      var h = r['h'];
+
+//      print("Hidden Rect: " + r.toString());
+
+      if(w > 0 && h > 0) {
+        for (var i = x; i < x + w; i++) {
+          for (var j = y; j < y + h; j++) {
+            var fixedI = math.min(math.max(0, i), width).toInt() * 4;
+            var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
+
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
+          }
+        }
+      }
+    });
+
+    prepareTwoWayInvoke();
+
+    var args = {
+      'pixels': byteData.buffer.asUint8List(),
+      'width': width.toInt(),
+      'height': height.toInt()
+    };
+
+    await _channel.invokeMethod('sendScreenshot', args);
   }
 
   // Public Interface
 
   static Future<void> begin(String appToken) async {
+    prepareTwoWayInvoke();
+
     await _channel.invokeMethod('begin', appToken);
   }
 
   static Future<void> beginWithOptions(String appToken, Map options) async {
+    prepareTwoWayInvoke();
+
     var args = {'appToken': appToken, 'options': options};
 
     await _channel.invokeMethod('beginWithOptions', args);
@@ -145,7 +269,6 @@ class TestFairy {
     await _channel.invokeMethod('disableMetric', metric);
   }
 
-  // TODO : fix these on Android
   static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
     var args = {
       'policy': policy,
@@ -159,7 +282,6 @@ class TestFairy {
   static Future<void> disableVideo() async {
     await _channel.invokeMethod('disableVideo');
   }
-  //////////////////////////////////////////////////////////////
 
   static Future<void> enableFeedbackForm(String method) async {
     await _channel.invokeMethod('enableFeedbackForm', method);
@@ -171,6 +293,10 @@ class TestFairy {
 
   static Future<void> setMaxSessionLength(double seconds) async {
     await _channel.invokeMethod('setMaxSessionLength', seconds);
+  }
+
+  static void hideWidget(GlobalKey widgetKey) {
+    _hiddenWidgets.add(widgetKey);
   }
 
   static Future<void> bringFlutterToFront() async {
@@ -225,7 +351,7 @@ class TestFairy {
     opts.timestamp = args['timestamp'];
     opts.i = args['i'];
 
-    print(args['callId'].toString());
+//    print(args['callId'].toString());
 
     feedbackOptionsCallbacks[args['callId'].toString()]['onFeedbackSent'](opts);
   }
@@ -248,37 +374,8 @@ class TestFairy {
 
   // Screenshots
 
-  // TODO : implement this on Android
-  static Future<void> takeScreenshot() async {
-    await _channel.invokeMethod('takeScreenshot');
-//    PermissionStatus res = await SimplePermissions.requestPermission(Permission. WriteExternalStorage);
-//
-//    if (res == PermissionStatus.authorized) {
-//      await _channel.invokeMethod('takeScreenshot');
-//    } else {
-//      print("Storage permission error on takeScreenshot");
-//    }
-  }
-//
-
-//  static Future<void> startTakingScreenshots() async {
-//    stopTakingScreenshots();
-//
-//    screenshotTimer = Timer.periodic(Duration(seconds: 1), (_) async {
-//      await takeScreenshot();
-//    });
-//  }
-//
-//  static Future<void> stopTakingScreenshots() async {
-//    if (screenshotTimer != null) {
-//      screenshotTimer.cancel();
-//      screenshotTimer = null;
-//    }
-//  }
-
 // TODO : implement the integrations below on both platform
 //  addNetworkEvent
-//  hideView
 ////////////////////////////////////////////////////////////
 
 }

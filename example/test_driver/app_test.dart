@@ -67,6 +67,7 @@ void main() {
     testfairyTestSimple('Identity Tests', find.byValueKey('identityTests'));
     testfairyTestSimple('Log Tests', find.byValueKey('logTests'));
     testfairyTestSimple('Developer Options Tests', find.byValueKey('developerOptionsTests'));
+    testfairyTestSimple('Screenshot Tests', find.byValueKey('hiddenText'));
 //    testfairyTestSimple('Feedback Options Tests', find.byValueKey('feedbackOptionsTests'));
   });
 }

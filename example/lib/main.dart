@@ -8,7 +8,7 @@ import 'package:testfairy/testfairy.dart';
 const String APP_TOKEN = 'SDK-gLeZiE9i';
 
 // Test Globals
-List<String> logs = List();
+List<String> logs = [];
 Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
@@ -50,12 +50,15 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
   String errorMessage = 'No error yet.';
   String testName = '';
   bool testing = false;
+  GlobalKey hideWidgetKey = GlobalKey();
 
 //  GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
 
   @override
   void initState() {
     super.initState();
+
+    TestFairy.hideWidget(hideWidgetKey);
 
     onNewLog = () => setState(() {});
 
@@ -174,29 +177,17 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                             onPressed: onFeedbackOptionsTest,
                             key: Key('feedbackOptionsTests'),
                             child: Text('Feedback Options Tests')),
-//              FlatButton(
-//                  color: Color.fromRGBO(0, 100, 100, 1.0),
-//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
-//                  onPressed: onTakeScreenshot,
-//                  key: Key('takeScreenshot'),
-//                  child: Text('Take Screenshot')
-//              ),
-//              FlatButton(
-//                  color: Color.fromRGBO(0, 100, 100, 1.0),
-//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
-//                  onPressed: onStartTakingScreenshots,
-//                  key: Key('startTakingScreenshots'),
-//                  child: Text('Start Taking Screenshots')
-//              ),
-//              FlatButton(
-//                  color: Color.fromRGBO(0, 100, 100, 1.0),
-//                  textColor: Color.fromRGBO(255, 255, 255, 1.0),
-//                  onPressed: onStopTakingScreenshots,
-//                  key: Key('stopTakingScreenshots'),
-//                  child: Text('Stop Taking Screenshots')
-//              ),
-//              Text('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n '),
-//              Text('Hide Me!', key: hiddenWidgetKey),
+                        Text(
+                            "HIDE ME FROM SCREENSHOTS",
+                            key: hideWidgetKey
+                        ),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onTakeScreenshot,
+                            key: Key("hiddenText"),
+                            child: Text('Take Screenshot')
+                        ),
                         Column(children: logs.map((l) => new Text(l)).toList())
                       ],
                     )))));
@@ -417,63 +408,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     endTest();
   }
 
-  // TODO : Enable this once video is fixed on Android
-//  void onTakeScreenshot() async {
-//    if (testing) return;
-//
-//    beginTest("Take Screenshot");
-//
-//    try {
-//      await TestFairy.takeScreenshot();
-//    } catch (e) {
-//      setError(e);
-//    }
-//
-//    endTest();
-////    RenderBox ro = hiddenWidgetKey.currentContext.findRenderObject();
-////
-////    var pos = ro.localToGlobal(Offset.zero);
-////    pos = Offset(pos.dx * window.devicePixelRatio, pos.dy * window.devicePixelRatio);
-////    print('Position is: ');
-////    print(pos.toString());
-////
-////    var size = hiddenWidgetKey.currentContext.size;
-////    size = Size(size.width * window.devicePixelRatio, size.height * window.devicePixelRatio);
-////    print('Size is: ');
-////    print(size.toString());
-//
-////    await TestFairy.takeScreenshot();
-//  }
-//
-//  void onStartTakingScreenshots() async {
-//    if (testing) return;
-//
-//    beginTest("Start Taking Screenshots");
-//
-//    try {
-//      await TestFairy.startTakingScreenshots();
-//      await TestFairy.startTakingScreenshots();
-//    } catch (e) {
-//      setError(e);
-//    }
-//
-//    endTest();
-//  }
-//
-//  void onStopTakingScreenshots() async {
-//    if (testing) return;
-//
-//    beginTest("Stop Taking Screenshots");
-//
-//    try {
-//      await TestFairy.stopTakingScreenshots();
-//      await TestFairy.stopTakingScreenshots();
-//    } catch (e) {
-//      setError(e);
-//    }
-//
-//    endTest();
-//  }
+  void onTakeScreenshot() async {
+    try {
+      await TestFairy.takeScreenshot();
+    } catch (e) {
+      print(e);
+    }
+  }
 
   void onAddCheckpointTest() async {
     if (testing) return;
