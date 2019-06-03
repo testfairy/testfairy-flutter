@@ -3,12 +3,16 @@
 @interface TestfairyFlutterPlugin : NSObject<FlutterPlugin>
 
 // Static factory required by Flutter
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
++ (void) registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
+
++ (void) takeScreenshot;
 
 // Call resolver for all integrations
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
 
 // Integrations
+- (void) sendScreenshot:(FlutterStandardTypedData*)pixels width:(NSNumber*)width height:(NSNumber*)height;
+
 - (void) begin:(NSString*)appToken;
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options;
@@ -70,7 +74,5 @@
 - (void) setMaxSessionLength:(NSNumber*)seconds;
 
 - (void) bringFlutterToFront;
-
-- (void) takeScreenshot;
 
 @end

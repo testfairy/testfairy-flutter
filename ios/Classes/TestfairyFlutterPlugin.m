@@ -8,15 +8,39 @@
 //    private WeakReference<FlutterView> flutterViewWeakReference = new WeakReference<>(null);
 }
 
+NSMutableDictionary* viewControllerMethodChannelMapping;
+
++ (void) takeScreenshot {
+    id appDelegate = UIApplication.sharedApplication.delegate;
+    
+    if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
+        FlutterAppDelegate* flutterAppDelegate = appDelegate;
+        NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
+        FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
+        
+        if (channel != nil) {
+            [channel invokeMethod:@"takeScreenshot" arguments:nil];
+        }
+    }
+}
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
             methodChannelWithName:@"testfairy"
             binaryMessenger:[registrar messenger]];
     TestfairyFlutterPlugin* instance = [[TestfairyFlutterPlugin alloc] init];
     
-//    [channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
-//        [instance handleMethodCall:call result:result];
-//    }];
+    if (viewControllerMethodChannelMapping == nil) {
+        viewControllerMethodChannelMapping = [[NSMutableDictionary alloc] init];
+    }
+    
+    id appDelegate = UIApplication.sharedApplication.delegate;
+    
+    if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {
+        FlutterAppDelegate* flutterAppDelegate = appDelegate;
+        NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
+        [viewControllerMethodChannelMapping setObject:channel forKey:currentViewControllerKey];
+    }
     
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -28,7 +52,10 @@
             args = call.arguments;
         }
         
-        if ([@"begin" isEqualToString:call.method]) {
+        if ([@"sendScreenshot" isEqualToString:call.method]) {
+            [self sendScreenshot:[args valueForKey:@"pixels"] width:[args valueForKey:@"width"] height:[args valueForKey:@"height"]];
+            result(nil);
+        } else if ([@"begin" isEqualToString:call.method]) {
             [self begin:call.arguments];
             result(nil);
         } else if ([@"beginWithOptions" isEqualToString:call.method]) {
@@ -115,9 +142,6 @@
         } else if ([@"bringFlutterToFront" isEqualToString:call.method]) {
             [self bringFlutterToFront];
             result(nil);
-        } else if ([@"takeScreenshot" isEqualToString:call.method]) {
-            [self takeScreenshot];
-            result(nil);
         } else if ([@"logError" isEqualToString:call.method]) {
             [self logError:call.arguments];
             result(nil);
@@ -149,6 +173,26 @@
 //    }
 }
 
+- (void) sendScreenshot:(FlutterStandardTypedData*)pixels width:(NSNumber*)width height:(NSNumber*)height {
+    void* outputData = (void*) [[pixels data] bytes];
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef bitmapContext = CGBitmapContextCreate(outputData, [width intValue], [height intValue], 8, 4*[width intValue], colorSpace,  kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault);
+    CFRelease(colorSpace);
+    CGImageRef cgImage = CGBitmapContextCreateImage(bitmapContext);
+    CGContextRelease(bitmapContext);
+    
+    UIImage * newimage = [UIImage imageWithCGImage:cgImage];
+    
+    // TODO : send newImage
+    UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
+
+    CGImageRelease(cgImage);
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [TestfairyFlutterPlugin takeScreenshot];
+    });
+}
+    
 - (void) begin:(NSString*)appToken {
     [TestFairy begin:appToken];
 }
@@ -280,10 +324,6 @@
     } else {
         [rootVC dismissViewControllerAnimated:true completion:nil];
     }
-}
-
-- (void) takeScreenshot {
-    [TestFairy takeScreenshot];
 }
 
 @end
