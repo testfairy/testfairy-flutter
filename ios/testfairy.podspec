@@ -15,7 +15,8 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'TestFairy'
+  s.dependency 'TestFairy', '1.19.4'
+#  s.dependency 'TestFairy'
   s.static_framework = true
 
   s.ios.deployment_target = '9.0'

@@ -14,6 +14,8 @@ import com.testfairy.TestFairy;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -528,6 +530,32 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		TestFairy.setFeedbackOptions(builder.build());
 	}
 
+	// TODO : bridge this
+	private void addNetworkEvent(
+			String uri,
+			String method,
+			int code,
+			long startTimeMillis,
+			long endTimeMillis,
+			long requestSize,
+			long responseSize,
+			String errorMessage
+	) {
+		try {
+			TestFairy.addNetworkEvent(
+				new URI(uri),
+				method,
+				code,
+				startTimeMillis,
+				endTimeMillis,
+				requestSize,
+				responseSize,
+				errorMessage
+			);
+		} catch (URISyntaxException ignore) {
+		}
+	}
+
 	static private void sendScreenshot(byte[] pixels, int width, int height) {
 		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		ByteBuffer buffer = ByteBuffer.wrap(pixels);
@@ -536,19 +564,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		// TODO : send to testfairy
 		saveImage(bmp, "tfss-" + System.currentTimeMillis());
 	}
-
-//	private void addNetworkEvent(
-//			URI uri,
-//			String method,
-//			int code,
-//			long startTimeMillis,
-//			long endTimeMillis,
-//			long requestSize,
-//			long responseSize,
-//			String errorMessage
-//	) {
-//		// TODO
-//	}
 
 	private static void saveImage(Bitmap finalBitmap, String image_name) {
 		String root = Environment.getExternalStorageDirectory().toString();

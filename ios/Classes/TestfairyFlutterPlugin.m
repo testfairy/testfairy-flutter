@@ -2,12 +2,9 @@
 #import "TestFairy.h"
 
 @implementation TestfairyFlutterPlugin {
-//    private WeakReference<Context> contextWeakReference = new WeakReference<>(null);
-//    private WeakReference<MethodChannel> methodChannelWeakReference = new WeakReference<>(null);
-//    private WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
-//    private WeakReference<FlutterView> flutterViewWeakReference = new WeakReference<>(null);
 }
 
+// Static
 NSMutableDictionary* viewControllerMethodChannelMapping;
 
 + (void) takeScreenshot {
@@ -45,6 +42,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
+// Instance
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     @try {
         NSDictionary* args = nil;
@@ -325,6 +323,10 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         [rootVC dismissViewControllerAnimated:true completion:nil];
     }
 }
+
+// TODO : implement this
+- (void) addNetwork {}
+
 
 @end
 
