@@ -29,24 +29,21 @@
 * `enableFeedbackForm`
 * `disableFeedbackForm`
 * `setMaxSessionLength`
-* `bringFlutterToFront`
-
-## Supported by only iOS
-
-Android requires these to be reimplemented on the Dart side. iOS works normally.
-
 * `enableVideo`
 * `disableVideo`
-* `takeScreenshot`
+* `bringFlutterToFront`
 
 ## Supported by only Android
 
 TestFairy iOS SDK does not have corresponding Objective-C interface for these integrations.
 
 * `setFeedbackOptions`
-* `logError` - forwarded to `log` as a workaround in iOS
 
 ## Not supported by any platform
-* `addNetworkEvent` - This requires research to eliminate all the edge cases.
-* `hideView` - This needs to be implemented on the Dart side entirely to be able to crawl the widget tree.
-* Session and distribution status listeners are omitted by decision.
+
+These are waiting updates to native SDKs. Dart functionality is already implemented.
+
+* `enableVideo`
+* `disableVideo`
+* `takeScreenshot`
+* `hideView`
