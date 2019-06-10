@@ -50,7 +50,20 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
             args = call.arguments;
         }
         
-        if ([@"sendScreenshot" isEqualToString:call.method]) {
+        if ([@"addNetworkEvent" isEqualToString:call.method]) {
+            [self addNetworkEvent:[args valueForKey:@"uri"]
+                           method:[args valueForKey:@"method"]
+                             code:[args valueForKey:@"code"]
+                startTimeMillis:[args valueForKey:@"startTimeMillis"]
+                  endTimeMillis:[args valueForKey:@"endTimeMillis"]
+                      requestSize:[args valueForKey:@"requestSize"]
+                     responseSize:[args valueForKey:@"responseSize"]
+                     errorMessage:[args valueForKey:@"errorMessage"]];
+            result(nil);
+        } else if ([@"takeScreenshot" isEqualToString:call.method]) {
+            [TestfairyFlutterPlugin takeScreenshot];
+            result(nil);
+        } else if ([@"sendScreenshot" isEqualToString:call.method]) {
             [self sendScreenshot:[args valueForKey:@"pixels"] width:[args valueForKey:@"width"] height:[args valueForKey:@"height"]];
             result(nil);
         } else if ([@"begin" isEqualToString:call.method]) {
@@ -260,7 +273,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 }
 
 - (void) logError:(NSString*)error {
-    [TestFairy log:error]; // TODO : fix this
+    [TestFairy logError:[NSError errorWithDomain:@"testfairy" code:-1 userInfo:@{NSLocalizedDescriptionKey:error}]];
 }
 
 - (void) log:(NSString*)msg {
@@ -312,7 +325,6 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 }
 
 - (void) bringFlutterToFront {
-    // TODO : test this, dunno if works
     FlutterViewController *rootVC =
         (FlutterViewController*)[[(FlutterAppDelegate*)[[UIApplication sharedApplication]delegate] window] rootViewController];
     
@@ -324,8 +336,23 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
 }
 
-// TODO : implement this
-- (void) addNetwork {}
+- (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage {
+    NSString* error = nil;
+    if ([errorMessage isKindOfClass:[NSString class]]) {
+        error = errorMessage;
+    } else {
+        error = @"";
+    }
+    
+    [TestFairy addNetwork:[NSURL URLWithString:uri]
+                   method:method
+                     code:[code intValue]
+        startTimeInMillis:[startTimeMillis longValue]
+          endTimeInMillis:[endTimeMillis longValue]
+              requestSize:[requestSize longValue]
+             responseSize:[responseSize longValue]
+             errorMessage:error];
+}
 
 
 @end

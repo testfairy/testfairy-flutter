@@ -125,6 +125,23 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			}
 
 			switch (call.method) {
+				case "addNetworkEvent":
+					addNetworkEvent(
+							(String) args.get("uri"),
+							(String) args.get("method"),
+							(int) args.get("code"),
+							((Number) args.get("startTimeMillis")).longValue(),
+							((Number) args.get("endTimeMillis")).longValue(),
+							((Number) args.get("requestSize")).longValue(),
+							((Number) args.get("responseSize")).longValue(),
+							(String) args.get("errorMessage")
+					);
+					result.success(null);
+					break;
+				case "takeScreenshot":
+					takeScreenshot();
+					result.success(null);
+					break;
 				case "sendScreenshot":
 					sendScreenshot((byte[]) args.get("pixels"), (int) args.get("width"), (int) args.get("height"));
 					result.success(null);
@@ -530,7 +547,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		TestFairy.setFeedbackOptions(builder.build());
 	}
 
-	// TODO : bridge this
 	private void addNetworkEvent(
 			String uri,
 			String method,

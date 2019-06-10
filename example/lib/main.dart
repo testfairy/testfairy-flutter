@@ -15,7 +15,7 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
-  HttpOverrides.runZoned(
+  HttpOverrides.runWithHttpOverrides(
       () async {
         try {
           FlutterError.onError =
@@ -28,6 +28,7 @@ void main() {
           TestFairy.logError(error);
         }
       },
+      TestFairy.httpOverrides(),
       onError: TestFairy.logError,
       zoneSpecification: new ZoneSpecification(
         print: (self, parent, zone, message) {
@@ -39,7 +40,6 @@ void main() {
           onNewLog();
         },
       ),
-      createHttpClient: (SecurityContext c) => TestFairy.wrapClient(c)
   );
 }
 

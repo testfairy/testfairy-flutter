@@ -109,57 +109,6 @@ class TestFairy {
     return rects;
   }
 
-  static Future<void> takeScreenshot() async {
-    var ps = WidgetsBinding.instance.window.physicalSize;
-    double width = ps.width;
-    double height = ps.height;
-
-    await WidgetsBinding.instance.endOfFrame;
-
-    var rects = getHiddenRects();
-
-    var screenshot = await WidgetInspectorService.instance.screenshot(
-        WidgetsBinding.instance.renderViewElement.findRenderObject(),
-        width: width,
-        height: height
-    );
-
-    ByteData byteData = await screenshot.toByteData(format: ui.ImageByteFormat.rawRgba);
-
-    rects.forEach((r) {
-      var x = r['x'];
-      var y = r['y'];
-      var w = r['w'];
-      var h = r['h'];
-
-//      print("Hidden Rect: " + r.toString());
-
-      if(w > 0 && h > 0) {
-        for (var i = x; i < x + w; i++) {
-          for (var j = y; j < y + h; j++) {
-            var fixedI = math.min(math.max(0, i), width).toInt() * 4;
-            var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
-
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
-          }
-        }
-      }
-    });
-
-    prepareTwoWayInvoke();
-
-    var args = {
-      'pixels': byteData.buffer.asUint8List(),
-      'width': width.toInt(),
-      'height': height.toInt()
-    };
-
-    await _channel.invokeMethod('sendScreenshot', args);
-  }
-
   // Public Interface
 
   static Future<void> begin(String appToken) async {
@@ -302,6 +251,81 @@ class TestFairy {
     _hiddenWidgets.add(widgetKey);
   }
 
+  static Future<void> takeScreenshot() async {
+    var ps = WidgetsBinding.instance.window.physicalSize;
+    double width = ps.width;
+    double height = ps.height;
+
+    await WidgetsBinding.instance.endOfFrame;
+
+    var rects = getHiddenRects();
+
+    var screenshot = await WidgetInspectorService.instance.screenshot(
+        WidgetsBinding.instance.renderViewElement.findRenderObject(),
+        width: width,
+        height: height
+    );
+
+    ByteData byteData = await screenshot.toByteData(format: ui.ImageByteFormat.rawRgba);
+
+    rects.forEach((r) {
+      var x = r['x'];
+      var y = r['y'];
+      var w = r['w'];
+      var h = r['h'];
+
+//      print("Hidden Rect: " + r.toString());
+
+      if(w > 0 && h > 0) {
+        for (var i = x; i < x + w; i++) {
+          for (var j = y; j < y + h; j++) {
+            var fixedI = math.min(math.max(0, i), width).toInt() * 4;
+            var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
+
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
+            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
+          }
+        }
+      }
+    });
+
+    prepareTwoWayInvoke();
+
+    var args = {
+      'pixels': byteData.buffer.asUint8List(),
+      'width': width.toInt(),
+      'height': height.toInt()
+    };
+
+    await _channel.invokeMethod('sendScreenshot', args);
+  }
+
+  static Future<void> addNetworkEvent(
+      String uri,
+      String method,
+      int code,
+      int startTimeMillis,
+      int endTimeMillis,
+      int requestSize,
+      int responseSize,
+      String errorMessage
+      ) async {
+    var args = {
+      'uri': uri,
+      'method': method,
+      'code': code,
+      'startTimeMillis': startTimeMillis,
+      'endTimeMillis': endTimeMillis,
+      'requestSize': requestSize,
+      'responseSize': responseSize,
+      'errorMessage': errorMessage,
+    };
+
+    await _channel.invokeMethod('addNetworkEvent', args);
+  }
+
   static Future<void> bringFlutterToFront() async {
     await _channel.invokeMethod('bringFlutterToFront');
   }
@@ -375,17 +399,12 @@ class TestFairy {
         ['onFeedbackFailed'](opts);
   }
 
-  static HttpClient wrapClient(SecurityContext context) {
-    return TestFairyHttpClient(context: context);
+  // Http overrides for network logging
+
+  static HttpOverrides httpOverrides() {
+    return new TestFairyHttpOverrides();
   }
-
-// TODO : implement the integrations below on both platform
-//  addNetworkEvent
-////////////////////////////////////////////////////////////
-
 }
-
-// TODO : test everything below
 
 class TestFairyHttpOverrides extends HttpOverrides {
 
@@ -396,26 +415,15 @@ class TestFairyHttpOverrides extends HttpOverrides {
     return new TestFairyHttpClient(context: context, wrappedClient: clientToWrap);
   }
 
-  @override
-  String findProxyFromEnvironment(Uri url, Map<String, String> environment) {
-    super.findProxyFromEnvironment(url, environment);
-  }
-
 }
 
 abstract class TestFairyHttpClient extends HttpClient {
 
   factory TestFairyHttpClient({SecurityContext context, HttpClient wrappedClient}) {
-    HttpOverrides overrides = HttpOverrides.current;
-
-    if (overrides == null) {
-      if (wrappedClient == null) {
-        return new _TestFairyHttpClient(new HttpClient(context: context));
-      } else {
-        return new _TestFairyHttpClient(wrappedClient);
-      }
+    if (wrappedClient == null) {
+      return new _TestFairyHttpClient(new HttpClient(context: context));
     } else {
-      return new _TestFairyHttpClient(overrides.createHttpClient(context));
+      return new _TestFairyHttpClient(wrappedClient);
     }
   }
 
@@ -698,10 +706,39 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
 
   @override
   Future<HttpClientResponse> close() {
+    int startTimeMillis = new DateTime.now().millisecondsSinceEpoch;
+    int requestSize = this.wrappedRequest.contentLength;
+
     return this.wrappedRequest.close().then((HttpClientResponse res) {
-      // TODO : log to testfairy
+      int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
+      
+      TestFairy.addNetworkEvent(
+          uri.toString(),
+          method,
+          res.statusCode,
+          startTimeMillis,
+          endTimeMillis,
+          requestSize,
+          res.contentLength,
+          null
+      );
 
       return res;
+    }).catchError((error) {
+      int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
+
+      TestFairy.addNetworkEvent(
+          uri.toString(),
+          method,
+          -1,
+          startTimeMillis,
+          endTimeMillis,
+          requestSize,
+          -1,
+          error.toString()
+      );
+
+      throw error;
     });
   }
 
