@@ -525,7 +525,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			}
 
 			@Override
-			public void onFeedbackFailed(final int i, final FeedbackContent feedbackContent) {
+			public void onFeedbackFailed(final int feedbackNo, final FeedbackContent feedbackContent) {
 				withMethodChannel(new MethodChannelConsumer<Void>() {
 					@Override
 					public Void consume(MethodChannel channel) {
@@ -534,7 +534,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 						feedbackContentMap.put("email", feedbackContent.getEmail());
 						feedbackContentMap.put("text", feedbackContent.getText());
 						feedbackContentMap.put("timestamp", (double) feedbackContent.getTimestamp());
-						feedbackContentMap.put("i", i);
+						feedbackContentMap.put("feedbackNo", feedbackNo);
 						feedbackContentMap.put("callId", callId);
 
 						channel.invokeMethod("callOnFeedbackFailed", feedbackContentMap);

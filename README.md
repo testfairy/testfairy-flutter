@@ -20,26 +20,46 @@ dependencies:
 import 'package:testfairy/testfairy.dart';
 
 void main() {
-  runZoned(
-    () async {
-      try {
-        FlutterError.onError = (details) => TestFairy.logError(details.exception);
-
-        // Do any other SDK setup here
-        await TestFairy.begin('TOKEN');
-
-        runApp(TestfairyExampleApp());
-      } catch (error) {
-        TestFairy.logError(error);
-      }
-    },
-    onError: TestFairy.logError,
-    zoneSpecification: new ZoneSpecification(
-      print: (self, parent, zone, message) => TestFairy.log(message)
-    )
-  );
+    HttpOverrides.runWithHttpOverrides(
+         () async {
+           try {
+             // Enables widget error logging
+             FlutterError.onError =
+                 (details) => TestFairy.logError(details.exception);
+   
+             // Initializes a session
+             await TestFairy.begin(TOKEN);
+   
+             // Runs your app
+             runApp(TestfairyExampleApp());
+           } catch (error) {
+   
+             // Logs synchronous errors
+             TestFairy.logError(error);
+   
+           }
+         },
+   
+         // Logs network events
+         TestFairy.httpOverrides(),
+   
+         // Logs asynchronous errors
+         onError: TestFairy.logError,
+   
+         // Logs console messages
+         zoneSpecification: new ZoneSpecification(
+           print: (self, parent, zone, message) {
+             TestFairy.log(message);
+           },
+         )
+     );
 }
 ```
+
+### How to update native SDKs?
+This is done automatically for Android. 
+
+If you want to update the native iOS SDK used by this integration, run `pod install` in your *ios* directory. This will fix all the syntax errors in *TestFairyFlutterPlugin.m* file if there is any due to an update.
 
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)
@@ -73,18 +93,19 @@ void main() {
 * `enableFeedbackForm`
 * `disableFeedbackForm`
 * `setMaxSessionLength`
-* `bringFlutterToFront`
-
-### Features supported by only iOS
-
 * `enableVideo`
 * `disableVideo`
-* `takeScreenshot`
+* `bringFlutterToFront`
 
 ### Features supported by only Android
 
 * `setFeedbackOptions`
-* `logError`
+
+### Features not supported by any platform yet
+
+* `enableVideo`
+* `disableVideo`
+* `takeScreenshot`
  
 ## Development
 1. Install [Flutter](https://flutter.io/docs).
@@ -100,5 +121,3 @@ void main() {
 ## TODO
 1. Add video and screenshot support on Android.
 2. Add feedback options support for iOS.
-3. Add `hideView` for both platforms. 
-4. Add network logging for both platforms.

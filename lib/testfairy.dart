@@ -1,226 +1,276 @@
+library testfairy;
+
 import 'dart:async';
-import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
-import 'dart:math' as math;
-import 'dart:typed_data';
-import 'dart:ui' as ui;
 
-//import 'package:http/http.dart' as http;
-
-import 'package:flutter/gestures.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-//import 'package:simple_permissions/simple_permissions.dart';
+import 'src/network_logging.dart';
+import 'src/testfairy_base.dart';
 
-class FeedbackOptions {
-  String email;
-  String text;
-  double timestamp;
-  int i = 0;
-}
+part 'package:testfairy/src/feedback_options.dart';
 
-class TestFairy {
-  // Private internals
+/// This is the main entry point to TestFairy integration in Flutter.
+///
+/// An example usage can be found below.
+///
+/// ```dart
+/// HttpOverrides.runWithHttpOverrides(
+///      () async {
+///        try {
+///          // Enables widget error logging
+///          FlutterError.onError =
+///              (details) => TestFairy.logError(details.exception);
+///
+///          // Initializes a session
+///          await TestFairy.begin(TOKEN);
+///
+///          // Runs your app
+///          runApp(TestfairyExampleApp());
+///        } catch (error) {
+///
+///          // Logs synchronous errors
+///          TestFairy.logError(error);
+///
+///        }
+///      },
+///
+///      // Logs network events
+///      TestFairy.httpOverrides(),
+///
+///      // Logs asynchronous errors
+///      onError: TestFairy.logError,
+///
+///      // Logs console messages
+///      zoneSpecification: new ZoneSpecification(
+///        print: (self, parent, zone, message) {
+///          TestFairy.log(message);
+///        },
+///      )
+///  );
+/// ```
+abstract class TestFairy extends TestFairyBase {
 
-  static const MethodChannel _channel =
-      const MethodChannel('testfairy');
-  static bool isMethodCallHandlerSet = false;
-  static List<GlobalKey> _hiddenWidgets = [];
-
-  static Future<dynamic> methodCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'callOnFeedbackSent':
-        callOnFeedbackSent(call.arguments);
-        break;
-      case 'callOnFeedbackCancelled':
-        callOnFeedbackCancelled(call.arguments);
-        break;
-      case 'callOnFeedbackFailed':
-        callOnFeedbackFailed(call.arguments);
-        break;
-      case 'getHiddenRects':
-        return getHiddenRects();
-      case 'lock':
-        return lock();
-      case 'unlock':
-        return unlock();
-      case 'takeScreenshot':
-        takeScreenshot();
-        break;
-      default:
-        print('TestFairy: Ignoring invoke from native. This normally shouldn\'t happen.');
-    }
-  }
-
-  static void prepareTwoWayInvoke() {
-    if (!isMethodCallHandlerSet) {
-      _channel.setMethodCallHandler(methodCallHandler);
-      isMethodCallHandlerSet = true;
-    }
-  }
-
-  static void lock() {
-    GestureBinding.instance.lockEvents((){ return Future.value(null); });
-    RendererBinding.instance.lockEvents((){ return Future.value(null); });
-    PaintingBinding.instance.lockEvents((){ return Future.value(null); });
-    SchedulerBinding.instance.lockEvents((){ return Future.value(null); });
-    ServicesBinding.instance.lockEvents((){ return Future.value(null); });
-    WidgetsBinding.instance.lockEvents((){ return Future.value(null); });
-  }
-
-  static void unlock() {
-    GestureBinding.instance.unlocked();
-    RendererBinding.instance.unlocked();
-    PaintingBinding.instance.unlocked();
-    SchedulerBinding.instance.unlocked();
-    ServicesBinding.instance.unlocked();
-    WidgetsBinding.instance.unlocked();
-  }
-
-  static List<Map<String, int>> getHiddenRects() {
-    List<Map<String, int>> rects = [];
-
-    _hiddenWidgets.forEach((gk) {
-      RenderBox ro = gk.currentContext.findRenderObject();
-
-      var pos = ro.localToGlobal(Offset.zero);
-      pos = Offset(pos.dx * ui.window.devicePixelRatio, pos.dy * ui.window.devicePixelRatio);
-//      print('Position is: ');
-//      print(pos.toString());
-
-      var size = gk.currentContext.size;
-      size = Size(size.width * ui.window.devicePixelRatio, size.height * ui.window.devicePixelRatio);
-//      print('Size is: ');
-//      print(size.toString());
-
-      rects.add({
-        'x': pos.dx.toInt(),
-        'y': pos.dy.toInt(),
-        'w': size.width.toInt(),
-        'h': size.height.toInt()
-      });
-    });
-
-    return rects;
-  }
-
-  // Public Interface
-
+  /// Initialize a TestFairy session.
   static Future<void> begin(String appToken) async {
-    prepareTwoWayInvoke();
+    TestFairyBase.takeScreenshot = TestFairy.takeScreenshot;
+    TestFairyBase.prepareTwoWayInvoke();
 
-    await _channel.invokeMethod('begin', appToken);
+    await TestFairyBase.channel.invokeMethod('begin', appToken);
   }
 
+  /// Initialize a TestFairy session with fine grained options.
+  ///
+  /// Specify [options] as a [Map] controlling the current session
+  /// "metrics": comma separated string of default metric options such as “cpu,memory,network-requests,shake,video,logs”
+  /// "enableCrashReporter": [true] / [false] to enable crash handling. Default is true.
   static Future<void> beginWithOptions(String appToken, Map options) async {
-    prepareTwoWayInvoke();
+    TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {'appToken': appToken, 'options': options};
+    var args = {
+      'appToken': appToken,
+      'options': options
+    };
 
-    await _channel.invokeMethod('beginWithOptions', args);
+    await TestFairyBase.channel.invokeMethod('beginWithOptions', args);
   }
 
+  /// Override the server endpoint address for using with on-premise installations
+  /// and private cloud configuration.
+  ///
+  /// Please contact support for more information about these products.
   static Future<void> setServerEndpoint(String endpoint) async {
-    await _channel.invokeMethod('setServerEndpoint', endpoint);
+    await TestFairyBase.channel.invokeMethod('setServerEndpoint', endpoint);
   }
 
+  /// Returns SDK version (x.x.x)
   static Future<String> getVersion() async {
-    return await _channel.invokeMethod('getVersion');
+    return await TestFairyBase.channel.invokeMethod('getVersion');
   }
 
+  /// Send a feedback on behalf of the user.
+  ///
+  /// Call when using a in-house feedback screen with a custom design and feel.
+  /// Feedback will be associated with the current session.
   static Future<void> sendUserFeedback(String feedback) async {
-    await _channel.invokeMethod('sendUserFeedback', feedback);
+    await TestFairyBase.channel.invokeMethod('sendUserFeedback', feedback);
   }
 
+  /// Deprecated backward compatibility wrapper for [addEvent].
+  /// Use [addEvent] unless really necessary.
   static Future<void> addCheckpoint(String name) async {
-    await _channel.invokeMethod('addCheckpoint', name);
+    await TestFairyBase.channel.invokeMethod('addCheckpoint', name);
   }
 
+  /// Marks an event in session. Use this text to tag a session with an event name.
+  ///
+  /// Later, you can filter sessions for users passed through this checkpoint,
+  /// to better understand what your users experienced.
   static Future<void> addEvent(String name) async {
-    await _channel.invokeMethod('addEvent', name);
+    await TestFairyBase.channel.invokeMethod('addEvent', name);
   }
 
+  /// Deprecated backward compability wrapper for [setUserId].
+  /// Use [setUserId] unless really necessary.
+  ///
+  /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
+  /// For example, setting correlation to the value of the user-id after they logged in.
+  /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> setCorrelationId(String id) async {
-    await _channel.invokeMethod('setCorrelationId', id);
+    await TestFairyBase.channel.invokeMethod('setCorrelationId', id);
   }
 
+  /// Deprecated backward compability wrapper for [setUserId] and [setAttribute].
+  /// Use those unless really necessary.
+  ///
+  /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
+  /// For example, setting correlation to the value of the user-id after they logged in.
+  /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> identifyWithTraits(String id, Map traits) async {
     var args = {'id': id, 'traits': traits};
 
-    await _channel.invokeMethod('identifyWithTraits', args);
+    await TestFairyBase.channel.invokeMethod('identifyWithTraits', args);
   }
 
+  /// Deprecated backward compability wrapper for [setUserId].
+  /// Use [setUserId] unless really necessary.
+  ///
+  /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
+  /// For example, setting correlation to the value of the user-id after they logged in.
+  /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> identify(String id) async {
-    await _channel.invokeMethod('identify', id);
+    await TestFairyBase.channel.invokeMethod('identify', id);
   }
 
+  /// Use this to tell TestFairy who the user is.
+  ///	It will help you to search the specific user in the TestFairy dashboard.
+  ///
+  /// We recommend passing values such as email, phone number, or user id that your app may use.
   static Future<void> setUserId(String id) async {
-    await _channel.invokeMethod('setUserId', id);
+    await TestFairyBase.channel.invokeMethod('setUserId', id);
   }
 
+  /// Records an attribute that will be added to the session.
+  ///
+  /// NOTE: The SDK limits you to storing 64 attribute keys. Adding more than 64 will fail and return false.
   static Future<void> setAttribute(String key, String value) async {
-    var args = {'key': key, 'value': value};
+    var args = {
+      'key': key,
+      'value': value
+    };
 
-    await _channel.invokeMethod('setAttribute', args);
+    await TestFairyBase.channel.invokeMethod('setAttribute', args);
   }
 
+  /// Returns the address of the recorded session on TestFairy’s developer portal.
+  /// Will return null if recording not yet started.
   static Future<String> getSessionUrl() async {
-    return await _channel.invokeMethod('getSessionUrl');
+    return await TestFairyBase.channel.invokeMethod('getSessionUrl');
   }
 
+  /// Displays the feedback activity or view controller depending on your platform.
+  /// Must be called after begin.
+  ///
+  /// Allows users to provide feedback about the current session.
+  /// All feedbacks will appear in your build report page, and in the recorded session page.
   static Future<void> showFeedbackForm() async {
-    await _channel.invokeMethod('showFeedbackForm');
+    await TestFairyBase.channel.invokeMethod('showFeedbackForm');
   }
 
+  /// Stops the current session recording. Unlike 'pause', when
+  /// calling 'resume', a new session will be created and will be
+  /// linked to the previous recording. Useful if you want short
+  /// session recordings of specific use-cases of the app. Hidden
+  /// views and user identity will be applied to the new session
+  /// as well, if started.
   static Future<void> stop() async {
-    await _channel.invokeMethod('stop');
+    TestFairyBase.takeScreenshot = null;
+
+    await TestFairyBase.channel.invokeMethod('stop');
   }
 
+  /// Resumes the recording of the current session.
+  ///
+  /// This method resumes a session after it was paused. Has no effect if already resumed.
   static Future<void> resume() async {
-    await _channel.invokeMethod('resume');
+    await TestFairyBase.channel.invokeMethod('resume');
   }
 
+  /// Pauses the current session.
+  ///
+  /// This method stops recoding of the current session until resume has been called.
+  /// Has no effect if already paused.
   static Future<void> pause() async {
-    await _channel.invokeMethod('pause');
+    await TestFairyBase.channel.invokeMethod('pause');
   }
 
+  /// Send a VERBOSE [Error] or [Exception] to TestFairy.
   static Future<void> logError(dynamic error) async {
-    await _channel.invokeMethod('logError', error.toString());
+    await TestFairyBase.channel.invokeMethod('logError', error.toString());
   }
 
+  /// Send a VERBOSE log message  to TestFairy.
   static Future<void> log(String message) async {
-    await _channel.invokeMethod('log', message);
+    await TestFairyBase.channel.invokeMethod('log', message);
   }
 
+  /// Set a custom name for the current screen. Useful for applications that don't use more than one
+  ///	activity or view controller.
+  ///
+  ///	This name is displayed for a given screenshot, and will override the name of the current screen.
   static Future<void> setScreenName(String name) async {
-    await _channel.invokeMethod('setScreenName', name);
+    await TestFairyBase.channel.invokeMethod('setScreenName', name);
   }
 
+  /// Indicates in runtime whether your last session was crashed.
   static Future<bool> didLastSessionCrash() async {
-    return await _channel.invokeMethod('didLastSessionCrash');
+    return await TestFairyBase.channel.invokeMethod('didLastSessionCrash');
   }
 
+  /// Enables the ability to capture crashes.
+  /// Must be called before begin.
+  ///
+  /// TestFairy crash handler is installed by default. Once installed
+  /// it cannot be uninstalled.
   static Future<void> enableCrashHandler() async {
-    await _channel.invokeMethod('enableCrashHandler');
+    await TestFairyBase.channel.invokeMethod('enableCrashHandler');
   }
 
+  /// Disables the ability to capture crashes.
+  /// Must be called before begin.
+  ///
+  /// TestFairy crash handler is installed by default. Once installed
+  /// it cannot be uninstalled.
   static Future<void> disableCrashHandler() async {
-    await _channel.invokeMethod('disableCrashHandler');
+    await TestFairyBase.channel.invokeMethod('disableCrashHandler');
   }
 
+  /// Enables recording of a metric regardless of build settings.
+  /// Must be called be before begin.
+  ///
+  /// Valid values include "cpu", "memory", "logcat", "battery", "network-requests"
+  ///	A metric cannot be enabled and disabled at the same time, therefore
+  /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> enableMetric(String metric) async {
-    await _channel.invokeMethod('enableMetric', metric);
+    await TestFairyBase.channel.invokeMethod('enableMetric', metric);
   }
 
+  /// Disables recording of a metric regardless of build settings.
+  /// Must be called be before begin.
+  ///
+  /// Valid values include “cpu”, “memory”, “logcat”, “battery”, “network-requests”
+  /// A metric cannot be enabled and disabled at the same time, therefore
+  /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> disableMetric(String metric) async {
-    await _channel.invokeMethod('disableMetric', metric);
+    await TestFairyBase.channel.invokeMethod('disableMetric', metric);
   }
 
+  /// Enables the ability to capture video recording regardless of build settings.
+  ///
+  /// Valid values for policy include “always” and “wifi”.
+  /// Valid values for quality include “high”, “low”, “medium”.
+  /// Values for fps must be between 0.1 and 2.0. Value will be rounded to the nearest frame.
   static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
     var args = {
       'policy': policy,
@@ -228,80 +278,67 @@ class TestFairy {
       'framesPerSecond': framesPerSecond
     };
 
-    await _channel.invokeMethod('enableVideo', args);
+    await TestFairyBase.channel.invokeMethod('enableVideo', args);
   }
 
+  /// Disables the ability to capture video recording.
+  /// Must be called before begin.
   static Future<void> disableVideo() async {
-    await _channel.invokeMethod('disableVideo');
+    await TestFairyBase.channel.invokeMethod('disableVideo');
   }
 
+  /// Enables the ability to present the feedback form based on the method given.
+  /// Must be called before begin.
+  ///
+  /// Valid values include “shake”, “screenshot” or “shake|screenshot”.
+  /// If an unrecognized method is passed, the value defined in the build
+  /// settings will be used.
   static Future<void> enableFeedbackForm(String method) async {
-    await _channel.invokeMethod('enableFeedbackForm', method);
+    await TestFairyBase.channel.invokeMethod('enableFeedbackForm', method);
   }
 
+  /// Disables the ability to present users with feedback when devices is shaken,
+  /// or if a screenshot is taken.
+  /// Must be called before begin.
   static Future<void> disableFeedbackForm() async {
-    await _channel.invokeMethod('disableFeedbackForm');
+    await TestFairyBase.channel.invokeMethod('disableFeedbackForm');
   }
 
+  /// Sets the maximum recording time.
+  /// Must be called before begin.
+  ///
+  /// Minimum value is 60 seconds, else the value defined in the build settings will be used.
+  /// The maximum value is the lowest value between this value and the value defined in the build settings.
+  /// Time is rounded to the nearest minute.
   static Future<void> setMaxSessionLength(double seconds) async {
-    await _channel.invokeMethod('setMaxSessionLength', seconds);
+    await TestFairyBase.channel.invokeMethod('setMaxSessionLength', seconds);
   }
 
+  /// Hides a specific view from appearing in the video generated.
+  ///
+  /// Provide the same [GlobalKey] you specify in your widget's [key] attribute.
   static void hideWidget(GlobalKey widgetKey) {
-    _hiddenWidgets.add(widgetKey);
+    TestFairyBase.hiddenWidgets.add(widgetKey);
   }
 
+  /// Takes a screenshot and sends it to TestFairy.
+  /// Must be called after begin.
   static Future<void> takeScreenshot() async {
-    var ps = WidgetsBinding.instance.window.physicalSize;
-    double width = ps.width;
-    double height = ps.height;
+    var screenshot = await TestFairyBase.createSingleScreenShot();
 
-    await WidgetsBinding.instance.endOfFrame;
-
-    var rects = getHiddenRects();
-
-    var screenshot = await WidgetInspectorService.instance.screenshot(
-        WidgetsBinding.instance.renderViewElement.findRenderObject(),
-        width: width,
-        height: height
-    );
-
-    ByteData byteData = await screenshot.toByteData(format: ui.ImageByteFormat.rawRgba);
-
-    rects.forEach((r) {
-      var x = r['x'];
-      var y = r['y'];
-      var w = r['w'];
-      var h = r['h'];
-
-//      print("Hidden Rect: " + r.toString());
-
-      if(w > 0 && h > 0) {
-        for (var i = x; i < x + w; i++) {
-          for (var j = y; j < y + h; j++) {
-            var fixedI = math.min(math.max(0, i), width).toInt() * 4;
-            var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
-
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
-          }
-        }
-      }
-    });
-
-    prepareTwoWayInvoke();
+    TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
-      'pixels': byteData.buffer.asUint8List(),
-      'width': width.toInt(),
-      'height': height.toInt()
+      'pixels': screenshot.pixels,
+      'width': screenshot.width,
+      'height': screenshot.height
     };
 
-    await _channel.invokeMethod('sendScreenshot', args);
+    await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
   }
 
+  /// Call this function to log your network events.
+  /// See [httpOverrides] to automatically do this for all your http calls.
   static Future<void> addNetworkEvent(
       String uri,
       String method,
@@ -323,466 +360,68 @@ class TestFairy {
       'errorMessage': errorMessage,
     };
 
-    await _channel.invokeMethod('addNetworkEvent', args);
+    await TestFairyBase.channel.invokeMethod('addNetworkEvent', args);
   }
 
+  /// Brings Flutter activity or view controller to front.
+  /// Can be used for testing native plugins.
   static Future<void> bringFlutterToFront() async {
-    await _channel.invokeMethod('bringFlutterToFront');
+    await TestFairyBase.channel.invokeMethod('bringFlutterToFront');
   }
 
-  // Feedback options callback mechanism
-
-  static void testfairyVoid() {}
-
-  static void testfairyFeedbackOptionsVoid(FeedbackOptions feedbackContent) {}
-
-  static int feedbackOptionsIdCounter = 0;
-  static var feedbackOptionsCallbacks = {};
-
-  // TODO : implement this on iOS
-  static Future<void> setFeedbackOptions(
-      {String browserUrl,
+  /// Customizes the feedback form.
+  static Future<void> setFeedbackOptions({
+      String browserUrl,
       bool emailFieldVisible: true,
       bool emailMandatory: false,
-      Function(FeedbackOptions) onFeedbackSent: testfairyFeedbackOptionsVoid,
-      Function() onFeedbackCancelled: testfairyVoid,
+      Function(FeedbackOptions) onFeedbackSent: EmptyFeedbackOptionsFunction,
+      Function() onFeedbackCancelled: EmptyFunction,
       Function(FeedbackOptions) onFeedbackFailed:
-          testfairyFeedbackOptionsVoid}) async {
-    prepareTwoWayInvoke();
+      EmptyFeedbackOptionsFunction
+  }) async { // TODO : implement this on iOS
+    TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
       'browserUrl': browserUrl,
       'emailFieldVisible': emailFieldVisible,
       'emailMandatory': emailMandatory,
-      'callId': feedbackOptionsIdCounter
+      'callId': TestFairyBase.feedbackOptionsIdCounter
     };
 
-    feedbackOptionsCallbacks.putIfAbsent(feedbackOptionsIdCounter.toString(),
-        () {
+    var ifAbsent = () {
       return {
         'onFeedbackSent': onFeedbackSent,
         'onFeedbackCancelled': onFeedbackCancelled,
         'onFeedbackFailed': onFeedbackFailed
       };
-    });
+    };
 
-    feedbackOptionsIdCounter++;
-    await _channel.invokeMethod('setFeedbackOptions', args);
+    TestFairyBase.feedbackOptionsCallbacks.putIfAbsent(
+      TestFairyBase.feedbackOptionsIdCounter.toString(),
+      ifAbsent
+    );
+
+    TestFairyBase.feedbackOptionsIdCounter++;
+
+    await TestFairyBase.channel.invokeMethod('setFeedbackOptions', args);
   }
 
-  static void callOnFeedbackSent(Map args) {
-    var opts = FeedbackOptions();
-
-    opts.email = args['email'];
-    opts.text = args['text'];
-    opts.timestamp = args['timestamp'];
-    opts.i = args['i'];
-
-//    print(args['callId'].toString());
-
-    feedbackOptionsCallbacks[args['callId'].toString()]['onFeedbackSent'](opts);
-  }
-
-  static void callOnFeedbackCancelled(int callId) {
-    feedbackOptionsCallbacks[callId.toString()]['onFeedbackCancelled']();
-  }
-
-  static void callOnFeedbackFailed(Map args) {
-    var opts = FeedbackOptions();
-
-    opts.email = args['email'];
-    opts.text = args['text'];
-    opts.timestamp = args['timestamp'];
-    opts.i = args['i'];
-
-    feedbackOptionsCallbacks[args['callId'].toString()]
-        ['onFeedbackFailed'](opts);
-  }
-
-  // Http overrides for network logging
-
+  /// Creates necessary overrides to be used with [HttpOverrides.runWithHttpOverrides].
+  /// Use this if you need to log all your http requests by default.
+  ///
+  /// An example usage can be found below.
+  ///
+  /// ```dart
+  /// HttpOverrides.runWithHttpOverrides(
+  ///      () async {
+  ///          // Call `await TestFairy.begin()` or any other setup code here.
+  ///
+  ///          runApp(ExampleApp());
+  ///      },
+  ///      TestFairy.httpOverrides()
+  ///  );
+  /// ```
   static HttpOverrides httpOverrides() {
     return new TestFairyHttpOverrides();
   }
-}
-
-class TestFairyHttpOverrides extends HttpOverrides {
-
-  @override
-  HttpClient createHttpClient(SecurityContext context) {
-    var clientToWrap = super.createHttpClient(context);
-
-    return new TestFairyHttpClient(context: context, wrappedClient: clientToWrap);
-  }
-
-}
-
-abstract class TestFairyHttpClient extends HttpClient {
-
-  factory TestFairyHttpClient({SecurityContext context, HttpClient wrappedClient}) {
-    if (wrappedClient == null) {
-      return new _TestFairyHttpClient(new HttpClient(context: context));
-    } else {
-      return new _TestFairyHttpClient(wrappedClient);
-    }
-  }
-
-}
-
-class _TestFairyHttpClient implements TestFairyHttpClient {
-
-  HttpClient wrappedClient;
-
-  _TestFairyHttpClient(HttpClient wrappedClient) {
-    this.wrappedClient = wrappedClient;
-  }
-
-  @override
-  void set autoUncompress(bool autoUncompress) {
-    this.wrappedClient.autoUncompress = autoUncompress;
-  }
-
-  @override
-  bool get autoUncompress {
-    return this.wrappedClient.autoUncompress;
-  }
-
-  @override
-  void set connectionTimeout(Duration connectionTimeout) {
-    this.wrappedClient.connectionTimeout = connectionTimeout;
-  }
-
-  @override
-  Duration get connectionTimeout {
-    return this.wrappedClient.connectionTimeout;
-  }
-
-  @override
-  void set idleTimeout(Duration idleTimeout) {
-    this.wrappedClient.idleTimeout = idleTimeout;
-  }
-
-  @override
-  Duration get idleTimeout {
-    return this.wrappedClient.idleTimeout;
-  }
-
-  @override
-  void set maxConnectionsPerHost(int maxConnectionsPerHost) {
-    this.wrappedClient.maxConnectionsPerHost = maxConnectionsPerHost;
-  }
-
-  @override
-  int get maxConnectionsPerHost {
-    return this.wrappedClient.maxConnectionsPerHost;
-  }
-
-  @override
-  void set userAgent(String userAgent) {
-    this.wrappedClient.userAgent = userAgent;
-  }
-
-  @override
-  String get userAgent {
-    return this.wrappedClient.userAgent;
-  }
-
-  @override
-  void addCredentials(Uri url, String realm, HttpClientCredentials credentials) {
-    this.wrappedClient.addCredentials(url, realm, credentials);
-  }
-
-  @override
-  void addProxyCredentials(String host, int port, String realm, HttpClientCredentials credentials) {
-    this.wrappedClient.addProxyCredentials(host, port, realm, credentials);
-  }
-
-  @override
-  void set authenticate(Future<bool> Function(Uri url, String scheme, String realm) f) {
-    this.wrappedClient.authenticate = f;
-  }
-
-  @override
-  void set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String realm) f) {
-    this.wrappedClient.authenticateProxy = f;
-  }
-
-  @override
-  void set badCertificateCallback(bool Function(X509Certificate cert, String host, int port) callback) {
-    this.wrappedClient.badCertificateCallback = callback;
-  }
-
-  @override
-  void close({bool force = false}) {
-    this.wrappedClient.close(force: force);
-  }
-
-  @override
-  Future<HttpClientRequest> delete(String host, int port, String path) {
-    return this.wrappedClient.delete(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> deleteUrl(Uri url) {
-    return this.wrappedClient.deleteUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  void set findProxy(String Function(Uri url) f) {
-    this.wrappedClient.findProxy = f;
-  }
-
-  @override
-  Future<HttpClientRequest> get(String host, int port, String path) {
-    return this.wrappedClient.get(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> getUrl(Uri url) {
-    return this.wrappedClient.getUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> head(String host, int port, String path) {
-    return this.wrappedClient.head(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> headUrl(Uri url) {
-    return this.wrappedClient.headUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> open(String method, String host, int port, String path) {
-    return this.wrappedClient.open(method, host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> openUrl(String method, Uri url) {
-    return this.wrappedClient.openUrl(method, url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> patch(String host, int port, String path) {
-    return this.wrappedClient.patch(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> patchUrl(Uri url) {
-    return this.wrappedClient.patchUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> post(String host, int port, String path) {
-    return this.wrappedClient.post(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> postUrl(Uri url) {
-    return this.wrappedClient.postUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> put(String host, int port, String path) {
-    return this.wrappedClient.put(host, port, path).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-
-  @override
-  Future<HttpClientRequest> putUrl(Uri url) {
-    return this.wrappedClient.putUrl(url).then((HttpClientRequest req) {
-      return new _TestFairyClientHttpRequest(req);
-    });
-  }
-}
-
-class _TestFairyClientHttpRequest implements HttpClientRequest {
-
-  HttpClientRequest wrappedRequest;
-
-  _TestFairyClientHttpRequest(HttpClientRequest wrappedRequest) {
-    this.wrappedRequest = wrappedRequest;
-  }
-
-  @override
-  bool get bufferOutput {
-    return this.wrappedRequest.bufferOutput;
-  }
-
-  @override
-  void set bufferOutput(bool bufferOutput) {
-    this.wrappedRequest.bufferOutput = bufferOutput;
-  }
-
-  @override
-  int get contentLength {
-    return this.wrappedRequest.contentLength;
-  }
-
-  @override
-  void set contentLength(int contentLength) {
-    this.wrappedRequest.contentLength = contentLength;
-  }
-
-  @override
-  Encoding get encoding {
-    return this.wrappedRequest.encoding;
-  }
-
-  @override
-  void set encoding(Encoding encoding) {
-    this.wrappedRequest.encoding = encoding;
-  }
-
-  @override
-  bool get followRedirects {
-    return this.wrappedRequest.followRedirects;
-  }
-
-  @override
-  void set followRedirects(bool followRedirects) {
-    this.wrappedRequest.followRedirects = followRedirects;
-  }
-
-  @override
-  int get maxRedirects {
-    return this.wrappedRequest.maxRedirects;
-  }
-
-  @override
-  void set maxRedirects(int maxRedirects) {
-    this.wrappedRequest.maxRedirects = maxRedirects;
-  }
-
-  @override
-  bool get persistentConnection {
-    return this.wrappedRequest.persistentConnection;
-  }
-
-  @override
-  void set persistentConnection(bool persistentConnection) {
-    this.wrappedRequest.persistentConnection = persistentConnection;
-  }
-
-  @override
-  void add(List<int> data) {
-    this.wrappedRequest.add(data);
-  }
-
-  @override
-  void addError(Object error, [StackTrace stackTrace]) {
-    this.wrappedRequest.addError(error, stackTrace);
-  }
-
-  @override
-  Future addStream(Stream<List<int>> stream) {
-    return this.wrappedRequest.addStream(stream);
-  }
-
-  @override
-  Future<HttpClientResponse> close() {
-    int startTimeMillis = new DateTime.now().millisecondsSinceEpoch;
-    int requestSize = this.wrappedRequest.contentLength;
-
-    return this.wrappedRequest.close().then((HttpClientResponse res) {
-      int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
-      
-      TestFairy.addNetworkEvent(
-          uri.toString(),
-          method,
-          res.statusCode,
-          startTimeMillis,
-          endTimeMillis,
-          requestSize,
-          res.contentLength,
-          null
-      );
-
-      return res;
-    }).catchError((error) {
-      int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
-
-      TestFairy.addNetworkEvent(
-          uri.toString(),
-          method,
-          -1,
-          startTimeMillis,
-          endTimeMillis,
-          requestSize,
-          -1,
-          error.toString()
-      );
-
-      throw error;
-    });
-  }
-
-  @override
-  HttpConnectionInfo get connectionInfo => this.wrappedRequest.connectionInfo;
-
-  @override
-  List<Cookie> get cookies => this.wrappedRequest.cookies;
-
-  @override
-  Future<HttpClientResponse> get done => this.wrappedRequest.done;
-
-  @override
-  Future flush() {
-    return this.wrappedRequest.flush();
-  }
-
-  @override
-  HttpHeaders get headers => this.wrappedRequest.headers;
-
-  @override
-  String get method => this.wrappedRequest.method;
-
-  @override
-  Uri get uri => this.wrappedRequest.uri;
-
-  @override
-  void write(Object obj) {
-    this.wrappedRequest.write(obj);
-  }
-
-  @override
-  void writeAll(Iterable objects, [String separator = ""]) {
-    this.wrappedRequest.writeAll(objects, separator);
-  }
-
-  @override
-  void writeCharCode(int charCode) {
-    this.wrappedRequest.writeCharCode(charCode);
-  }
-
-  @override
-  void writeln([Object obj = ""]) {
-    this.wrappedRequest.writeln(obj);
-  }
-
 }

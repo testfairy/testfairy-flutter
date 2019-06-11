@@ -33,15 +33,17 @@ void main() {
       zoneSpecification: new ZoneSpecification(
         print: (self, parent, zone, message) {
           TestFairy.log(message);
-
-          // Below 3 lines can be removed safely in your app, they there for testing purposes.
-          parent.print(zone, message);
-          logs.add(message);
-          onNewLog();
         },
-      ),
+      )
   );
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Add these lines to ZoneSpecification.print if you want to test this project properly
+//parent.print(zone, message);
+//logs.add(message);
+//onNewLog();
+///////////////////////////////////////////////////////////////////////////////////////
 
 // Test App
 class TestfairyExampleApp extends StatefulWidget {

@@ -406,7 +406,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
  feedbackContentMap.put("email", feedbackContent.getEmail());
  feedbackContentMap.put("text", feedbackContent.getText());
  feedbackContentMap.put("timestamp", (double) feedbackContent.getTimestamp());
- feedbackContentMap.put("i", i);
+ feedbackContentMap.put("feedbackNo", i);
  feedbackContentMap.put("callId", callId);
  
  channel.invokeMethod("callOnFeedbackFailed", feedbackContentMap);
