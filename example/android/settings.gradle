@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':testfairy-android-sdk-release'
 
 def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
 

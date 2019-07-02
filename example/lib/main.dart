@@ -257,9 +257,9 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print("A");
       await TestFairy.begin(APP_TOKEN);
       print("B");
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 20));
       print("C");
-      await TestFairy.takeScreenshot();
+//      await TestFairy.takeScreenshot();
       print("D");
       await Future.delayed(const Duration(seconds: 2));
       print("E");

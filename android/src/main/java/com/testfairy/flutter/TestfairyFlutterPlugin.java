@@ -14,6 +14,8 @@ import com.testfairy.TestFairy;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
@@ -341,6 +343,8 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			public Void consume(Context context) {
 				TestFairy.begin(context, appToken);
 
+				setScreenshotProvider();
+
 				return null;
 			}
 		});
@@ -351,6 +355,8 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			@Override
 			public Void consume(Context context) {
 				TestFairy.begin(context, appToken, options);
+
+				setScreenshotProvider();
 
 				return null;
 			}
@@ -577,8 +583,25 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		ByteBuffer buffer = ByteBuffer.wrap(pixels);
 		bmp.copyPixelsFromBuffer(buffer);
 
-		// TODO : send to testfairy
-		saveImage(bmp, "tfss-" + System.currentTimeMillis());
+//		saveImage(bmp, "tfss-" + System.currentTimeMillis());
+
+		TestFairy.addScreenshot(bmp);
+	}
+
+	static private void setScreenshotProvider() {
+		try {
+			Method setScrenshotProvider = getMethodWithName(TestFairy.class, "setScrenshotProvider");
+			setScrenshotProvider.invoke(null, new Runnable() {
+				@Override
+				public void run() {
+					takeScreenshot();
+				}
+			});
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void saveImage(Bitmap finalBitmap, String image_name) {
@@ -597,5 +620,20 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Method getMethodWithName(Class<?> klass, String method) {
+		if (method == null || klass == null) return null;
+
+		Method[] methods = klass.getDeclaredMethods();
+
+		for (Method m : methods) {
+			if (m.getName().equals(method)) {
+				m.setAccessible(true);
+				return m;
+			}
+		}
+
+		return null;
 	}
 }
