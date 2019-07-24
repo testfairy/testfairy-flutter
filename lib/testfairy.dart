@@ -3,6 +3,7 @@ library testfairy;
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:flutter/widgets.dart';
 
@@ -318,23 +319,33 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// Provide the same [GlobalKey] you specify in your widget's [key] attribute.
   static void hideWidget(GlobalKey widgetKey) {
+    if (Platform.isIOS) {
+      debugPrint("WARNING: hideWidget() is currently not supported in iOS. Disabling video as fallback.");
+      disableVideo();
+    }
+
     TestFairyBase.hiddenWidgets.add(widgetKey);
   }
 
   /// Takes a screenshot and sends it to TestFairy.
   /// Must be called after begin.
   static Future<void> takeScreenshot() async {
-    var screenshot = await TestFairyBase.createSingleScreenShot();
+    // TODO : remove this check after iOS implements the same interface
+    if (Platform.isIOS) {
+      await TestFairyBase.channel.invokeMethod("takeScreenshot");
+    } else {
+      var screenshot = await TestFairyBase.createSingleScreenShot();
 
-    TestFairyBase.prepareTwoWayInvoke();
+      TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
-      'pixels': screenshot.pixels,
-      'width': screenshot.width,
-      'height': screenshot.height
-    };
+      var args = {
+        'pixels': screenshot.pixels,
+        'width': screenshot.width,
+        'height': screenshot.height
+      };
 
-    await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+    }
   }
 
   /// Call this function to log your network events.

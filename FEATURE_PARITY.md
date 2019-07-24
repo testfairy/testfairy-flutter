@@ -32,18 +32,11 @@
 * `enableVideo`
 * `disableVideo`
 * `bringFlutterToFront`
+* `takeScreenshot`
 
 ## Supported by only Android
 
 TestFairy iOS SDK does not have corresponding Objective-C interface for these integrations.
 
-* `setFeedbackOptions`
-
-## Not supported by any platform
-
-These are waiting updates to native SDKs. Dart functionality is already implemented.
-
-* `enableVideo`
-* `disableVideo`
-* `takeScreenshot`
 * `hideView`
+* `setFeedbackOptions`

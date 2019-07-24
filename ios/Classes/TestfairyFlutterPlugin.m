@@ -61,7 +61,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
                      errorMessage:[args valueForKey:@"errorMessage"]];
             result(nil);
         } else if ([@"takeScreenshot" isEqualToString:call.method]) {
-            [TestfairyFlutterPlugin takeScreenshot];
+            [self takeScreenshot];
             result(nil);
         } else if ([@"sendScreenshot" isEqualToString:call.method]) {
             [self sendScreenshot:[args valueForKey:@"pixels"] width:[args valueForKey:@"width"] height:[args valueForKey:@"height"]];
@@ -194,14 +194,15 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     
     UIImage * newimage = [UIImage imageWithCGImage:cgImage];
     
-    // TODO : send newImage
+    // TODO : send newImage to TestFairy SDK
+    
     UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
 
     CGImageRelease(cgImage);
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [TestfairyFlutterPlugin takeScreenshot];
-    });
+}
+
+- (void) takeScreenshot {
+    [TestFairy takeScreenshot];
 }
     
 - (void) begin:(NSString*)appToken {

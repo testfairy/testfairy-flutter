@@ -140,10 +140,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 					);
 					result.success(null);
 					break;
-				case "takeScreenshot":
-					takeScreenshot();
-					result.success(null);
-					break;
 				case "sendScreenshot":
 					sendScreenshot((byte[]) args.get("pixels"), (int) args.get("width"), (int) args.get("height"));
 					result.success(null);
@@ -424,11 +420,11 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 	}
 
 	private void logError(String error) {
-		TestFairy.logThrowable(new TestfairyFlutterException(error));
+		TestFairy.logThrowable(error);
 	}
 
 	private void log(String msg) {
-		TestFairy.log("TESTFAIRYSDK", msg);
+		TestFairy.log("Flutter", msg);
 	}
 
 	private void setScreenName(String name) {

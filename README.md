@@ -59,7 +59,33 @@ void main() {
 ### How to update native SDKs?
 This is done automatically for Android. 
 
-If you want to update the native iOS SDK used by this integration, run `pod install` in your *ios* directory. This will fix all the syntax errors in *TestFairyFlutterPlugin.m* file if there is any due to an update.
+If you need to update the native iOS SDK used by this integration, run `pod install` in your *ios* directory. This will fix "Undefined symbols for architecture" and all the syntax errors in *TestFairyFlutterPlugin.m* file if there is any due to an update.
+
+### Troubleshoot
+1. **CocoaPods could not find compatible versions for pod "TestFairy".**
+
+This is an old bug in the plugin *pubspec* file. First, run `flutter clean` in your root directory. 
+
+Please move **ios/Podfile.lock** into a temporary place before running `pod install` in your *ios* directory. 
+
+If some of the libraries you use needs to be at specific versions, copy the necessary lines from your backed up **Podfile.lock** into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
+
+Finally, run `pod install` again to re-download libraries from the replaced lines.
+
+If everything went smoothly, this issue should never happen again.
+
+2. **I see `Undefined symbols for architecture` error during compilation.**
+
+In your project root, run `flutter clean; cd ios; pod install; cd ..` and test again.
+
+3. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
+
+In your project root, run `flutter clean; cd ios; pod install; cd ..` and test again.
+
+4. **My widget's are not hidden in screenshots.**
+
+This is currently not supported in iOS and will be fixed in the next release.
+
 
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)
@@ -93,31 +119,27 @@ If you want to update the native iOS SDK used by this integration, run `pod inst
 * `enableFeedbackForm`
 * `disableFeedbackForm`
 * `setMaxSessionLength`
+* `bringFlutterToFront`
 * `enableVideo`
 * `disableVideo`
-* `bringFlutterToFront`
+* `takeScreenshot`
 
 ### Features supported by only Android
 
 * `setFeedbackOptions`
+* `hideWidget`
 
-### Features not supported by any platform yet
-
-* `enableVideo`
-* `disableVideo`
-* `takeScreenshot`
- 
 ## Development
 1. Install [Flutter](https://flutter.io/docs).
 2. Connect an Android device.
-3. Run `flutter packages get` in both root and *example* folder.
-4. Run `./test.sh` in the main folder and wait for tests to complete.
+3. Run `flutter packages get` in both root and *example* directory.
+4. Run `./test.sh` in the main directory and wait for tests to complete.
 5. (Optional) Run `./run.sh` and tap buttons to see what happens.
-6. (Optional) Run `./profile.sh` in the main folder and tap around to benchmark.
+6. (Optional) Run `./profile.sh` in the main directory and tap around to benchmark.
 7. Edit *example/lib/main.dart* and *example/test_driver/app_test.dart* to add a test case.
 8. Edit *lib/testfairy_flutter.dart* to add more SDK integration.
 9. Run `./docs.sh` to generate documentation for offline usage.
 
 ## TODO
-1. Add video and screenshot support on Android.
-2. Add feedback options support for iOS.
+1. Add feedback options support for iOS.
+2. Add `hideWidget` support for iOS.

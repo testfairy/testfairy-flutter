@@ -427,7 +427,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     beginTest("Take Screenshot");
 
     try {
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
       await TestFairy.takeScreenshot();
+
+      await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
     } catch (e) {
       setError(e);
     }

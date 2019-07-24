@@ -3,10 +3,10 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'testfairy'
-  s.version          = '1.0.0'
+  s.version          = '1.0.3'
   s.summary          = 'TestFairy integration for Flutter, bundles with the native iOS SDK'
   s.description      = <<-DESC
-A new flutter plugin project.
+TestFairy flutter plugin.
                        DESC
   s.homepage         = 'http://testfairy.com'
   s.license          = { :file => '../LICENSE' }
@@ -15,7 +15,7 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'TestFairy', '1.19.5'
+  s.dependency 'TestFairy', '>=1.19.9'
   s.static_framework = true
 
   s.ios.deployment_target = '9.0'
