@@ -62,21 +62,44 @@ This is done automatically for Android.
 If you need to update the native iOS SDK used by this integration, run `pod install` in your *ios* directory. This will fix "Undefined symbols for architecture" and all the syntax errors in *TestFairyFlutterPlugin.m* file if there is any due to an update.
 
 ### Troubleshoot
-1. **CocoaPods could not find compatible versions for pod "TestFairy".**
+1. **I see `Undefined symbols for architecture` error during compilation.**
 
-This is an old bug in the plugin *pubspec* file. First, run `flutter clean` in your root directory. 
+You must use frameworks and specify an platform version of at least 9.0 in your generated iOS project's Podfile. Please make the following changes in the *ios/Podfile* and rebuild.
 
-Please move **ios/Podfile.lock** into a temporary place before running `pod install` in your *ios* directory. 
+```
+target 'Runner' do
+  platform :ios, '9.0'   ####################################### <--- add this and specify at least 9.0
 
-If some of the libraries you use needs to be at specific versions, copy the necessary lines from your backed up **Podfile.lock** into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
+  use_frameworks!        ####################################### <--- add this, and try building if there is 
+                         #######################################      no Swift code or plugin in the project.
+                         #######################################      If there is Swift code, please also add 
+                         #######################################      the marked line below.
+
+  ...
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+      config.build_settings['SWIFT_VERSION'] = '3.2'  ########## <--- add this, change the version to what's being
+                                                      ##########      used in the project, remove if there is none
+    end
+  end
+end
+```
+
+2. **CocoaPods could not find compatible versions for pod "TestFairy".**
+
+This is an old bug in the plugin pubspec file. First, run `flutter clean` in your root directory. 
+
+Please move *ios/Podfile.lock* into a temporary place before running `pod install` in your *ios* directory. 
+
+If some of the libraries you use need to be at specific versions, copy the necessary lines from your backed up **Podfile.lock** into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
 
 Finally, run `pod install` again to re-download libraries from the replaced lines.
 
 If everything went smoothly, this issue should never happen again.
-
-2. **I see `Undefined symbols for architecture` error during compilation.**
-
-In your project root, run `flutter clean; cd ios; pod install; cd ..` and test again.
 
 3. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
