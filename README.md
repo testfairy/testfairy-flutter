@@ -59,12 +59,12 @@ void main() {
 ### How to update native SDKs?
 This is done automatically for Android. 
 
-If you need to update the native iOS SDK used by this integration, run `pod install` in your *ios* directory. This will fix "Undefined symbols for architecture" and all the syntax errors in *TestFairyFlutterPlugin.m* file if there is any due to an update.
+If you need to update the native iOS SDK used by your current integration, run `pod install` in your *ios* directory.
 
 ### Troubleshoot
 1. **I see `Undefined symbols for architecture` error during compilation.**
 
-You must use frameworks and specify an platform version of at least 9.0 in your generated iOS project's Podfile. Please make the following changes in the *ios/Podfile* and rebuild.
+You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
 
 ```
 target 'Runner' do
@@ -73,7 +73,7 @@ target 'Runner' do
   use_frameworks!        ####################################### <--- add this, and try building if there is 
                          #######################################      no Swift code or plugin in the project.
                          #######################################      If there is Swift code, please also add 
-                         #######################################      the marked line below.
+                         #######################################      the marked line below
 
   ...
 end
