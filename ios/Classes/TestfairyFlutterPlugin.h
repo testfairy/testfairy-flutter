@@ -11,7 +11,7 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
 
 // Integrations
-- (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeInMillis:(NSNumber*)startTimeInMillis endTimeInMillis:(NSNumber*)endTimeInMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(NSString*)errorMessage;
+- (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage;
 
 - (void) takeScreenshot;
 

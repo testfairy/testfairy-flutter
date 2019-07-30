@@ -1,5 +1,5 @@
 ## 1.0.3
-* Android Screenshots.
+* Android Screenshots and `hideWidget()`.
 * Network logging.
 
 ## 1.0.2

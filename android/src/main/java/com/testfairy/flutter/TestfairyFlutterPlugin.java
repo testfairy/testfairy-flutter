@@ -35,12 +35,6 @@ import io.flutter.view.FlutterView;
 /** TestfairyFlutterPlugin */
 public class TestfairyFlutterPlugin implements MethodCallHandler {
 
-	private class TestfairyFlutterException extends Exception {
-		public TestfairyFlutterException(String msg) {
-			super(msg);
-		}
-	}
-
 	private static class FlutterViewMethodChannelPair {
 		public WeakReference<FlutterView> flutterViewWeakReference;
 		public WeakReference<MethodChannel> methodChannelWeakReference;
@@ -586,7 +580,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 
 	static private void setScreenshotProvider() {
 		try {
-			Method setScrenshotProvider = getMethodWithName(TestFairy.class, "setScrenshotProvider");
+			Method setScrenshotProvider = getMethodWithName(TestFairy.class, "setScreenshotProvider");
 			setScrenshotProvider.invoke(null, new Runnable() {
 				@Override
 				public void run() {
@@ -624,7 +618,8 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		Method[] methods = klass.getDeclaredMethods();
 
 		for (Method m : methods) {
-			if (m.getName().equals(method)) {
+			String mName = m.getName();
+			if (mName.equals(method)) {
 				m.setAccessible(true);
 				return m;
 			}

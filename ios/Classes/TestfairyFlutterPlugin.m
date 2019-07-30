@@ -196,7 +196,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     
     // TODO : send newImage to TestFairy SDK
     
-    UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
+//    UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
 
     CGImageRelease(cgImage);
 }
