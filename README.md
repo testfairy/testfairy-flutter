@@ -95,7 +95,7 @@ This is an old bug in the plugin pubspec file. First, run `flutter clean` in you
 
 Please move *ios/Podfile.lock* into a temporary place before running `pod install` in your *ios* directory. 
 
-If some of the libraries you use need to be at specific versions, copy the necessary lines from your backed up **Podfile.lock** into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
+If some of the libraries you use need to be at specific versions, copy the necessary lines from your backed up *Podfile.lock* into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
 
 Finally, run `pod install` again to re-download libraries from the replaced lines.
 
