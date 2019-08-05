@@ -156,6 +156,9 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         } else if ([@"logError" isEqualToString:call.method]) {
             [self logError:call.arguments];
             result(nil);
+        } else if ([@"disableAutoUpdate" isEqualToString:call.method]) {
+            [self disableAutoUpdate];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -323,6 +326,10 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 
 - (void) setMaxSessionLength:(NSNumber*)seconds {
     [TestFairy setMaxSessionLength:[seconds floatValue]];
+}
+
+- (void) disableAutoUpdate {
+    [TestFairy disableAutoUpdate];
 }
 
 - (void) bringFlutterToFront {

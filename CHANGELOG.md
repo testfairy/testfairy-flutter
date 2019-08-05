@@ -1,3 +1,6 @@
+## 1.0.4
+* `disableAutoUpdate()` support.
+
 ## 1.0.3
 * Android Screenshots and `hideWidget()`.
 * Network logging.

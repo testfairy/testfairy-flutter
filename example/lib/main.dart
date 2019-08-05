@@ -201,6 +201,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                             key: Key("networkLogTests"),
                             child: Text('Network Log Tests')
                         ),
+                        FlatButton(
+                            color: Color.fromRGBO(0, 100, 100, 1.0),
+                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                            onPressed: onDisableAutoUpdateTests,
+                            key: Key("disableAutoUpdateTests"),
+                            child: Text('Disable Auto Update Tests')
+                        ),
                         Column(children: logs.map((l) => new Text(l)).toList())
                       ],
                     )))));
@@ -661,6 +668,34 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print(response.toString());
 
       await Future.delayed(const Duration(seconds: 2));
+      await TestFairy.stop();
+    } catch (e) {
+      setError(e);
+    }
+
+    endTest();
+  }
+
+  void onDisableAutoUpdateTests() async {
+    if (testing) return;
+
+    beginTest("Disable Auto Update Test");
+
+    try {
+      print('Testing disabled auto update sesssion');
+
+      await TestFairy.disableAutoUpdate();
+      await TestFairy.begin(APP_TOKEN);
+      await Future.delayed(const Duration(seconds: 2));
+
+      var url = await TestFairy.getSessionUrl();
+
+      assert(url != null);
+
+      print("Session Url: " + url);
+
+      assert(url.contains("http"));
+
       await TestFairy.stop();
     } catch (e) {
       setError(e);

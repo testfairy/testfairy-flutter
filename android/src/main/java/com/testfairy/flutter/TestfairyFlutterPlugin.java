@@ -270,6 +270,11 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 							(boolean) args.get("emailMandatory"),
 							(int) args.get("callId")
 					);
+					result.success(null);
+					break;
+				case "disableAutoUpdate":
+					disableAutoUpdate();
+					result.success(null);
 					break;
 				default:
 					result.notImplemented();
@@ -541,6 +546,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		});
 
 		TestFairy.setFeedbackOptions(builder.build());
+	}
+
+	private void disableAutoUpdate() {
+		TestFairy.disableAutoUpdate();
 	}
 
 	private void addNetworkEvent(

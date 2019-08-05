@@ -77,6 +77,8 @@
 
 - (void) setMaxSessionLength:(NSNumber*)seconds;
 
+- (void) disableAutoUpdate;
+
 - (void) bringFlutterToFront;
 
 @end

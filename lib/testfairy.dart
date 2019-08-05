@@ -417,6 +417,11 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('setFeedbackOptions', args);
   }
 
+  /// Disables auto update prompts for current session.
+  static Future<void> disableAutoUpdate() async {
+    await TestFairyBase.channel.invokeMethod('disableAutoUpdate');
+  }
+
   /// Creates necessary overrides to be used with [HttpOverrides.runWithHttpOverrides].
   /// Use this if you need to log all your http requests by default.
   ///
