@@ -5,7 +5,7 @@ TestFairy integration for Flutter, bundles with the native SDK.
 [See details...](https://pub.dartlang.org/packages/testfairy#-installing-tab-)
 
 ## Quick Start
-Include the library and run your main app like this.
+Include the library and run your main app like this. Make sure your project is [AndroidX](https://flutter.dev/docs/development/androidx-migration) compatible.
 
 ```yaml
 # inside pubspec.yaml
@@ -36,7 +36,6 @@ void main() {
    
              // Logs synchronous errors
              TestFairy.logError(error);
-   
            }
          },
    
@@ -62,7 +61,11 @@ This is done automatically for Android.
 If you need to update the native iOS SDK used by your current integration, run `pod repo update; pod install` in your *ios* directory.
 
 ### Troubleshoot
-1. **I see `Undefined symbols for architecture` error during compilation.**
+1. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfix| is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
+
+Migrate your Android project to AndroidX by following [this](https://flutter.dev/docs/development/androidx-migration) guide.
+
+2. **I see `Undefined symbols for architecture` error during compilation.**
 
 You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
 
@@ -89,7 +92,7 @@ post_install do |installer|
 end
 ```
 
-2. **CocoaPods could not find compatible versions for pod "TestFairy".**
+3. **CocoaPods could not find compatible versions for pod "TestFairy".**
 
 This is an old bug in the plugin pubspec file. First, run `flutter clean` in your root directory. 
 
@@ -101,11 +104,11 @@ Finally, run `pod repo update; pod install` again to re-download libraries from 
 
 If everything went smoothly, this issue should never happen again.
 
-3. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
+4. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
 In your project root, run `flutter clean; cd ios; pod repo update; pod install; cd ..` and test again.
 
-4. **My widget's are not hidden in screenshots.**
+5. **My widget's are not hidden in screenshots.**
 
 This is currently not supported in iOS and will be fixed in the next release.
 

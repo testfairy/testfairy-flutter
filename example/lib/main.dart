@@ -343,7 +343,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await Future.delayed(const Duration(seconds: 2));
       await TestFairy.sendUserFeedback("Dummy feedback from Flutter");
       await TestFairy.showFeedbackForm();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 10));
       await TestFairy.bringFlutterToFront();
       await Future.delayed(const Duration(seconds: 2));
       await TestFairy.stop();

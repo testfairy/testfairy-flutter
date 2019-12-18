@@ -1,3 +1,6 @@
+## 1.0.5
+* AndroidX support.
+
 ## 1.0.4
 * `disableAutoUpdate()` support.
 
