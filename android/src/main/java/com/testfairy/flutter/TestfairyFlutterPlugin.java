@@ -13,6 +13,8 @@ import com.testfairy.TestFairy;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -282,7 +284,17 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 			}
 		} catch (Throwable e) {
 			Log.e("TESTFAIRYSDK", "Invalid channel invoke", e);
-			result.notImplemented();
+
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String stacktrace = sw.toString();
+
+			result.error(
+					"-1",
+					e.getClass().getSimpleName() + ": " + e.getMessage() + "\n" + stacktrace,
+					stacktrace
+			);
 		}
 	}
 

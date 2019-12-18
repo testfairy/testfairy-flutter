@@ -33,7 +33,6 @@ part 'package:testfairy/src/feedback_options.dart';
 ///
 ///          // Logs synchronous errors
 ///          TestFairy.logError(error);
-///
 ///        }
 ///      },
 ///
