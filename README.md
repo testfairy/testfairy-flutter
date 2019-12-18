@@ -61,7 +61,7 @@ This is done automatically for Android.
 If you need to update the native iOS SDK used by your current integration, run `pod repo update; pod install` in your *ios* directory.
 
 ### Troubleshoot
-1. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfix| is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
+1. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
 
 Migrate your Android project to AndroidX by following [this](https://flutter.dev/docs/development/androidx-migration) guide.
 
