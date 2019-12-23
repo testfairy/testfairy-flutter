@@ -16,7 +16,8 @@ dependencies:
 
 ```dart
 // inside your main.dart
-
+import 'dart:async';
+import 'dart:io';
 import 'package:testfairy/testfairy.dart';
 
 void main() {
