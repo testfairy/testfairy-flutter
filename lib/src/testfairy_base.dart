@@ -47,6 +47,7 @@ abstract class TestFairyBase {
 
   static void prepareTwoWayInvoke() {
     if (!isMethodCallHandlerSet) {
+      WidgetsFlutterBinding.ensureInitialized();
       channel.setMethodCallHandler(methodCallHandler);
       isMethodCallHandlerSet = true;
     }

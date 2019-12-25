@@ -81,11 +81,13 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// Please contact support for more information about these products.
   static Future<void> setServerEndpoint(String endpoint) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('setServerEndpoint', endpoint);
   }
 
   /// Returns SDK version (x.x.x)
   static Future<String> getVersion() async {
+    TestFairyBase.prepareTwoWayInvoke();
     return await TestFairyBase.channel.invokeMethod('getVersion');
   }
 
@@ -94,12 +96,14 @@ abstract class TestFairy extends TestFairyBase {
   /// Call when using a in-house feedback screen with a custom design and feel.
   /// Feedback will be associated with the current session.
   static Future<void> sendUserFeedback(String feedback) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('sendUserFeedback', feedback);
   }
 
   /// Deprecated backward compatibility wrapper for [addEvent].
   /// Use [addEvent] unless really necessary.
   static Future<void> addCheckpoint(String name) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('addCheckpoint', name);
   }
 
@@ -108,6 +112,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Later, you can filter sessions for users passed through this checkpoint,
   /// to better understand what your users experienced.
   static Future<void> addEvent(String name) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('addEvent', name);
   }
 
@@ -118,6 +123,7 @@ abstract class TestFairy extends TestFairyBase {
   /// For example, setting correlation to the value of the user-id after they logged in.
   /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> setCorrelationId(String id) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('setCorrelationId', id);
   }
 
@@ -140,6 +146,7 @@ abstract class TestFairy extends TestFairyBase {
   /// For example, setting correlation to the value of the user-id after they logged in.
   /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> identify(String id) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('identify', id);
   }
 
@@ -148,6 +155,7 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// We recommend passing values such as email, phone number, or user id that your app may use.
   static Future<void> setUserId(String id) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('setUserId', id);
   }
 
@@ -155,6 +163,8 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// NOTE: The SDK limits you to storing 64 attribute keys. Adding more than 64 will fail and return false.
   static Future<void> setAttribute(String key, String value) async {
+    TestFairyBase.prepareTwoWayInvoke();
+
     var args = {
       'key': key,
       'value': value
@@ -166,6 +176,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Returns the address of the recorded session on TestFairy’s developer portal.
   /// Will return null if recording not yet started.
   static Future<String> getSessionUrl() async {
+    TestFairyBase.prepareTwoWayInvoke();
     return await TestFairyBase.channel.invokeMethod('getSessionUrl');
   }
 
@@ -175,6 +186,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Allows users to provide feedback about the current session.
   /// All feedbacks will appear in your build report page, and in the recorded session page.
   static Future<void> showFeedbackForm() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('showFeedbackForm');
   }
 
@@ -185,6 +197,7 @@ abstract class TestFairy extends TestFairyBase {
   /// views and user identity will be applied to the new session
   /// as well, if started.
   static Future<void> stop() async {
+    TestFairyBase.prepareTwoWayInvoke();
     TestFairyBase.takeScreenshot = null;
 
     await TestFairyBase.channel.invokeMethod('stop');
@@ -194,6 +207,7 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// This method resumes a session after it was paused. Has no effect if already resumed.
   static Future<void> resume() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('resume');
   }
 
@@ -202,16 +216,19 @@ abstract class TestFairy extends TestFairyBase {
   /// This method stops recoding of the current session until resume has been called.
   /// Has no effect if already paused.
   static Future<void> pause() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('pause');
   }
 
   /// Send a VERBOSE [Error] or [Exception] to TestFairy.
   static Future<void> logError(dynamic error) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('logError', error.toString());
   }
 
   /// Send a VERBOSE log message  to TestFairy.
   static Future<void> log(String message) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('log', message);
   }
 
@@ -220,11 +237,13 @@ abstract class TestFairy extends TestFairyBase {
   ///
   ///	This name is displayed for a given screenshot, and will override the name of the current screen.
   static Future<void> setScreenName(String name) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('setScreenName', name);
   }
 
   /// Indicates in runtime whether your last session was crashed.
   static Future<bool> didLastSessionCrash() async {
+    TestFairyBase.prepareTwoWayInvoke();
     return await TestFairyBase.channel.invokeMethod('didLastSessionCrash');
   }
 
@@ -234,6 +253,7 @@ abstract class TestFairy extends TestFairyBase {
   /// TestFairy crash handler is installed by default. Once installed
   /// it cannot be uninstalled.
   static Future<void> enableCrashHandler() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('enableCrashHandler');
   }
 
@@ -243,6 +263,7 @@ abstract class TestFairy extends TestFairyBase {
   /// TestFairy crash handler is installed by default. Once installed
   /// it cannot be uninstalled.
   static Future<void> disableCrashHandler() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableCrashHandler');
   }
 
@@ -253,6 +274,7 @@ abstract class TestFairy extends TestFairyBase {
   ///	A metric cannot be enabled and disabled at the same time, therefore
   /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> enableMetric(String metric) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('enableMetric', metric);
   }
 
@@ -263,6 +285,7 @@ abstract class TestFairy extends TestFairyBase {
   /// A metric cannot be enabled and disabled at the same time, therefore
   /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> disableMetric(String metric) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableMetric', metric);
   }
 
@@ -272,6 +295,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Valid values for quality include “high”, “low”, “medium”.
   /// Values for fps must be between 0.1 and 2.0. Value will be rounded to the nearest frame.
   static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
+    TestFairyBase.prepareTwoWayInvoke();
+
     var args = {
       'policy': policy,
       'quality': quality,
@@ -284,6 +309,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Disables the ability to capture video recording.
   /// Must be called before begin.
   static Future<void> disableVideo() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableVideo');
   }
 
@@ -294,6 +320,7 @@ abstract class TestFairy extends TestFairyBase {
   /// If an unrecognized method is passed, the value defined in the build
   /// settings will be used.
   static Future<void> enableFeedbackForm(String method) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('enableFeedbackForm', method);
   }
 
@@ -301,6 +328,7 @@ abstract class TestFairy extends TestFairyBase {
   /// or if a screenshot is taken.
   /// Must be called before begin.
   static Future<void> disableFeedbackForm() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableFeedbackForm');
   }
 
@@ -311,6 +339,7 @@ abstract class TestFairy extends TestFairyBase {
   /// The maximum value is the lowest value between this value and the value defined in the build settings.
   /// Time is rounded to the nearest minute.
   static Future<void> setMaxSessionLength(double seconds) async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('setMaxSessionLength', seconds);
   }
 
@@ -318,6 +347,8 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// Provide the same [GlobalKey] you specify in your widget's [key] attribute.
   static void hideWidget(GlobalKey widgetKey) {
+    TestFairyBase.prepareTwoWayInvoke();
+
     if (Platform.isIOS) {
       debugPrint("WARNING: hideWidget() is currently not supported in iOS. Disabling video as fallback.");
       disableVideo();
@@ -329,6 +360,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Takes a screenshot and sends it to TestFairy.
   /// Must be called after begin.
   static Future<void> takeScreenshot() async {
+    TestFairyBase.prepareTwoWayInvoke();
+
     // TODO : remove this check after iOS implements the same interface
     if (Platform.isIOS) {
       await TestFairyBase.channel.invokeMethod("takeScreenshot");
@@ -359,6 +392,8 @@ abstract class TestFairy extends TestFairyBase {
       int responseSize,
       String errorMessage
       ) async {
+    TestFairyBase.prepareTwoWayInvoke();
+
     var args = {
       'uri': uri,
       'method': method,
@@ -376,6 +411,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Brings Flutter activity or view controller to front.
   /// Can be used for testing native plugins.
   static Future<void> bringFlutterToFront() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('bringFlutterToFront');
   }
 
@@ -418,6 +454,7 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Disables auto update prompts for current session.
   static Future<void> disableAutoUpdate() async {
+    TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableAutoUpdate');
   }
 
@@ -437,6 +474,7 @@ abstract class TestFairy extends TestFairyBase {
   ///  );
   /// ```
   static HttpOverrides httpOverrides() {
+    TestFairyBase.prepareTwoWayInvoke();
     return new TestFairyHttpOverrides();
   }
 }
