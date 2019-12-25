@@ -27,74 +27,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
-import io.flutter.view.FlutterView;
 
 /** TestfairyFlutterPlugin */
-public class TestfairyFlutterPlugin implements MethodCallHandler {
+public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
 
-	private static class FlutterViewMethodChannelPair {
-		public WeakReference<FlutterView> flutterViewWeakReference;
+	private static class FlutterActivityMethodChannelPair {
+		public WeakReference<Activity> flutterActivityWeakReference;
 		public WeakReference<MethodChannel> methodChannelWeakReference;
 
-		public FlutterViewMethodChannelPair(FlutterView flutterView, MethodChannel methodChannel) {
-			this.flutterViewWeakReference = new WeakReference<>(flutterView);
+		public FlutterActivityMethodChannelPair(Activity activity, MethodChannel methodChannel) {
+			this.flutterActivityWeakReference = new WeakReference<>(activity);
 			this.methodChannelWeakReference = new WeakReference<>(methodChannel);
 		}
 
 		public boolean isValid() {
-			return flutterViewWeakReference.get() != null && methodChannelWeakReference.get() != null;
+			return flutterActivityWeakReference.get() != null && methodChannelWeakReference.get() != null;
 		}
 	}
 
 	private WeakReference<Context> contextWeakReference = new WeakReference<>(null);
 	private WeakReference<MethodChannel> methodChannelWeakReference = new WeakReference<>(null);
 	private WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
-	private WeakReference<FlutterView> flutterViewWeakReference = new WeakReference<>(null);
 
-	static private Map<WeakReference<Context>, FlutterViewMethodChannelPair> contextChannelMapping = new ConcurrentHashMap<>();
-
-	static private FlutterViewMethodChannelPair getActiveFlutterViewMethodChannelPair() {
-		List<Runnable> cleanUp = new ArrayList<>();
-		FlutterViewMethodChannelPair result = null;
-
-		for (final WeakReference<Context> c : contextChannelMapping.keySet()) {
-			final FlutterViewMethodChannelPair flutterViewMethodChannelPair = contextChannelMapping.get(c);
-
-			if (c.get() != null && flutterViewMethodChannelPair.isValid()) {
-				if (c.get() == flutterViewMethodChannelPair.flutterViewWeakReference.get().getContext()) {
-					result = flutterViewMethodChannelPair;
-				}
-			} else {
-				cleanUp.add(new Runnable() {
-					@Override
-					public void run() {
-						contextChannelMapping.remove(c);
-					}
-				});
-			}
-		}
-
-		for (Runnable r : cleanUp) r.run();
-
-		return result;
-	}
-
-	static private void takeScreenshot() {
-		FlutterViewMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
-
-		if (activeFlutterViewMethodChannelPair != null) {
-			MethodChannel methodChannel = activeFlutterViewMethodChannelPair.methodChannelWeakReference.get();
-
-			if (methodChannel != null) {
-				methodChannel.invokeMethod("takeScreenshot", null, null);
-			}
-		}
-	}
+	static private Map<WeakReference<Activity>, FlutterActivityMethodChannelPair> activityChannelMapping = new ConcurrentHashMap<>();
 
 	/** Plugin registration. (Mandatory)*/
 	public static void registerWith(Registrar registrar) {
@@ -104,14 +67,55 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		testfairyFlutterPlugin.methodChannelWeakReference = new WeakReference<>(channel);
 		testfairyFlutterPlugin.contextWeakReference = new WeakReference<>(registrar.context());
 		testfairyFlutterPlugin.activityWeakReference = new WeakReference<>(registrar.activity());
-		testfairyFlutterPlugin.flutterViewWeakReference = new WeakReference<>(registrar.view());
 
 		channel.setMethodCallHandler(testfairyFlutterPlugin);
 
-		contextChannelMapping.put(
-				new WeakReference<Context>(registrar.activity()),
-				new FlutterViewMethodChannelPair(registrar.view(), channel)
+		activityChannelMapping.put(
+				new WeakReference<>(registrar.activity()),
+				new FlutterActivityMethodChannelPair(registrar.activity(), channel)
 		);
+	}
+
+	@Override
+	public void onAttachedToEngine(FlutterPluginBinding binding) {
+		final MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), "testfairy");
+
+		this.methodChannelWeakReference = new WeakReference<>(channel);
+		this.contextWeakReference = new WeakReference<>(binding.getApplicationContext());
+
+		channel.setMethodCallHandler(this);
+	}
+
+	@Override
+	public void onDetachedFromEngine(FlutterPluginBinding binding) {
+	}
+
+	@Override
+	public void onAttachedToActivity(ActivityPluginBinding binding) {
+		this.activityWeakReference = new WeakReference<>(binding.getActivity());
+
+		activityChannelMapping.put(
+				new WeakReference<>(binding.getActivity()),
+				new FlutterActivityMethodChannelPair(binding.getActivity(), methodChannelWeakReference.get())
+		);
+	}
+
+	@Override
+	public void onDetachedFromActivityForConfigChanges() {
+	}
+
+	@Override
+	public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+		this.activityWeakReference = new WeakReference<>(binding.getActivity());
+
+		activityChannelMapping.put(
+				new WeakReference<>(binding.getActivity()),
+				new FlutterActivityMethodChannelPair(binding.getActivity(), methodChannelWeakReference.get())
+		);
+	}
+
+	@Override
+	public void onDetachedFromActivity() {
 	}
 
 	@Override
@@ -298,6 +302,44 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 		}
 	}
 
+	static private FlutterActivityMethodChannelPair getActiveFlutterViewMethodChannelPair() {
+		List<Runnable> cleanUp = new ArrayList<>();
+		FlutterActivityMethodChannelPair result = null;
+
+		for (final WeakReference<Activity> a : activityChannelMapping.keySet()) {
+			final FlutterActivityMethodChannelPair flutterActivityMethodChannelPair = activityChannelMapping.get(a);
+
+			if (a.get() != null && flutterActivityMethodChannelPair.isValid()) {
+				if (a.get() == flutterActivityMethodChannelPair.flutterActivityWeakReference.get()) {
+					result = flutterActivityMethodChannelPair;
+				}
+			} else {
+				cleanUp.add(new Runnable() {
+					@Override
+					public void run() {
+						activityChannelMapping.remove(a);
+					}
+				});
+			}
+		}
+
+		for (Runnable r : cleanUp) r.run();
+
+		return result;
+	}
+
+	static private void takeScreenshot() {
+		FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+
+		if (activeFlutterViewMethodChannelPair != null) {
+			MethodChannel methodChannel = activeFlutterViewMethodChannelPair.methodChannelWeakReference.get();
+
+			if (methodChannel != null) {
+				methodChannel.invokeMethod("takeScreenshot", null, null);
+			}
+		}
+	}
+
 	private interface ContextConsumer<T> {
 		T consume(Context context);
 	}
@@ -326,17 +368,6 @@ public class TestfairyFlutterPlugin implements MethodCallHandler {
 	private <T> T withActivity(ActivityConsumer<T> consumer) {
 		if (activityWeakReference.get() != null) {
 			return consumer.consume(activityWeakReference.get());
-		}
-
-		return null;
-	}
-
-	private interface FlutterViewConsumer<T> {
-		T consume(FlutterView flutterView);
-	}
-	private <T> T withFlutterView(FlutterViewConsumer<T> consumer) {
-		if (flutterViewWeakReference.get() != null) {
-			return consumer.consume(flutterViewWeakReference.get());
 		}
 
 		return null;
