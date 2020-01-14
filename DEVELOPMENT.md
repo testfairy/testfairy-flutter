@@ -10,7 +10,7 @@
 9. Run `./docs.sh` to generate documentation for offline usage.
 
 # Publish
-1. Bump up versions in these files: *testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *CHANGELOG.md*.
+1. Bump up versions in these files: *ios/testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *CHANGELOG.md*.
 2. Publish to pub.
 
 ## TODO
