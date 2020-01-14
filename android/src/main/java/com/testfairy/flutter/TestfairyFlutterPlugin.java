@@ -622,7 +622,8 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 
 	static private void sendScreenshot(byte[] pixels, int width, int height) {
 		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-		ByteBuffer buffer = ByteBuffer.wrap(pixels);
+		ByteBuffer buffer = ByteBuffer.wrap(pixels, 0, width * height * 4);
+		buffer.rewind();
 		bmp.copyPixelsFromBuffer(buffer);
 
 //		saveImage(bmp, "tfss-" + System.currentTimeMillis());

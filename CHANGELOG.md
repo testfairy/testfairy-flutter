@@ -1,3 +1,6 @@
+## 1.0.7
+* Bugfix for small pixel buffers during screenshots in Android.
+
 ## 1.0.6
 * Embedded Flutter and v2 Android plugin support.
 
