@@ -33,10 +33,10 @@
 * `disableVideo`
 * `bringFlutterToFront`
 * `takeScreenshot`
+* `hideWidget`
 
 ## Supported by only Android
 
 TestFairy iOS SDK does not have corresponding Objective-C interface for these integrations.
 
-* `hideView`
 * `setFeedbackOptions`

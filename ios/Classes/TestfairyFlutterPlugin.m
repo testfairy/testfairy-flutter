@@ -1,6 +1,10 @@
 #import "TestfairyFlutterPlugin.h"
 #import "TestFairy.h"
 
+@interface TestFairy()
++ (void)setScreenshotProvider:(void (^)(void))provider;
+@end
+
 @implementation TestfairyFlutterPlugin {
 }
 
@@ -197,7 +201,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     
     UIImage * newimage = [UIImage imageWithCGImage:cgImage];
     
-    // TODO : send newImage to TestFairy SDK
+    [TestFairy addScreenshot:newimage];
     
 //    UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
 
@@ -210,10 +214,16 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     
 - (void) begin:(NSString*)appToken {
     [TestFairy begin:appToken];
+    [TestFairy setScreenshotProvider:^{
+        [TestfairyFlutterPlugin takeScreenshot];
+    }];
 }
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options {
     [TestFairy begin:appToken withOptions:options];
+    [TestFairy setScreenshotProvider:^{
+        [TestfairyFlutterPlugin takeScreenshot];
+    }];
 }
 
 - (void) setServerEndpoint:(NSString*)endpoint {

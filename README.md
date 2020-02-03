@@ -101,13 +101,13 @@ Please move *ios/Podfile.lock* into a temporary place before running `pod repo u
 
 If some of the libraries you use need to be at specific versions, copy the necessary lines from your backed up *Podfile.lock* into the newly created one. Please keep the lines related to TestFairy (note the title case in the name) untouched.
 
-Finally, run `pod repo update; pod install` again to re-download libraries from the replaced lines.
+Finally, run `pod repo update; pod install; pod update TestFairy` again to re-download libraries from the replaced lines.
 
 If everything went smoothly, this issue should never happen again.
 
 4. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
-In your project root, run `flutter clean; cd ios; pod repo update; pod install; cd ..` and test again.
+In your project root, run `flutter clean; cd ios; pod repo update; pod install; pod update TestFairy; cd ..` and test again.
 
 5. **My widget's are not hidden in screenshots.**
 
@@ -151,8 +151,8 @@ This is currently not supported in iOS and will be fixed in the next release.
 * `disableVideo`
 * `takeScreenshot`
 * `disableAutoUpdate`
+* `hideWidget`
 
 ### Features supported by only Android
 
 * `setFeedbackOptions`
-* `hideWidget`
