@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'dart:core';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -117,17 +116,10 @@ abstract class TestFairyBase {
             var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
 
             try {
-              if (Platform.isIOS) {
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 255);
-              } else {
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-                byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
-              }
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 255);
             } catch (e) {
               // Ignore out of bounds
             }
