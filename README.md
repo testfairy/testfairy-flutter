@@ -1,8 +1,9 @@
-# testfairy
-TestFairy integration for Flutter, bundles with the native SDK. 
+# TestFairy-Flutter integration
+
+This is TestFairy integration for Flutter, bundles with the native SDK. 
 
 ## Installation
-[See details...](https://pub.dartlang.org/packages/testfairy#-installing-tab-)
+Read installation docs at [pub.dartlang.org](https://pub.dartlang.org/packages/testfairy#-installing-tab-)
 
 ## Quick Start
 Include the library and run your main app like this. Make sure your project is [AndroidX](https://flutter.dev/docs/development/androidx-migration) compatible.
