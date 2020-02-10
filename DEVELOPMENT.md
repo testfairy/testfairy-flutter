@@ -15,4 +15,3 @@
 
 ## TODO
 1. Add feedback options support for iOS.
-2. Add `hideWidget` support for iOS.

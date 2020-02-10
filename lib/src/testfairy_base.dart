@@ -115,10 +115,14 @@ abstract class TestFairyBase {
             var fixedI = math.min(math.max(0, i), width).toInt() * 4;
             var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
 
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-            byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 0);
+            try {
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
+              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 255);
+            } catch (e) {
+              // Ignore out of bounds
+            }
           }
         }
       }

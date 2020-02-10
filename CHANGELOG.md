@@ -1,3 +1,7 @@
+## 1.0.8
+* Added `hideWidget()` support for iOS.
+* Fixed missing screenshots in feedbacks.
+
 ## 1.0.7
 * Bugfix for small pixel buffers during screenshots in Android.
 
