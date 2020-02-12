@@ -110,11 +110,6 @@ If everything went smoothly, this issue should never happen again.
 
 In your project root, run `flutter clean; cd ios; pod repo update; pod install; pod update TestFairy; cd ..` and test again.
 
-5. **My widget's are not hidden in screenshots.**
-
-This is currently not supported in iOS and will be fixed in the next release.
-
-
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)
 
