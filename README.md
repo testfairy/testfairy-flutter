@@ -22,24 +22,22 @@ import 'dart:io';
 import 'package:testfairy/testfairy.dart';
 
 void main() {
+  HttpOverrides.global = TestFairy.httpOverrides();
+
   runZonedGuarded(
     () async {
-      HttpOverrides.runWithHttpOverrides(
-        () async {
-          try {
-            FlutterError.onError = (details) => TestFairy.logError(details.exception);
+      try {
+        FlutterError.onError =
+            (details) => TestFairy.logError(details.exception);
 
-            // Call `await TestFairy.begin()` or any other setup code here.
+        // Call `await TestFairy.begin()` or any other setup code here.
 
-            runApp(TestfairyExampleApp());
-          } catch (error) {
-            TestFairy.logError(error);
-          }
-        },
-        TestFairy.httpOverrides()
-      );
+        runApp(TestfairyExampleApp());
+      } catch (error) {
+        TestFairy.logError(error);
+      }
     },
-    (e, s) {
+        (e, s) {
       TestFairy.logError(e);
     },
     zoneSpecification: new ZoneSpecification(

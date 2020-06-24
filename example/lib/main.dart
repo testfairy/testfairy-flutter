@@ -15,25 +15,22 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
+  HttpOverrides.global = TestFairy.httpOverrides();
+
   runZonedGuarded(
     () async {
-      HttpOverrides.runWithHttpOverrides(
-              () async {
-            try {
-              FlutterError.onError =
-                  (details) => TestFairy.logError(details.exception);
+      try {
+        FlutterError.onError =
+            (details) => TestFairy.logError(details.exception);
 
-              // Call `await TestFairy.begin()` or any other setup code here.
+        // Call `await TestFairy.begin()` or any other setup code here.
 
-              runApp(TestfairyExampleApp());
-            } catch (error) {
-              TestFairy.logError(error);
-            }
-          },
-          TestFairy.httpOverrides()
-      );
+        runApp(TestfairyExampleApp());
+      } catch (error) {
+        TestFairy.logError(error);
+      }
     },
-    (e, s) {
+        (e, s) {
       TestFairy.logError(e);
     },
     zoneSpecification: new ZoneSpecification(
@@ -673,7 +670,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       var response = await http.get('https://example.com/');
       print(response.toString());
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 5));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
