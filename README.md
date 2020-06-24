@@ -37,7 +37,7 @@ void main() {
         TestFairy.logError(error);
       }
     },
-        (e, s) {
+    (e, s) {
       TestFairy.logError(e);
     },
     zoneSpecification: new ZoneSpecification(
