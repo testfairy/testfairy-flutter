@@ -1,5 +1,6 @@
 ### 1.0.9
 * Fixed error and network logging for latest Flutter version.
+* Fixed iOS builds example project. See troubleshoot section in readme if you are having difficulties building iOS apps.
 
 ## 1.0.8
 * Added `hideWidget()` support for iOS.
