@@ -10,3 +10,5 @@ doc/
 
 *.iml
 .gradle
+.idea
+example/android/testfairy-android-sdk-release

@@ -22,38 +22,32 @@ import 'dart:io';
 import 'package:testfairy/testfairy.dart';
 
 void main() {
-    HttpOverrides.runWithHttpOverrides(
-         () async {
-           try {
-             // Enables widget error logging
-             FlutterError.onError =
-                 (details) => TestFairy.logError(details.exception);
-   
-             // Initializes a session
-             await TestFairy.begin(TOKEN);
-   
-             // Runs your app
-             runApp(TestfairyExampleApp());
-           } catch (error) {
-   
-             // Logs synchronous errors
-             TestFairy.logError(error);
-           }
-         },
-   
-         // Logs network events
-         TestFairy.httpOverrides(),
-   
-         // Logs asynchronous errors
-         onError: TestFairy.logError,
-   
-         // Logs console messages
-         zoneSpecification: new ZoneSpecification(
-           print: (self, parent, zone, message) {
-             TestFairy.log(message);
-           },
-         )
-     );
+  runZonedGuarded(
+    () async {
+      HttpOverrides.runWithHttpOverrides(
+        () async {
+          try {
+            FlutterError.onError = (details) => TestFairy.logError(details.exception);
+
+            // Call `await TestFairy.begin()` or any other setup code here.
+
+            runApp(TestfairyExampleApp());
+          } catch (error) {
+            TestFairy.logError(error);
+          }
+        },
+        TestFairy.httpOverrides()
+      );
+    },
+    (e, s) {
+      TestFairy.logError(e);
+    },
+    zoneSpecification: new ZoneSpecification(
+      print: (self, parent, zone, message) {
+        TestFairy.log(message);
+      },
+    )
+  );
 }
 ```
 
@@ -109,6 +103,8 @@ If everything went smoothly, this issue should never happen again.
 4. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
 In your project root, run `flutter clean; cd ios; pod repo update; pod install; pod update TestFairy; cd ..` and test again.
+
+5. 
 
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)

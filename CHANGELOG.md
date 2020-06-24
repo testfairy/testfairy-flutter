@@ -1,3 +1,6 @@
+### 1.0.9
+* Fixed error and network logging for latest Flutter version.
+
 ## 1.0.8
 * Added `hideWidget()` support for iOS.
 * Fixed missing screenshots in feedbacks.

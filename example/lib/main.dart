@@ -15,26 +15,32 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
-  HttpOverrides.runWithHttpOverrides(
-      () async {
-        try {
-          FlutterError.onError =
-              (details) => TestFairy.logError(details.exception);
+  runZonedGuarded(
+    () async {
+      HttpOverrides.runWithHttpOverrides(
+              () async {
+            try {
+              FlutterError.onError =
+                  (details) => TestFairy.logError(details.exception);
 
-          // Call `await TestFairy.begin()` or any other setup code here.
+              // Call `await TestFairy.begin()` or any other setup code here.
 
-          runApp(TestfairyExampleApp());
-        } catch (error) {
-          TestFairy.logError(error);
-        }
+              runApp(TestfairyExampleApp());
+            } catch (error) {
+              TestFairy.logError(error);
+            }
+          },
+          TestFairy.httpOverrides()
+      );
+    },
+    (e, s) {
+      TestFairy.logError(e);
+    },
+    zoneSpecification: new ZoneSpecification(
+      print: (self, parent, zone, message) {
+        TestFairy.log(message);
       },
-      TestFairy.httpOverrides(),
-      onError: TestFairy.logError,
-      zoneSpecification: new ZoneSpecification(
-        print: (self, parent, zone, message) {
-          TestFairy.log(message);
-        },
-      )
+    )
   );
 }
 
