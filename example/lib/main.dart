@@ -15,26 +15,29 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
-  HttpOverrides.runWithHttpOverrides(
-      () async {
-        try {
-          FlutterError.onError =
-              (details) => TestFairy.logError(details.exception);
+  HttpOverrides.global = TestFairy.httpOverrides();
 
-          // Call `await TestFairy.begin()` or any other setup code here.
+  runZonedGuarded(
+    () async {
+      try {
+        FlutterError.onError =
+            (details) => TestFairy.logError(details.exception);
 
-          runApp(TestfairyExampleApp());
-        } catch (error) {
-          TestFairy.logError(error);
-        }
+        // Call `await TestFairy.begin()` or any other setup code here.
+
+        runApp(TestfairyExampleApp());
+      } catch (error) {
+        TestFairy.logError(error);
+      }
+    },
+        (e, s) {
+      TestFairy.logError(e);
+    },
+    zoneSpecification: new ZoneSpecification(
+      print: (self, parent, zone, message) {
+        TestFairy.log(message);
       },
-      TestFairy.httpOverrides(),
-      onError: TestFairy.logError,
-      zoneSpecification: new ZoneSpecification(
-        print: (self, parent, zone, message) {
-          TestFairy.log(message);
-        },
-      )
+    )
   );
 }
 
@@ -667,7 +670,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       var response = await http.get('https://example.com/');
       print(response.toString());
 
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 5));
       await TestFairy.stop();
     } catch (e) {
       setError(e);

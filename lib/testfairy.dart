@@ -16,38 +16,32 @@ part 'package:testfairy/src/feedback_options.dart';
 /// An example usage can be found below.
 ///
 /// ```dart
-/// HttpOverrides.runWithHttpOverrides(
-///      () async {
-///        try {
-///          // Enables widget error logging
-///          FlutterError.onError =
-///              (details) => TestFairy.logError(details.exception);
+/// void main() {
+///   HttpOverrides.global = TestFairy.httpOverrides();
 ///
-///          // Initializes a session
-///          await TestFairy.begin(TOKEN);
+///   runZonedGuarded(
+///     () async {
+///       try {
+///         FlutterError.onError =
+///             (details) => TestFairy.logError(details.exception);
 ///
-///          // Runs your app
-///          runApp(TestfairyExampleApp());
-///        } catch (error) {
+///         // Call `await TestFairy.begin()` or any other setup code here.
 ///
-///          // Logs synchronous errors
-///          TestFairy.logError(error);
-///        }
-///      },
-///
-///      // Logs network events
-///      TestFairy.httpOverrides(),
-///
-///      // Logs asynchronous errors
-///      onError: TestFairy.logError,
-///
-///      // Logs console messages
-///      zoneSpecification: new ZoneSpecification(
-///        print: (self, parent, zone, message) {
-///          TestFairy.log(message);
-///        },
-///      )
-///  );
+///         runApp(TestfairyExampleApp());
+///       } catch (error) {
+///         TestFairy.logError(error);
+///       }
+///     },
+///     (e, s) {
+///       TestFairy.logError(e);
+///     },
+///     zoneSpecification: new ZoneSpecification(
+///       print: (self, parent, zone, message) {
+///         TestFairy.log(message);
+///       },
+///     )
+///   );
+/// }
 /// ```
 abstract class TestFairy extends TestFairyBase {
 
@@ -453,14 +447,7 @@ abstract class TestFairy extends TestFairyBase {
   /// An example usage can be found below.
   ///
   /// ```dart
-  /// HttpOverrides.runWithHttpOverrides(
-  ///      () async {
-  ///          // Call `await TestFairy.begin()` or any other setup code here.
-  ///
-  ///          runApp(ExampleApp());
-  ///      },
-  ///      TestFairy.httpOverrides()
-  ///  );
+  /// HttpOverrides.global = TestFairy.httpOverrides();
   /// ```
   static HttpOverrides httpOverrides() {
     TestFairyBase.prepareTwoWayInvoke();

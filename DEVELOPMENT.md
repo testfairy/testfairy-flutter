@@ -12,6 +12,3 @@
 # Publish
 1. Bump up versions in these files: *ios/testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *CHANGELOG.md*.
 2. Publish to pub.
-
-## TODO
-1. Add feedback options support for iOS.
