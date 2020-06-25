@@ -53,6 +53,7 @@ matrix:
         - mv ios/Podfile ios/_podfile
         - echo "use_frameworks!" > ios/Podfile
         - cat ios/_podfile >> ios/Podfile
+        - cat ios/Podfile
         - rm ios/_podfile
         - ../flutter/bin/flutter -v build ios --no-codesign
         - #./flutter/bin/flutter drive --target=test_driver/app.dart
