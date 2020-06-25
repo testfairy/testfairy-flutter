@@ -59,9 +59,13 @@ This is done automatically for Android.
 If you need to update the native iOS SDK used by your current integration, run `pod repo update; pod install` in your *ios* directory.
 
 ### Troubleshoot
-1. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
+1. **I have my own `HttpOverrides.global` setup. How can I make it work with TestFairy?**
 
-This happens due to a pod misconfiguration bug on the Flutter side.
+Copy [this](https://github.com/testfairy/testfairy-flutter/blob/master/lib/src/network_logging.dart) file to your project. Add the necessary functionality and assign to `HttpOverrides.global` an instance from your new implementation.
+
+2. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
+
+This happens due to a pod misconfiguration bug on the Flutter side. We have [blog post](https://blog.testfairy.com/errnoenoent-fix-for-flutter-ios/) explaining the issue if you are interested.
 
 Clean your project, remove *ios/Podfile* and Xcode workspace file entirely. (make sure you have backups just in case)
 ```
@@ -96,15 +100,15 @@ Retry your build.
 
 Once your build is successful, you can update cocoapods back to its latest version.
 
-2. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
+3. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
 
 TestFairy supports iOS 9.0 and above. Please change the build target accordingly in your Xcode project.
 
-3. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
+4. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
 
 Migrate your Android project to AndroidX by following [this](https://flutter.dev/docs/development/androidx-migration) guide.
 
-4. **I see `Undefined symbols for architecture` error during compilation.**
+5. **I see `Undefined symbols for architecture` error during compilation.**
 
 You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
 ```
@@ -130,7 +134,7 @@ post_install do |installer|
 end
 ```
 
-5. **CocoaPods could not find compatible versions for pod "TestFairy".**
+6. **CocoaPods could not find compatible versions for pod "TestFairy".**
 
 This is an old bug in the plugin pubspec file. First, run `flutter clean` in your root directory. 
 
