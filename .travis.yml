@@ -42,8 +42,8 @@ matrix:
       osx_image: xcode11.2
       sudo: true
       before_script:
-        - yes | sudo gem uninstall --all cocoapods
-        - gem install cocoapods -v 1.7.5
+        - brew uninstall cocoapods
+        - brew install cocoapods@1.7.5
         - pod --version
         - #pip install six
         - #brew update
