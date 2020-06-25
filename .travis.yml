@@ -26,7 +26,7 @@ matrix:
             - libstdc++6
             - fonts-droid
       script:
-        - bash android-ci-sh
+        - bash android-ci.sh
 
     - os: osx
       language: generic
