@@ -46,17 +46,21 @@ matrix:
         - brew install --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
-        - yes | sudo gem uninstall --all cocoapods
+        - yes | sudo gem uninstall cocoapods
         - gem install cocoapods -v 1.7.5
         - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
-        - ../flutter/bin/flutter -v build ios --no-codesign || echo Failing on purpose
+        - ../flutter/bin/flutter -v build ios --simulator --no-codesign || echo Failing on purpose
         - mv ios/Podfile ios/_podfile
         - echo "use_frameworks!" > ios/Podfile
         - cat ios/_podfile >> ios/Podfile
         - cat ios/Podfile
         - rm ios/_podfile
+        - pod repo update 
+        - cd ios
+        - pod install
+        - cd..
         - ../flutter/bin/flutter -v build ios --simulator --no-codesign
         - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
