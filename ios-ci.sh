@@ -1,3 +1,5 @@
+set -e
+
 # prepare
 yes | gem uninstall --all cocoapods
 gem install -n /usr/local/bin cocoapods -v 1.7.5

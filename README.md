@@ -61,8 +61,21 @@ If you need to update the native iOS SDK used by your current integration, run `
 ### Troubleshoot
 1. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
 
-Add the following line to the beginning of your generated iOS project's Podfile.
+This happens due to a pod misconfiguration bug on the Flutter side.
 
+Clean your project, remove *ios/Podfile* and Xcode workspace file entirely. (make sure you have backups just in case)
+```
+flutter clean
+rm -rf ios/Podfile ios/Podfile.lock pubspec.lock ios/Pods ios/Runner.xcworkspace
+```
+
+Revert to **cocoapods 1.7.5** temporarily.
+```
+gem uninstall cocoapods
+gem install cocoapods -v 1.7.5
+```
+
+Add the following line to the beginning of your iOS project's generated Podfile.
 ```
 # Beginning of file
 use_frameworks!
@@ -70,6 +83,18 @@ use_frameworks!
 # The rest of the file contents
 # ...
 ```
+
+Install pods.
+```
+pod repo update
+cd ios
+pod install
+cd ..
+```
+
+Retry your build.
+
+Once your build is successful, you can update cocoapods back to its latest version.
 
 2. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
 
@@ -82,7 +107,6 @@ Migrate your Android project to AndroidX by following [this](https://flutter.dev
 4. **I see `Undefined symbols for architecture` error during compilation.**
 
 You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
-
 ```
 target 'Runner' do
   platform :ios, '9.0'   ####################################### <--- add this and specify at least 9.0

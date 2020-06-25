@@ -1,3 +1,5 @@
+set -e
+
 # prepare
 yes | sdkmanager "platforms;android-28"
 wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
