@@ -39,7 +39,7 @@ matrix:
 
     - os: osx
       language: generic
-      osx_image: xcode8.3
+      osx_image: xcode11.2
       before_script:
         - pip install six
         - brew update
