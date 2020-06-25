@@ -49,6 +49,8 @@ matrix:
         - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
+        - ../flutter/bin/flutter -v build ios --no-codesign || echo Failing on purpose
+        - sed -i "s/# platform :ios, '9.0'/use_frameworks!/" ios/Podfile
         - ../flutter/bin/flutter -v build ios --no-codesign
         - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
