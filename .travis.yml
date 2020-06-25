@@ -34,7 +34,7 @@ matrix:
         - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
-        - ./flutter/bin/flutter -v build apk
+        - ../flutter/bin/flutter -v build apk
         - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
     - os: osx
@@ -49,7 +49,7 @@ matrix:
         - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
-        - ./flutter/bin/flutter -v build ios --no-codesign
+        - ../flutter/bin/flutter -v build ios --no-codesign
         - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
 cache:
