@@ -42,8 +42,9 @@ matrix:
       osx_image: xcode11.2
       sudo: true
       before_script:
-        - gem install -n /usr/local/bin cocoapods -v 1.7.5
-        - pod _1.7.5_ --version
+        - yes | bundle exec gem uninstall --all cocoapods
+        - bundle exec gem install -n /usr/local/bin cocoapods -v 1.7.5
+        - pod --version
         - #pip install six
         - #brew update
         - #brew install --HEAD libimobiledevice
