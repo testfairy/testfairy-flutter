@@ -31,11 +31,11 @@ matrix:
         - unzip -qq gradle-3.5-bin.zip
         - export GRADLE_HOME=$PWD/gradle-3.5
         - export PATH=$GRADLE_HOME/bin:$PATH
-        - git clone https://github.com/flutter/flutter.git -b alpha --depth 1
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
         - ./flutter/bin/flutter -v build apk
-        - ./flutter/bin/flutter drive --target=test_driver/app.dart
+        - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
     - os: osx
       language: generic
@@ -46,11 +46,11 @@ matrix:
         - brew install --HEAD libimobiledevice
         - brew install ideviceinstaller
         - brew install ios-deploy
-        - git clone https://github.com/flutter/flutter.git -b alpha --depth 1
+        - git clone https://github.com/flutter/flutter.git -b stable --depth 1
       script:
         - cd example
         - ./flutter/bin/flutter -v build ios --no-codesign
-        - ./flutter/bin/flutter drive --target=test_driver/app.dart
+        - #./flutter/bin/flutter drive --target=test_driver/app.dart
 
 cache:
   directories:
