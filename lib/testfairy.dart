@@ -400,6 +400,7 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Customizes the feedback form.
   static Future<void> setFeedbackOptions({
+      String defaultText,
       String browserUrl,
       bool emailFieldVisible: true,
       bool emailMandatory: false,
@@ -407,10 +408,11 @@ abstract class TestFairy extends TestFairyBase {
       Function() onFeedbackCancelled: EmptyFunction,
       Function(FeedbackOptions) onFeedbackFailed:
       EmptyFeedbackOptionsFunction
-  }) async { // TODO : implement this on iOS
+  }) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
+      'defaultText': defaultText,
       'browserUrl': browserUrl,
       'emailFieldVisible': emailFieldVisible,
       'emailMandatory': emailMandatory,

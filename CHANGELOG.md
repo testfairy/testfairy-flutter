@@ -1,3 +1,7 @@
+## 1.0.11
+* Added `setFeedbackOptions()` support for iOS.
+* Fixed video in resumed sessions on Android.
+
 ## 1.0.10
 * Added improved documentation for latest Errno::ENOENT issue.
 

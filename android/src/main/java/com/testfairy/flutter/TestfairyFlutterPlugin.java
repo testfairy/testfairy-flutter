@@ -271,6 +271,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 					break;
 				case "setFeedbackOptions":
 					setFeedbackOptions(
+							(String) args.get("defaultText"),
 							(String) args.get("browserUrl"),
 							(boolean) args.get("emailFieldVisible"),
 							(boolean) args.get("emailMandatory"),
@@ -328,13 +329,16 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		return result;
 	}
 
-	static private void takeScreenshot() {
+	private static void takeScreenshot() {
 		FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+
+//		Log.i("TestFairy", "Attempting to reach channel for taking screenshot");
 
 		if (activeFlutterViewMethodChannelPair != null) {
 			MethodChannel methodChannel = activeFlutterViewMethodChannelPair.methodChannelWeakReference.get();
 
 			if (methodChannel != null) {
+//				Log.i("TestFairy", "Taking a screenshot in Flutter");
 				methodChannel.invokeMethod("takeScreenshot", null, null);
 			}
 		}
@@ -531,9 +535,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		});
 	}
 
-	private void setFeedbackOptions(String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
+	private void setFeedbackOptions(String defaultText, String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
 		FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
 
+		if (defaultText != null) builder.setDefaultText(defaultText);
 		if (browserUrl != null) builder.setBrowserUrl(browserUrl);
 		builder.setEmailFieldVisible(emailFieldVisible);
 		builder.setEmailMandatory(emailMandatory);
@@ -627,6 +632,8 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		bmp.copyPixelsFromBuffer(buffer);
 
 //		saveImage(bmp, "tfss-" + System.currentTimeMillis());
+
+//		Log.i("TestFairy", "Sending screenshot to SDK");
 
 		TestFairy.addScreenshot(bmp);
 	}
