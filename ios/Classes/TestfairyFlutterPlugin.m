@@ -12,17 +12,19 @@
 NSMutableDictionary* viewControllerMethodChannelMapping;
 
 + (void) takeScreenshot {
-    id appDelegate = UIApplication.sharedApplication.delegate;
-    
-    if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
-        FlutterAppDelegate* flutterAppDelegate = appDelegate;
-        NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
-        FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
-        
-        if (channel != nil) {
-            [channel invokeMethod:@"takeScreenshot" arguments:nil];
-        }
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+       id appDelegate = UIApplication.sharedApplication.delegate;
+       
+       if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
+           FlutterAppDelegate* flutterAppDelegate = appDelegate;
+           NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
+           FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
+           
+           if (channel != nil) {
+               [channel invokeMethod:@"takeScreenshot" arguments:nil];
+           }
+       }
+    });
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -163,6 +165,12 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         } else if ([@"disableAutoUpdate" isEqualToString:call.method]) {
             [self disableAutoUpdate];
             result(nil);
+        } else if ([@"setFeedbackOptions" isEqualToString:call.method]) {
+            [self setFeedbackOptions:[args valueForKey:@"defaultText"]
+                          browserUrl:nil
+                   emailFieldVisible:[args valueForKey:@"emailFieldVisible"]
+                      emailMandatory:[args valueForKey:@"emailMandatory"]];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -176,19 +184,19 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     @finally {
     }
     
-//    switch (call.method) {
-//        case "setFeedbackOptions":
-//            setFeedbackOptions(
-//                               (String) args.get("browserUrl"),
-//                               (boolean) args.get("emailFieldVisible"),
-//                               (boolean) args.get("emailMandatory"),
-//                               (int) args.get("callId")
-//                               );
-//            break;
-//        default:
-//            result.notImplemented();
-//            break;
-//    }
+    //    switch (call.method) {
+    //        case "setFeedbackOptions":
+    //            setFeedbackOptions(
+    //                               (String) args.get("browserUrl"),
+    //                               (boolean) args.get("emailFieldVisible"),
+    //                               (boolean) args.get("emailMandatory"),
+    //                               (int) args.get("callId")
+    //                               );
+    //            break;
+    //        default:
+    //            result.notImplemented();
+    //            break;
+    //    }
 }
 
 - (void) sendScreenshot:(FlutterStandardTypedData*)pixels width:(NSNumber*)width height:(NSNumber*)height {
@@ -372,68 +380,24 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
              errorMessage:error];
 }
 
+- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory {
+    NSMutableDictionary* feedbackOptions = [NSMutableDictionary new];
+    
+    if (defaultText != nil && defaultText != [NSNull null]) {
+        [feedbackOptions setValue:defaultText forKey:@"defaultText"];
+    }
+    
+    // TODO : Browser url is not supported in iOS SDK yet
+    
+    if (emailFieldVisible != nil && emailFieldVisible != [NSNull null]) {
+        [feedbackOptions setValue:emailFieldVisible forKey:@"isEmailVisible"];
+    }
+    
+    if (emailMandatory != nil && emailMandatory != [NSNull null]) {
+        [feedbackOptions setValue:emailMandatory forKey:@"isEmailMandatory"];
+    }
+    
+    [TestFairy setFeedbackOptions:feedbackOptions];
+}
 
 @end
-
-/*
- // TODO
- private void setFeedbackOptions(String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
- FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
- 
- if (browserUrl != null) builder.setBrowserUrl(browserUrl);
- builder.setEmailFieldVisible(emailFieldVisible);
- builder.setEmailMandatory(emailMandatory);
- 
- builder.setCallback(new FeedbackOptions.Callback() {
- @Override
- public void onFeedbackSent(final FeedbackContent feedbackContent) {
- withMethodChannel(new MethodChannelConsumer<Void>() {
- @Override
- public Void consume(MethodChannel channel) {
- Map<String, Object> feedbackContentMap = new HashMap<>();
- 
- feedbackContentMap.put("email", feedbackContent.getEmail());
- feedbackContentMap.put("text", feedbackContent.getText());
- feedbackContentMap.put("timestamp", (double) feedbackContent.getTimestamp());
- feedbackContentMap.put("callId", callId);
- 
- channel.invokeMethod("callOnFeedbackSent", feedbackContentMap);
- return null;
- }
- });
- }
- 
- @Override
- public void onFeedbackCancelled() {
- withMethodChannel(new MethodChannelConsumer<Void>() {
- @Override
- public Void consume(MethodChannel channel) {
- channel.invokeMethod("callOnFeedbackCancelled", callId);
- return null;
- }
- });
- }
- 
- @Override
- public void onFeedbackFailed(final int i, final FeedbackContent feedbackContent) {
- withMethodChannel(new MethodChannelConsumer<Void>() {
- @Override
- public Void consume(MethodChannel channel) {
- Map<String, Object> feedbackContentMap = new HashMap<>();
- 
- feedbackContentMap.put("email", feedbackContent.getEmail());
- feedbackContentMap.put("text", feedbackContent.getText());
- feedbackContentMap.put("timestamp", (double) feedbackContent.getTimestamp());
- feedbackContentMap.put("feedbackNo", i);
- feedbackContentMap.put("callId", callId);
- 
- channel.invokeMethod("callOnFeedbackFailed", feedbackContentMap);
- return null;
- }
- });
- }
- });
- 
- TestFairy.setFeedbackOptions(builder.build());
- }
- */

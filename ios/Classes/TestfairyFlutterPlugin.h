@@ -11,6 +11,8 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
 
 // Integrations
+- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory;
+    
 - (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage;
 
 - (void) takeScreenshot;

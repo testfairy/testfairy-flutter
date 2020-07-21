@@ -188,7 +188,4 @@ In your project root, run `flutter clean; cd ios; pod repo update; pod install; 
 * `takeScreenshot`
 * `disableAutoUpdate`
 * `hideWidget`
-
-### Features supported by only Android
-
 * `setFeedbackOptions`
