@@ -146,7 +146,7 @@ Finally, run `pod repo update; pod install; pod update TestFairy` again to re-do
 
 If everything went smoothly, this issue should never happen again.
 
-6. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
+7. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
 In your project root, run `flutter clean; cd ios; pod repo update; pod install; pod update TestFairy; cd ..` and test again.
 
