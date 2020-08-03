@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:testfairy/testfairy.dart';
@@ -93,8 +94,16 @@ abstract class TestFairyBase {
 
     var rects = getHiddenRects();
 
+    var renderObject = WidgetsBinding.instance.renderViewElement.findRenderObject();
+    if (renderObject.owner != null) {
+        renderObject.owner
+          ..flushLayout()
+          ..flushCompositingBits()
+          ..flushPaint();
+    }
+
     var screenshot = await WidgetInspectorService.instance.screenshot(
-        WidgetsBinding.instance.renderViewElement.findRenderObject(),
+        renderObject,
         width: width,
         height: height
     );

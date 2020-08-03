@@ -1,3 +1,6 @@
+## 1.0.12
+* Fixed taking screenshots when layout is not ready.
+
 ## 1.0.11
 * Added `setFeedbackOptions()` support for iOS.
 * Fixed video in resumed sessions on Android.
