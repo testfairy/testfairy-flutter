@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -339,7 +340,22 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 
 			if (methodChannel != null) {
 //				Log.i("TestFairy", "Taking a screenshot in Flutter");
-				methodChannel.invokeMethod("takeScreenshot", null, null);
+				methodChannel.invokeMethod("takeScreenshot", null, new Result() {
+					@Override
+					public void success(@Nullable Object result) {
+
+					}
+
+					@Override
+					public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+						TestFairy.logThrowable(errorMessage);
+					}
+
+					@Override
+					public void notImplemented() {
+
+					}
+				});
 			}
 		}
 	}

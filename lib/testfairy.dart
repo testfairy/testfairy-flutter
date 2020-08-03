@@ -3,6 +3,7 @@ library testfairy;
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 
@@ -350,17 +351,27 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> takeScreenshot() async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var screenshot = await TestFairyBase.createSingleScreenShot();
+    try {
+      var screenshot = await TestFairyBase.createSingleScreenShot();
 
-    TestFairyBase.prepareTwoWayInvoke();
+      var args = {
+        'pixels': screenshot.pixels,
+        'width': screenshot.width,
+        'height': screenshot.height
+      };
 
-    var args = {
-      'pixels': screenshot.pixels,
-      'width': screenshot.width,
-      'height': screenshot.height
-    };
+      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+    } catch (error) {
+      logError(error);
 
-    await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+      var args = {
+        'pixels': Uint8List.fromList([0, 0, 0, 255]), // 1x1 black image
+        'width': 1,
+        'height': 1
+      };
+
+      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+    }
   }
 
   /// Call this function to log your network events.
