@@ -110,7 +110,15 @@ abstract class TestFairyBase {
     }
 
     // if it needs repaint, we paint it and retry on next frame.
-    if (renderObject.debugNeedsPaint == null || renderObject.debugNeedsLayout == null) {
+    if (renderObject.debugNeedsLayout == null || renderObject.debugNeedsPaint == null) {
+      if (attempt % 60 == 0) { // Print every second in order not to spam
+        if (renderObject.debugNeedsLayout == null) {
+          print("Discarding screenshot since debugNeedsLayout is null and not bool");
+        } else if (renderObject.debugNeedsPaint == null) {
+          print("Discarding screenshot since debugNeedsPaint is null and not bool");
+        }
+      }
+
       await Future.delayed(const Duration(milliseconds: 16)); // Single frame delay for 60 fps
       return await createSingleScreenShot(attempt: attempt + 1);
     }
