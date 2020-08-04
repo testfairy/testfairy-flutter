@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:testfairy/testfairy.dart';
@@ -85,7 +86,11 @@ abstract class TestFairyBase {
     return rects;
   }
 
-  static Future<Screenshot> createSingleScreenShot() async {
+  static Future<Screenshot> createSingleScreenShot({attempt = 0}) async {
+    if (attempt > 60 * 5) { // Give up if it takes 5 seconds to get an image
+      return null;
+    }
+
     var ps = WidgetsBinding.instance.window.physicalSize;
     double width = ps.width;
     double height = ps.height;
@@ -96,10 +101,18 @@ abstract class TestFairyBase {
 
     var renderObject = WidgetsBinding.instance.renderViewElement.findRenderObject();
     if (renderObject.owner != null) {
+      try {
         renderObject.owner
           ..flushLayout()
           ..flushCompositingBits()
           ..flushPaint();
+      } catch (_) {}
+    }
+
+    // if it needs repaint, we paint it and retry on next frame.
+    if (renderObject.debugNeedsPaint == null || renderObject.debugNeedsLayout == null) {
+      await Future.delayed(const Duration(milliseconds: 16)); // Single frame delay for 60 fps
+      return await createSingleScreenShot(attempt: attempt + 1);
     }
 
     var screenshot = await WidgetInspectorService.instance.screenshot(

@@ -351,26 +351,26 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> takeScreenshot() async {
     TestFairyBase.prepareTwoWayInvoke();
 
+    var blackImage = {
+      'pixels': Uint8List.fromList(const [0, 0, 0, 255]), // 1x1 black image
+      'width': 1,
+      'height': 1
+    };
+
     try {
       var screenshot = await TestFairyBase.createSingleScreenShot();
 
-      var args = {
+      var args = screenshot != null ? {
         'pixels': screenshot.pixels,
         'width': screenshot.width,
         'height': screenshot.height
-      };
+      } : blackImage;
 
       await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
     } catch (error) {
       logError(error);
 
-      var args = {
-        'pixels': Uint8List.fromList([0, 0, 0, 255]), // 1x1 black image
-        'width': 1,
-        'height': 1
-      };
-
-      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
+      await TestFairyBase.channel.invokeMethod('sendScreenshot', blackImage);
     }
   }
 
