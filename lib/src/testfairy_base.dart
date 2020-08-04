@@ -120,7 +120,7 @@ abstract class TestFairyBase {
       }
 
       await Future.delayed(const Duration(milliseconds: 16)); // Single frame delay for 60 fps
-      return await createSingleScreenShot(attempt: attempt + 1);
+      return createSingleScreenShot(attempt: attempt + 1); // Don't await so that you can avoid a stack overflow. We already return a Future.
     }
 
     var screenshot = await WidgetInspectorService.instance.screenshot(
