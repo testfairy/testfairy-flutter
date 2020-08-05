@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:core';
-import 'dart:math' as math;
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -10,21 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:testfairy/testfairy.dart';
 
-class Screenshot {
-  int width;
-  int height;
-  Uint8List pixels;
-
-  Screenshot(this.width, this.height, this.pixels);
-}
-
 abstract class TestFairyBase {
 
   // Method Channel Internals
 
   static const MethodChannel channel = const MethodChannel('testfairy');
   static bool isMethodCallHandlerSet = false;
-  static Function takeScreenshot;
 
   static Future<dynamic> methodCallHandler(MethodCall call) async {
     switch (call.method) {
@@ -38,10 +27,7 @@ abstract class TestFairyBase {
         callOnFeedbackFailed(call.arguments);
         break;
       case 'getHiddenRects':
-        return getHiddenRects();
-      case 'takeScreenshot':
-        if (takeScreenshot != null) takeScreenshot();
-        break;
+        return await getHiddenRects();
       default:
         print('TestFairy: Ignoring invoke from native. This normally shouldn\'t happen.');
     }
@@ -59,7 +45,9 @@ abstract class TestFairyBase {
 
   static List<GlobalKey> hiddenWidgets = [];
 
-  static List<Map<String, int>> getHiddenRects() {
+  static Future<List<Map<String, int>>> getHiddenRects() async {
+    await WidgetsBinding.instance.endOfFrame;
+
     List<Map<String, int>> rects = [];
 
     hiddenWidgets.forEach((gk) {
@@ -76,94 +64,16 @@ abstract class TestFairyBase {
 //      print(size.toString());
 
       rects.add({
-        'x': pos.dx.toInt(),
-        'y': pos.dy.toInt(),
-        'w': size.width.toInt(),
-        'h': size.height.toInt()
+        'left': pos.dx.toInt(),
+        'top': pos.dy.toInt(),
+        'right': pos.dx.toInt() + size.width.toInt(),
+        'bottom': pos.dy.toInt() + size.height.toInt()
       });
     });
 
-    return rects;
-  }
+//    print(rects.toString());
 
-  static Future<Screenshot> createSingleScreenShot({attempt = 0}) async {
-    if (attempt > 60 * 5) { // Give up if it takes 5 seconds to get an image
-      return null;
-    }
-
-    var ps = WidgetsBinding.instance.window.physicalSize;
-    double width = ps.width;
-    double height = ps.height;
-
-    await WidgetsBinding.instance.endOfFrame;
-
-    var rects = getHiddenRects();
-
-    var renderObject = WidgetsBinding.instance.renderViewElement.findRenderObject();
-    if (renderObject.owner != null) {
-      try {
-        renderObject.owner
-          ..flushLayout()
-          ..flushCompositingBits()
-          ..flushPaint();
-      } catch (_) {}
-    }
-
-    // if it needs repaint, we paint it and retry on next frame.
-    if (renderObject.debugNeedsLayout == null || renderObject.debugNeedsPaint == null) {
-      if (attempt % 60 == 0) { // Print every second in order not to spam
-        if (renderObject.debugNeedsLayout == null) {
-          print("Discarding screenshot since debugNeedsLayout is null and not bool");
-        } else if (renderObject.debugNeedsPaint == null) {
-          print("Discarding screenshot since debugNeedsPaint is null and not bool");
-        }
-      }
-
-      renderObject.markNeedsLayout();
-      renderObject.markNeedsPaint();
-
-      await Future.delayed(const Duration(milliseconds: 16)); // Single frame delay for 60 fps
-      return createSingleScreenShot(attempt: attempt + 1); // Don't await so that you can avoid a stack overflow. We already return a Future.
-    }
-
-    var screenshot = await WidgetInspectorService.instance.screenshot(
-        renderObject,
-        width: width,
-        height: height
-    );
-
-    ByteData byteData = await screenshot.toByteData(format: ui.ImageByteFormat.rawRgba);
-
-    rects.forEach((r) {
-      var x = r['x'];
-      var y = r['y'];
-      var w = r['w'];
-      var h = r['h'];
-
-//      print("Hidden Rect: " + r.toString());
-
-      if(w > 0 && h > 0) {
-        for (var i = x; i < x + w; i++) {
-          for (var j = y; j < y + h; j++) {
-            var fixedI = math.min(math.max(0, i), width).toInt() * 4;
-            var fixedJ = math.min(math.max(0, j), height).toInt() * 4;
-
-            try {
-              byteData.setUint8((fixedJ * width.toInt()) + fixedI, 0);
-              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 1, 0);
-              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 2, 0);
-              byteData.setUint8((fixedJ * width.toInt()) + fixedI + 3, 255);
-            } catch (e) {
-              // Ignore out of bounds
-            }
-          }
-        }
-      }
-    });
-
-    return Future.value(
-        new Screenshot(width.toInt(), height.toInt(), byteData.buffer.asUint8List())
-    );
+    return Future.value(rects);
   }
 
   // Feedback options callback mechanism

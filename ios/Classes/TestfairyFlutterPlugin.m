@@ -2,7 +2,6 @@
 #import "TestFairy.h"
 
 @interface TestFairy()
-+ (void)setScreenshotProvider:(void (^)(void))provider;
 @end
 
 @implementation TestfairyFlutterPlugin {
@@ -10,22 +9,6 @@
 
 // Static
 NSMutableDictionary* viewControllerMethodChannelMapping;
-
-+ (void) takeScreenshot {
-    dispatch_async(dispatch_get_main_queue(), ^{
-       id appDelegate = UIApplication.sharedApplication.delegate;
-       
-       if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
-           FlutterAppDelegate* flutterAppDelegate = appDelegate;
-           NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
-           FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
-           
-           if (channel != nil) {
-               [channel invokeMethod:@"takeScreenshot" arguments:nil];
-           }
-       }
-    });
-}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -67,10 +50,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
                      errorMessage:[args valueForKey:@"errorMessage"]];
             result(nil);
         } else if ([@"takeScreenshot" isEqualToString:call.method]) {
-            [self takeScreenshot];
-            result(nil);
-        } else if ([@"sendScreenshot" isEqualToString:call.method]) {
-            [self sendScreenshot:[args valueForKey:@"pixels"] width:[args valueForKey:@"width"] height:[args valueForKey:@"height"]];
+//            [self takeScreenshot];// TODO : Reenable once setExternalRectCapture is ready
             result(nil);
         } else if ([@"begin" isEqualToString:call.method]) {
             [self begin:call.arguments];
@@ -183,55 +163,25 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
     @finally {
     }
-    
-    //    switch (call.method) {
-    //        case "setFeedbackOptions":
-    //            setFeedbackOptions(
-    //                               (String) args.get("browserUrl"),
-    //                               (boolean) args.get("emailFieldVisible"),
-    //                               (boolean) args.get("emailMandatory"),
-    //                               (int) args.get("callId")
-    //                               );
-    //            break;
-    //        default:
-    //            result.notImplemented();
-    //            break;
-    //    }
 }
 
-- (void) sendScreenshot:(FlutterStandardTypedData*)pixels width:(NSNumber*)width height:(NSNumber*)height {
-    void* outputData = (void*) [[pixels data] bytes];
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef bitmapContext = CGBitmapContextCreate(outputData, [width intValue], [height intValue], 8, 4*[width intValue], colorSpace,  kCGImageAlphaPremultipliedLast | kCGBitmapByteOrderDefault);
-    CFRelease(colorSpace);
-    CGImageRef cgImage = CGBitmapContextCreateImage(bitmapContext);
-    CGContextRelease(bitmapContext);
-    
-    UIImage * newimage = [UIImage imageWithCGImage:cgImage];
-    
-    [TestFairy addScreenshot:newimage];
-    
-//    UIImageWriteToSavedPhotosAlbum(newimage, nil, nil, nil);
-
-    CGImageRelease(cgImage);
-}
-
-- (void) takeScreenshot {
-    [TestFairy takeScreenshot];
-}
+// TODO : Reenable after setExternalRectCapture is implemented
+//- (void) takeScreenshot {
+//    [TestFairy takeScreenshot];
+//}
     
 - (void) begin:(NSString*)appToken {
+    [TestFairy disableVideo]; // TODO : remove this once setExternalRectCapture is implemented in iOS
     [TestFairy begin:appToken];
-    [TestFairy setScreenshotProvider:^{
-        [TestfairyFlutterPlugin takeScreenshot];
-    }];
+    
+    // TODO : call setExternalRectCapture in SDK
 }
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options {
+    [TestFairy disableVideo]; // TODO : remove this once setExternalRectCapture is implemented in iOS
     [TestFairy begin:appToken withOptions:options];
-    [TestFairy setScreenshotProvider:^{
-        [TestfairyFlutterPlugin takeScreenshot];
-    }];
+    
+    // TODO : call setExternalRectCapture in SDK
 }
 
 - (void) setServerEndpoint:(NSString*)endpoint {

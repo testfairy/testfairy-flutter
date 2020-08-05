@@ -25,7 +25,7 @@ void main() {
 
         // Call `await TestFairy.begin()` or any other setup code here.
 //        await TestFairy.setMaxSessionLength(60);
-//        await TestFairy.begin(APP_TOKEN);
+        await TestFairy.begin(APP_TOKEN);
 
         runApp(TestfairyExampleApp());
       } catch (error) {
@@ -195,13 +195,6 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
                             textColor: Color.fromRGBO(255, 255, 255, 1.0),
-                            onPressed: onTakeScreenshotTests,
-                            key: Key("takeScreenshotTests"),
-                            child: Text('Take Screenshot Test')
-                        ),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
                             onPressed: onNetworkLogTests,
                             key: Key("networkLogTests"),
                             child: Text('Network Log Tests')
@@ -271,7 +264,9 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print("B");
       await Future.delayed(const Duration(seconds: 20));
       print("C");
-//      await TestFairy.takeScreenshot();
+
+      // Test stuff here
+
       print("D");
       await Future.delayed(const Duration(seconds: 2));
       print("E");
@@ -425,26 +420,6 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       assert(url.contains("http"));
 
-      await TestFairy.stop();
-    } catch (e) {
-      setError(e);
-    }
-
-    endTest();
-  }
-
-  void onTakeScreenshotTests() async {
-    if (testing) return;
-
-    beginTest("Take Screenshot");
-
-    try {
-      await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
-
-      await TestFairy.takeScreenshot();
-
-      await Future.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);

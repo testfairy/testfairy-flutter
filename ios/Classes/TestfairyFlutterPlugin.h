@@ -5,8 +5,6 @@
 // Static factory required by Flutter
 + (void) registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 
-+ (void) takeScreenshot;
-
 // Call resolver for all integrations
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
 
@@ -15,9 +13,7 @@
     
 - (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage;
 
-- (void) takeScreenshot;
-
-- (void) sendScreenshot:(FlutterStandardTypedData*)pixels width:(NSNumber*)width height:(NSNumber*)height;
+//- (void) takeScreenshot;
 
 - (void) begin:(NSString*)appToken;
 

@@ -67,7 +67,6 @@ void main() {
     testfairyTestSimple('Identity Tests', find.byValueKey('identityTests'));
     testfairyTestSimple('Log Tests', find.byValueKey('logTests'));
     testfairyTestSimple('Developer Options Tests', find.byValueKey('developerOptionsTests'));
-    testfairyTestSimple('Screenshot Tests', find.byValueKey('takeScreenshotTests'));
     testfairyTestSimple('Network Log Tests', find.byValueKey('networkLogTests'));
     testfairyTestSimple('Disable Auto Update Tests', find.byValueKey('disableAutoUpdateTests'));
 //    testfairyTestSimple('Feedback Options Tests', find.byValueKey('feedbackOptionsTests'));
