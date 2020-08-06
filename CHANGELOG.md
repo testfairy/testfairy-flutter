@@ -1,3 +1,9 @@
+## 1.0.14
+* Optimized Android screenshot algorithm.
+
+## 1.0.13
+* Fixed taking screenshots when paint is not ready.
+
 ## 1.0.12
 * Fixed taking screenshots when layout is not ready.
 

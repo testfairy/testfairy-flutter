@@ -35,3 +35,7 @@
 * `takeScreenshot`
 * `hideWidget`
 * `setFeedbackOptions`
+
+## Not supported in iOS
+
+* Video and screenshots.

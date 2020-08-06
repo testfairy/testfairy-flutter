@@ -1,10 +1,14 @@
 package com.testfairy.flutter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
 import com.testfairy.FeedbackContent;
@@ -26,7 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -37,8 +43,12 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
-/** TestfairyFlutterPlugin */
+/**
+ * TestfairyFlutterPlugin
+ */
 public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
+
+	private static final long HIDDEN_RECT_RETREIVAL_THROTTLE = 128;
 
 	private static class FlutterActivityMethodChannelPair {
 		public WeakReference<Activity> flutterActivityWeakReference;
@@ -58,9 +68,12 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 	private WeakReference<MethodChannel> methodChannelWeakReference = new WeakReference<>(null);
 	private WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
 
-	static private Map<WeakReference<Activity>, FlutterActivityMethodChannelPair> activityChannelMapping = new ConcurrentHashMap<>();
+	private static Map<WeakReference<Activity>, FlutterActivityMethodChannelPair> activityChannelMapping = new ConcurrentHashMap<>();
+	private static long lastTimeHiddenRectsSent = 0;
 
-	/** Plugin registration. (Mandatory)*/
+	/**
+	 * Plugin registration. (Mandatory)
+	 */
 	public static void registerWith(Registrar registrar) {
 		final MethodChannel channel = new MethodChannel(registrar.messenger(), "testfairy");
 		final TestfairyFlutterPlugin testfairyFlutterPlugin = new TestfairyFlutterPlugin();
@@ -330,39 +343,79 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		return result;
 	}
 
-	private static void takeScreenshot() {
-		FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+	@SuppressLint("NewApi")
+	private static void getHiddenRects(final Consumer<Rect[]> consumer) {
+		final FlutterActivityMethodChannelPair activeFlutterActivityMethodChannelPair = getActiveFlutterViewMethodChannelPair();
 
-//		Log.i("TestFairy", "Attempting to reach channel for taking screenshot");
+//		Log.i("TestFairy", "Attempting to reach channel for getting hidden rects");
 
-		if (activeFlutterViewMethodChannelPair != null) {
-			MethodChannel methodChannel = activeFlutterViewMethodChannelPair.methodChannelWeakReference.get();
+		final Result dartResponse = new Result() {
+			@Override
+			public void success(@Nullable Object result) {
+				sendRects((List<Map>) result, consumer);
+			}
+
+			@Override
+			public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+				TestFairy.logThrowable(errorMessage);
+			}
+
+			@Override
+			public void notImplemented() {
+				Log.e("TESTFAIRYSDK", "Invalid channel invoke getHiddenRects");
+			}
+		};
+
+		if (activeFlutterActivityMethodChannelPair != null) {
+			final MethodChannel methodChannel = activeFlutterActivityMethodChannelPair.methodChannelWeakReference.get();
+
+			final Runnable askDartForHiddenRects = new Runnable() {
+				@Override
+				public void run() {
+					methodChannel.invokeMethod("getHiddenRects", null, dartResponse);
+				}
+			};
 
 			if (methodChannel != null) {
-//				Log.i("TestFairy", "Taking a screenshot in Flutter");
-				methodChannel.invokeMethod("takeScreenshot", null, new Result() {
-					@Override
-					public void success(@Nullable Object result) {
+//				Log.i("TestFairy", "Getting hidden rects from Flutter");
 
-					}
-
-					@Override
-					public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-						TestFairy.logThrowable(errorMessage);
-					}
-
-					@Override
-					public void notImplemented() {
-
-					}
-				});
+				if (System.currentTimeMillis() - lastTimeHiddenRectsSent > HIDDEN_RECT_RETREIVAL_THROTTLE) {
+					askDartForHiddenRects.run();
+				} else {
+					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETREIVAL_THROTTLE);
+				}
 			}
+		}
+	}
+
+	@SuppressLint("NewApi")
+	private static void sendRects(@Nullable List<Map> result, final Consumer<Rect[]> consumer) {
+		try {
+			List<Map> rectsList = result;
+
+			final Rect[] rects = new Rect[rectsList.size()];
+
+			int i = 0;
+			for (Map rectMap : rectsList) {
+				int left = ((Number) rectMap.get("left")).intValue();
+				int top = ((Number) rectMap.get("top")).intValue();
+				int right = ((Number) rectMap.get("right")).intValue();
+				int bottom = ((Number) rectMap.get("bottom")).intValue();
+
+				rects[i++] = new Rect(left, top, right, bottom);
+			}
+
+			consumer.accept(rects);
+			lastTimeHiddenRectsSent = System.currentTimeMillis();
+		} catch (Throwable t) {
+			TestFairy.logThrowable(t);
 		}
 	}
 
 	private interface ContextConsumer<T> {
 		T consume(Context context);
 	}
+
 	private <T> T withContext(ContextConsumer<T> consumer) {
 		if (contextWeakReference.get() != null) {
 			return consumer.consume(contextWeakReference.get());
@@ -374,6 +427,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 	private interface MethodChannelConsumer<T> {
 		T consume(MethodChannel channel);
 	}
+
 	private <T> T withMethodChannel(MethodChannelConsumer<T> consumer) {
 		if (methodChannelWeakReference.get() != null) {
 			return consumer.consume(methodChannelWeakReference.get());
@@ -385,6 +439,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 	private interface ActivityConsumer<T> {
 		T consume(Activity activity);
 	}
+
 	private <T> T withActivity(ActivityConsumer<T> consumer) {
 		if (activityWeakReference.get() != null) {
 			return consumer.consume(activityWeakReference.get());
@@ -399,9 +454,13 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		withContext(new ContextConsumer<Void>() {
 			@Override
 			public Void consume(Context context) {
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+					TestFairy.disableVideo();
+				}
+
 				TestFairy.begin(context, appToken);
 
-				setScreenshotProvider();
+				setExternalRectCapture();
 
 				return null;
 			}
@@ -412,9 +471,13 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		withContext(new ContextConsumer<Void>() {
 			@Override
 			public Void consume(Context context) {
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+					TestFairy.disableVideo();
+				}
+
 				TestFairy.begin(context, appToken, options);
 
-				setScreenshotProvider();
+				setExternalRectCapture();
 
 				return null;
 			}
@@ -628,20 +691,20 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 	) {
 		try {
 			TestFairy.addNetworkEvent(
-				new URI(uri),
-				method,
-				code,
-				startTimeMillis,
-				endTimeMillis,
-				requestSize,
-				responseSize,
-				errorMessage
+					new URI(uri),
+					method,
+					code,
+					startTimeMillis,
+					endTimeMillis,
+					requestSize,
+					responseSize,
+					errorMessage
 			);
 		} catch (URISyntaxException ignore) {
 		}
 	}
 
-	static private void sendScreenshot(byte[] pixels, int width, int height) {
+	private static void sendScreenshot(byte[] pixels, int width, int height) {
 		Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		ByteBuffer buffer = ByteBuffer.wrap(pixels, 0, width * height * 4);
 		buffer.rewind();
@@ -654,19 +717,19 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		TestFairy.addScreenshot(bmp);
 	}
 
-	static private void setScreenshotProvider() {
-		try {
-			Method setScrenshotProvider = getMethodWithName(TestFairy.class, "setScreenshotProvider");
-			setScrenshotProvider.invoke(null, new Runnable() {
-				@Override
-				public void run() {
-					takeScreenshot();
-				}
-			});
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+	private void setExternalRectCapture() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			try {
+				Method setExternalRectCaptureMethod = getMethodWithName(TestFairy.class, "setExternalRectCapture");
+				setExternalRectCaptureMethod.invoke(null, new Consumer<Consumer<Rect[]>>() {
+					@Override
+					public void accept(Consumer<Rect[]> consumer) {
+						getHiddenRects(consumer);
+					}
+				});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -674,7 +737,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		String root = Environment.getExternalStorageDirectory().toString();
 		File myDir = new File(root);
 		myDir.mkdirs();
-		String fname = "Image-" + image_name+ ".jpg";
+		String fname = "Image-" + image_name + ".jpg";
 		File file = new File(myDir, fname);
 		if (file.exists()) file.delete();
 		Log.i("TestFairy", "Saved image to " + root + "/" + fname);

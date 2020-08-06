@@ -48,7 +48,6 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Initialize a TestFairy session.
   static Future<void> begin(String appToken) async {
-    TestFairyBase.takeScreenshot = TestFairy.takeScreenshot;
     TestFairyBase.prepareTwoWayInvoke();
 
     await TestFairyBase.channel.invokeMethod('begin', appToken);
@@ -192,7 +191,6 @@ abstract class TestFairy extends TestFairyBase {
   /// as well, if started.
   static Future<void> stop() async {
     TestFairyBase.prepareTwoWayInvoke();
-    TestFairyBase.takeScreenshot = null;
 
     await TestFairyBase.channel.invokeMethod('stop');
   }
@@ -344,34 +342,6 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
 
     TestFairyBase.hiddenWidgets.add(widgetKey);
-  }
-
-  /// Takes a screenshot and sends it to TestFairy.
-  /// Must be called after begin.
-  static Future<void> takeScreenshot() async {
-    TestFairyBase.prepareTwoWayInvoke();
-
-    try {
-      var screenshot = await TestFairyBase.createSingleScreenShot();
-
-      var args = {
-        'pixels': screenshot.pixels,
-        'width': screenshot.width,
-        'height': screenshot.height
-      };
-
-      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
-    } catch (error) {
-      logError(error);
-
-      var args = {
-        'pixels': Uint8List.fromList([0, 0, 0, 255]), // 1x1 black image
-        'width': 1,
-        'height': 1
-      };
-
-      await TestFairyBase.channel.invokeMethod('sendScreenshot', args);
-    }
   }
 
   /// Call this function to log your network events.
