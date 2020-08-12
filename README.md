@@ -54,9 +54,7 @@ void main() {
 ```
 
 ### How to update native SDKs?
-This is done automatically for Android. 
-
-If you need to update the native iOS SDK used by your current integration, run `pod repo update; pod install` in your *ios* directory.
+Run `pod repo update ` and update the plugin in *pubspec.yaml*.
 
 ### Troubleshoot
 1. **I have my own `HttpOverrides.global` setup. How can I make it work with TestFairy?**
@@ -65,7 +63,7 @@ Copy [this](https://github.com/testfairy/testfairy-flutter/blob/master/lib/src/n
 
 2. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
 
-This happens due to a pod misconfiguration bug on the Flutter side. We have [blog post](https://blog.testfairy.com/errnoenoent-fix-for-flutter-ios/) explaining the issue if you are interested.
+This happens due to a pod misconfiguration bug on the Flutter side. We have [a blog post](https://blog.testfairy.com/errnoenoent-fix-for-flutter-ios/) explaining the fix.
 
 Clean your project, remove *ios/Podfile* and Xcode workspace file entirely. (make sure you have backups just in case)
 ```
@@ -98,7 +96,7 @@ cd ..
 
 Retry your build.
 
-Once your build is successful, you can update cocoapods back to its latest version.
+Once your build is successful, you can update cocoapods back to its latest version. If the error reoccurs, you will have to revert back to 1.7.5 and retry the steps.
 
 3. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
 
