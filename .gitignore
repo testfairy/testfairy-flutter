@@ -13,3 +13,4 @@ doc/
 .idea
 example/.idea
 example/android/testfairy-android-sdk-release
+example/.flutter-plugins-dependencies 
