@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 TestFairy flutter plugin.
                        DESC
-  s.homepage         = 'http://testfairy.com'
+  s.homepage         = 'https://testfairy.com'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'TestFairy' => 'support@testfairy.com' }
   s.source           = { :path => '.' }
