@@ -2,6 +2,7 @@
 #import "TestFairy.h"
 
 @interface TestFairy()
++ (void)setExternalRectCapture:(void (^)(void (^)(NSArray*)))provider;
 @end
 
 @implementation TestfairyFlutterPlugin {
@@ -31,6 +32,43 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
++ (void)getHiddenRects {
+    [TestFairy setExternalRectCapture:^(void (^provider)(NSArray *rects)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+           id appDelegate = UIApplication.sharedApplication.delegate;
+           
+           if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
+               FlutterAppDelegate* flutterAppDelegate = appDelegate;
+               NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
+               FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
+               
+               if (channel != nil) {
+                   [channel invokeMethod:@"getHiddenRects" arguments:nil result: ^(id result) {
+                       NSArray *dartRects = (NSArray*)result;
+                       NSMutableArray *rects = [NSMutableArray array];
+                       
+                       for (int i = 0; i < [dartRects count]; i++) {
+                           NSDictionary *dartRect = [dartRects objectAtIndex:i];
+                           CGFloat screenScale = [[UIScreen mainScreen] scale];
+                           
+                           NSNumber *left = [dartRect valueForKey:@"left"];
+                           NSNumber *top = [dartRect valueForKey:@"top"];
+                           NSNumber *right = [dartRect valueForKey:@"right"];
+                           NSNumber *bottom = [dartRect valueForKey:@"bottom"];
+                           
+                           CGRect rect = CGRectMake([left intValue] / screenScale, [top intValue] / screenScale, ([right intValue] - [left intValue]) / screenScale, ([bottom intValue] - [top intValue]) / screenScale);
+                           
+                           [rects addObject:[NSValue valueWithCGRect:rect]];
+                       }
+                       
+                       provider(rects);
+                   }];
+               }
+           }
+        });
+    }];
+}
+
 // Instance
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     @try {
@@ -50,7 +88,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
                      errorMessage:[args valueForKey:@"errorMessage"]];
             result(nil);
         } else if ([@"takeScreenshot" isEqualToString:call.method]) {
-//            [self takeScreenshot];// TODO : Reenable once setExternalRectCapture is ready
+            [self takeScreenshot];
             result(nil);
         } else if ([@"begin" isEqualToString:call.method]) {
             [self begin:call.arguments];
@@ -165,23 +203,20 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
 }
 
-// TODO : Reenable after setExternalRectCapture is implemented
-//- (void) takeScreenshot {
-//    [TestFairy takeScreenshot];
-//}
+- (void) takeScreenshot {
+    [TestFairy takeScreenshot];
+}
     
 - (void) begin:(NSString*)appToken {
-    [TestFairy disableVideo]; // TODO : remove this once setExternalRectCapture is implemented in iOS
     [TestFairy begin:appToken];
     
-    // TODO : call setExternalRectCapture in SDK
+    [TestfairyFlutterPlugin getHiddenRects];
 }
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options {
-    [TestFairy disableVideo]; // TODO : remove this once setExternalRectCapture is implemented in iOS
     [TestFairy begin:appToken withOptions:options];
     
-    // TODO : call setExternalRectCapture in SDK
+    [TestfairyFlutterPlugin getHiddenRects];
 }
 
 - (void) setServerEndpoint:(NSString*)endpoint {

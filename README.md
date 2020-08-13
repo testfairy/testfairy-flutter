@@ -54,7 +54,7 @@ void main() {
 ```
 
 ### How to update native SDKs?
-Run `pod repo update ` and update the plugin in *pubspec.yaml*.
+Run `pod repo update` and update the plugin in *pubspec.yaml*. Then run `cd ios; pod update TestFairy; cd..`.
 
 ### Troubleshoot
 1. **I have my own `HttpOverrides.global` setup. How can I make it work with TestFairy?**
