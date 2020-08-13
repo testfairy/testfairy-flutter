@@ -1,3 +1,6 @@
+## 1.0.15
+* Optimized iOS screenshot algorithm.
+
 ## 1.0.14
 * Optimized Android screenshot algorithm.
 
