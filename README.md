@@ -57,11 +57,17 @@ void main() {
 Run `pod repo update` and update the plugin in *pubspec.yaml*. Then run `cd ios; pod update TestFairy; cd..`.
 
 ### Troubleshoot
-1. **I have my own `HttpOverrides.global` setup. How can I make it work with TestFairy?**
+1. **I see `Specs satisfying the TestFairy dependency were found, but they required a higher minimum deployment target.` when I build and iOS app.**
+
+You have to update the native SDK alongside with CocoaPods repository.
+
+Run `pod repo update` and update the plugin in *pubspec.yaml*. Then run `cd ios; pod update TestFairy; cd..`.
+
+2. **I have my own `HttpOverrides.global` setup. How can I make it work with TestFairy?**
 
 Copy [this](https://github.com/testfairy/testfairy-flutter/blob/master/lib/src/network_logging.dart) file to your project. Add the necessary functionality and assign to `HttpOverrides.global` an instance from your new implementation.
 
-2. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
+3. **I see `Errno::ENOENT - No such file or directory @ rb_sysopen - ./ios/Pods/Local Podspecs/testfairy.podspec.json` when I build an iOS app.**
 
 This happens due to a pod misconfiguration bug on the Flutter side. We have [a blog post](https://blog.testfairy.com/errnoenoent-fix-for-flutter-ios/) explaining the fix.
 
@@ -98,15 +104,15 @@ Retry your build.
 
 Once your build is successful, you can update cocoapods back to its latest version. If the error reoccurs, you will have to revert back to 1.7.5 and retry the steps.
 
-3. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
+4. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
 
 TestFairy supports iOS 9.0 and above. Please change the build target accordingly in your Xcode project.
 
-4. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
+5. **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
 
 Migrate your Android project to AndroidX by following [this](https://flutter.dev/docs/development/androidx-migration) guide.
 
-5. **I see `Undefined symbols for architecture` error during compilation.**
+6. **I see `Undefined symbols for architecture` error during compilation.**
 
 You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
 ```
@@ -132,7 +138,7 @@ post_install do |installer|
 end
 ```
 
-6. **CocoaPods could not find compatible versions for pod "TestFairy".**
+7. **CocoaPods could not find compatible versions for pod "TestFairy".**
 
 This is an old bug in the plugin pubspec file. First, run `flutter clean` in your root directory. 
 
@@ -144,7 +150,7 @@ Finally, run `pod repo update; pod install; pod update TestFairy` again to re-do
 
 If everything went smoothly, this issue should never happen again.
 
-7. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
+8. **There are syntax errors in TestFairyFlutterPlugin.java or TestFairyFlutterPlugin.m file.**
 
 In your project root, run `flutter clean; cd ios; pod repo update; pod install; pod update TestFairy; cd ..` and test again.
 
