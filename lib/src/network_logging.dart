@@ -37,7 +37,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set autoUncompress(bool autoUncompress) {
+  set autoUncompress(bool autoUncompress) {
     this.wrappedClient.autoUncompress = autoUncompress;
   }
 
@@ -47,7 +47,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set connectionTimeout(Duration connectionTimeout) {
+  set connectionTimeout(Duration connectionTimeout) {
     this.wrappedClient.connectionTimeout = connectionTimeout;
   }
 
@@ -57,7 +57,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set idleTimeout(Duration idleTimeout) {
+  set idleTimeout(Duration idleTimeout) {
     this.wrappedClient.idleTimeout = idleTimeout;
   }
 
@@ -67,7 +67,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set maxConnectionsPerHost(int maxConnectionsPerHost) {
+  set maxConnectionsPerHost(int maxConnectionsPerHost) {
     this.wrappedClient.maxConnectionsPerHost = maxConnectionsPerHost;
   }
 
@@ -77,7 +77,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set userAgent(String userAgent) {
+  set userAgent(String userAgent) {
     this.wrappedClient.userAgent = userAgent;
   }
 
@@ -97,17 +97,17 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set authenticate(Future<bool> Function(Uri url, String scheme, String realm) f) {
+  set authenticate(Future<bool> Function(Uri url, String scheme, String realm) f) {
     this.wrappedClient.authenticate = f;
   }
 
   @override
-  void set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String realm) f) {
+  set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String realm) f) {
     this.wrappedClient.authenticateProxy = f;
   }
 
   @override
-  void set badCertificateCallback(bool Function(X509Certificate cert, String host, int port) callback) {
+  set badCertificateCallback(bool Function(X509Certificate cert, String host, int port) callback) {
     this.wrappedClient.badCertificateCallback = callback;
   }
 
@@ -131,7 +131,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set findProxy(String Function(Uri url) f) {
+  set findProxy(String Function(Uri url) f) {
     this.wrappedClient.findProxy = f;
   }
 
@@ -235,7 +235,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set bufferOutput(bool bufferOutput) {
+  set bufferOutput(bool bufferOutput) {
     this.wrappedRequest.bufferOutput = bufferOutput;
   }
 
@@ -245,7 +245,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set contentLength(int contentLength) {
+  set contentLength(int contentLength) {
     this.wrappedRequest.contentLength = contentLength;
   }
 
@@ -255,7 +255,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set encoding(Encoding encoding) {
+  set encoding(Encoding encoding) {
     this.wrappedRequest.encoding = encoding;
   }
 
@@ -265,7 +265,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set followRedirects(bool followRedirects) {
+  set followRedirects(bool followRedirects) {
     this.wrappedRequest.followRedirects = followRedirects;
   }
 
@@ -275,7 +275,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set maxRedirects(int maxRedirects) {
+  set maxRedirects(int maxRedirects) {
     this.wrappedRequest.maxRedirects = maxRedirects;
   }
 
@@ -285,7 +285,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void set persistentConnection(bool persistentConnection) {
+  set persistentConnection(bool persistentConnection) {
     this.wrappedRequest.persistentConnection = persistentConnection;
   }
 

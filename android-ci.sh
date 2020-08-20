@@ -11,3 +11,9 @@ git clone https://github.com/flutter/flutter.git -b dev --depth 1
 # build
 cd example
 ../flutter/bin/flutter -v build apk
+
+# lint
+../flutter/bin/flutter analyze lib
+../flutter/bin/flutter analyze example/lib
+../flutter/bin/flutter analyze example/test
+../flutter/bin/flutter analyze example/test_driver
