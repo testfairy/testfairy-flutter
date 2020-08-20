@@ -1,3 +1,6 @@
+## 1.0.18
+* Adopted dartfmt for source formatting.
+
 ## 1.0.17
 * Fixed lint errors in the Dart code.
 
