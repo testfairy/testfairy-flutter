@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:testfairy/testfairy.dart';
 
 abstract class TestFairyBase {
-
   // Method Channel Internals
 
   static const MethodChannel channel = const MethodChannel('testfairy');
@@ -29,7 +28,8 @@ abstract class TestFairyBase {
       case 'getHiddenRects':
         return await getHiddenRects();
       default:
-        print('TestFairy: Ignoring invoke from native. This normally shouldn\'t happen.');
+        print(
+            'TestFairy: Ignoring invoke from native. This normally shouldn\'t happen.');
     }
   }
 
@@ -54,12 +54,14 @@ abstract class TestFairyBase {
       RenderBox ro = gk.currentContext.findRenderObject();
 
       var pos = ro.localToGlobal(Offset.zero);
-      pos = Offset(pos.dx * ui.window.devicePixelRatio, pos.dy * ui.window.devicePixelRatio);
+      pos = Offset(pos.dx * ui.window.devicePixelRatio,
+          pos.dy * ui.window.devicePixelRatio);
 //      print('Position is: ');
 //      print(pos.toString());
 
       var size = gk.currentContext.size;
-      size = Size(size.width * ui.window.devicePixelRatio, size.height * ui.window.devicePixelRatio);
+      size = Size(size.width * ui.window.devicePixelRatio,
+          size.height * ui.window.devicePixelRatio);
 //      print('Size is: ');
 //      print(size.toString());
 
@@ -107,6 +109,6 @@ abstract class TestFairyBase {
     opts.feedbackNo = args['feedbackNo'];
 
     feedbackOptionsCallbacks[args['callId'].toString()]
-    ['onFeedbackFailed'](opts);
+        ['onFeedbackFailed'](opts);
   }
 }

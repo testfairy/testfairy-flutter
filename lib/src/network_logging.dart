@@ -6,30 +6,27 @@ import 'dart:io';
 import 'package:testfairy/testfairy.dart';
 
 class TestFairyHttpOverrides extends HttpOverrides {
-
   @override
   HttpClient createHttpClient(SecurityContext context) {
     var clientToWrap = super.createHttpClient(context);
 
-    return new TestFairyHttpClient(context: context, wrappedClient: clientToWrap);
+    return new TestFairyHttpClient(
+        context: context, wrappedClient: clientToWrap);
   }
-
 }
 
 abstract class TestFairyHttpClient extends HttpClient {
-
-  factory TestFairyHttpClient({SecurityContext context, HttpClient wrappedClient}) {
+  factory TestFairyHttpClient(
+      {SecurityContext context, HttpClient wrappedClient}) {
     if (wrappedClient == null) {
       return new _TestFairyHttpClient(new HttpClient(context: context));
     } else {
       return new _TestFairyHttpClient(wrappedClient);
     }
   }
-
 }
 
 class _TestFairyHttpClient implements TestFairyHttpClient {
-
   HttpClient wrappedClient;
 
   _TestFairyHttpClient(HttpClient wrappedClient) {
@@ -87,27 +84,33 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void addCredentials(Uri url, String realm, HttpClientCredentials credentials) {
+  void addCredentials(
+      Uri url, String realm, HttpClientCredentials credentials) {
     this.wrappedClient.addCredentials(url, realm, credentials);
   }
 
   @override
-  void addProxyCredentials(String host, int port, String realm, HttpClientCredentials credentials) {
+  void addProxyCredentials(
+      String host, int port, String realm, HttpClientCredentials credentials) {
     this.wrappedClient.addProxyCredentials(host, port, realm, credentials);
   }
 
   @override
-  set authenticate(Future<bool> Function(Uri url, String scheme, String realm) f) {
+  set authenticate(
+      Future<bool> Function(Uri url, String scheme, String realm) f) {
     this.wrappedClient.authenticate = f;
   }
 
   @override
-  set authenticateProxy(Future<bool> Function(String host, int port, String scheme, String realm) f) {
+  set authenticateProxy(
+      Future<bool> Function(String host, int port, String scheme, String realm)
+          f) {
     this.wrappedClient.authenticateProxy = f;
   }
 
   @override
-  set badCertificateCallback(bool Function(X509Certificate cert, String host, int port) callback) {
+  set badCertificateCallback(
+      bool Function(X509Certificate cert, String host, int port) callback) {
     this.wrappedClient.badCertificateCallback = callback;
   }
 
@@ -118,7 +121,10 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   Future<HttpClientRequest> delete(String host, int port, String path) {
-    return this.wrappedClient.delete(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .delete(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -137,7 +143,10 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   Future<HttpClientRequest> get(String host, int port, String path) {
-    return this.wrappedClient.get(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .get(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -151,7 +160,10 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   Future<HttpClientRequest> head(String host, int port, String path) {
-    return this.wrappedClient.head(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .head(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -164,22 +176,32 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  Future<HttpClientRequest> open(String method, String host, int port, String path) {
-    return this.wrappedClient.open(method, host, port, path).then((HttpClientRequest req) {
+  Future<HttpClientRequest> open(
+      String method, String host, int port, String path) {
+    return this
+        .wrappedClient
+        .open(method, host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
 
   @override
   Future<HttpClientRequest> openUrl(String method, Uri url) {
-    return this.wrappedClient.openUrl(method, url).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .openUrl(method, url)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
 
   @override
   Future<HttpClientRequest> patch(String host, int port, String path) {
-    return this.wrappedClient.patch(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .patch(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -193,7 +215,10 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   Future<HttpClientRequest> post(String host, int port, String path) {
-    return this.wrappedClient.post(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .post(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -207,7 +232,10 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   Future<HttpClientRequest> put(String host, int port, String path) {
-    return this.wrappedClient.put(host, port, path).then((HttpClientRequest req) {
+    return this
+        .wrappedClient
+        .put(host, port, path)
+        .then((HttpClientRequest req) {
       return new _TestFairyClientHttpRequest(req);
     });
   }
@@ -218,11 +246,9 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
       return new _TestFairyClientHttpRequest(req);
     });
   }
-
 }
 
 class _TestFairyClientHttpRequest implements HttpClientRequest {
-
   HttpClientRequest wrappedRequest;
 
   _TestFairyClientHttpRequest(HttpClientRequest wrappedRequest) {
@@ -312,31 +338,15 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
     return this.wrappedRequest.close().then((HttpClientResponse res) {
       int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
 
-      TestFairy.addNetworkEvent(
-          uri.toString(),
-          method,
-          res.statusCode,
-          startTimeMillis,
-          endTimeMillis,
-          requestSize,
-          res.contentLength,
-          null
-      );
+      TestFairy.addNetworkEvent(uri.toString(), method, res.statusCode,
+          startTimeMillis, endTimeMillis, requestSize, res.contentLength, null);
 
       return res;
     }).catchError((error) {
       int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
 
-      TestFairy.addNetworkEvent(
-          uri.toString(),
-          method,
-          -1,
-          startTimeMillis,
-          endTimeMillis,
-          requestSize,
-          -1,
-          error.toString()
-      );
+      TestFairy.addNetworkEvent(uri.toString(), method, -1, startTimeMillis,
+          endTimeMillis, requestSize, -1, error.toString());
 
       throw error;
     });
@@ -384,5 +394,4 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   void writeln([Object obj = ""]) {
     this.wrappedRequest.writeln(obj);
   }
-
 }

@@ -44,7 +44,6 @@ part 'package:testfairy/src/feedback_options.dart';
 /// }
 /// ```
 abstract class TestFairy extends TestFairyBase {
-
   /// Initialize a TestFairy session.
   static Future<void> begin(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
@@ -60,10 +59,7 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> beginWithOptions(String appToken, Map options) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
-      'appToken': appToken,
-      'options': options
-    };
+    var args = {'appToken': appToken, 'options': options};
 
     await TestFairyBase.channel.invokeMethod('beginWithOptions', args);
   }
@@ -157,10 +153,7 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> setAttribute(String key, String value) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
-      'key': key,
-      'value': value
-    };
+    var args = {'key': key, 'value': value};
 
     await TestFairyBase.channel.invokeMethod('setAttribute', args);
   }
@@ -285,7 +278,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Valid values for policy include “always” and “wifi”.
   /// Valid values for quality include “high”, “low”, “medium”.
   /// Values for fps must be between 0.1 and 2.0. Value will be rounded to the nearest frame.
-  static Future<void> enableVideo(String policy, String quality, double framesPerSecond) async {
+  static Future<void> enableVideo(
+      String policy, String quality, double framesPerSecond) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
@@ -353,8 +347,7 @@ abstract class TestFairy extends TestFairyBase {
       int endTimeMillis,
       int requestSize,
       int responseSize,
-      String errorMessage
-      ) async {
+      String errorMessage) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
@@ -379,16 +372,15 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Customizes the feedback form.
-  static Future<void> setFeedbackOptions({
-      String defaultText,
+  static Future<void> setFeedbackOptions(
+      {String defaultText,
       String browserUrl,
       bool emailFieldVisible: true,
       bool emailMandatory: false,
       Function(FeedbackOptions) onFeedbackSent: emptyFeedbackOptionsFunction,
       Function() onFeedbackCancelled: emptyFunction,
       Function(FeedbackOptions) onFeedbackFailed:
-      emptyFeedbackOptionsFunction
-  }) async {
+          emptyFeedbackOptionsFunction}) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
@@ -408,9 +400,7 @@ abstract class TestFairy extends TestFairyBase {
     };
 
     TestFairyBase.feedbackOptionsCallbacks.putIfAbsent(
-      TestFairyBase.feedbackOptionsIdCounter.toString(),
-      ifAbsent
-    );
+        TestFairyBase.feedbackOptionsIdCounter.toString(), ifAbsent);
 
     TestFairyBase.feedbackOptionsIdCounter++;
 

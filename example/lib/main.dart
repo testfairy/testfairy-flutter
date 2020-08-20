@@ -17,30 +17,25 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 void main() {
   HttpOverrides.global = TestFairy.httpOverrides();
 
-  runZonedGuarded(
-    () async {
-      try {
-        FlutterError.onError =
-            (details) => TestFairy.logError(details.exception);
+  runZonedGuarded(() async {
+    try {
+      FlutterError.onError = (details) => TestFairy.logError(details.exception);
 
-        // Call `await TestFairy.begin()` or any other setup code here.
+      // Call `await TestFairy.begin()` or any other setup code here.
 //        await TestFairy.setMaxSessionLength(60);
 //        await TestFairy.begin(APP_TOKEN);
 
-        runApp(TestfairyExampleApp());
-      } catch (error) {
-        TestFairy.logError(error);
-      }
+      runApp(TestfairyExampleApp());
+    } catch (error) {
+      TestFairy.logError(error);
+    }
+  }, (e, s) {
+    TestFairy.logError(e);
+  }, zoneSpecification: new ZoneSpecification(
+    print: (self, parent, zone, message) {
+      TestFairy.log(message);
     },
-        (e, s) {
-      TestFairy.logError(e);
-    },
-    zoneSpecification: new ZoneSpecification(
-      print: (self, parent, zone, message) {
-        TestFairy.log(message);
-      },
-    )
-  );
+  ));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -188,24 +183,19 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                             onPressed: onFeedbackOptionsTest,
                             key: Key('feedbackOptionsTests'),
                             child: Text('Feedback Options Tests')),
-                        Text(
-                            "HIDE ME FROM SCREENSHOTS",
-                            key: hideWidgetKey
-                        ),
+                        Text("HIDE ME FROM SCREENSHOTS", key: hideWidgetKey),
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
                             textColor: Color.fromRGBO(255, 255, 255, 1.0),
                             onPressed: onNetworkLogTests,
                             key: Key("networkLogTests"),
-                            child: Text('Network Log Tests')
-                        ),
+                            child: Text('Network Log Tests')),
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
                             textColor: Color.fromRGBO(255, 255, 255, 1.0),
                             onPressed: onDisableAutoUpdateTests,
                             key: Key("disableAutoUpdateTests"),
-                            child: Text('Disable Auto Update Tests')
-                        ),
+                            child: Text('Disable Auto Update Tests')),
                         Column(children: logs.map((l) => new Text(l)).toList())
                       ],
                     )))));
@@ -683,5 +673,4 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
     endTest();
   }
-
 }
