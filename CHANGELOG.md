@@ -1,3 +1,6 @@
+## 1.0.16
+* Fixed lint errors in the Dart code.
+
 ## 1.0.15
 * Optimized iOS screenshot algorithm.
 
