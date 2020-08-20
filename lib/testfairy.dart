@@ -385,10 +385,10 @@ abstract class TestFairy extends TestFairyBase {
       String browserUrl,
       bool emailFieldVisible: true,
       bool emailMandatory: false,
-      Function(FeedbackOptions) onFeedbackSent: EmptyFeedbackOptionsFunction,
-      Function() onFeedbackCancelled: EmptyFunction,
+      Function(FeedbackOptions) onFeedbackSent: emptyFeedbackOptionsFunction,
+      Function() onFeedbackCancelled: emptyFunction,
       Function(FeedbackOptions) onFeedbackFailed:
-      EmptyFeedbackOptionsFunction
+      emptyFeedbackOptionsFunction
   }) async {
     TestFairyBase.prepareTwoWayInvoke();
 

@@ -16,7 +16,7 @@ class FeedbackOptions {
 }
 
 /// Utility no argument function to use as an empty callback.
-void EmptyFunction() {}
+void emptyFunction() {}
 
 /// Utility single [FeedbackOptions] argument function to use as an empty callback.
-void EmptyFeedbackOptionsFunction(FeedbackOptions feedbackContent) {}
+void emptyFeedbackOptionsFunction(FeedbackOptions feedbackContent) {}
