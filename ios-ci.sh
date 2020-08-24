@@ -10,7 +10,7 @@ brew update
 brew install --HEAD libimobiledevice
 brew install ideviceinstaller
 brew install ios-deploy
-git clone https://github.com/flutter/flutter.git -b dev --depth 1
+git clone https://github.com/flutter/flutter.git -b stable --depth 1
 
 # build
 cd example
