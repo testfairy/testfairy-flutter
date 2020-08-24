@@ -29,9 +29,9 @@ cd ..
 cd ..
 
 # lint
-./flutter/bin/flutter analyze lib
-./flutter/bin/flutter analyze example/lib
-./flutter/bin/flutter analyze example/test
-./flutter/bin/flutter analyze example/test_driver
+./flutter/bin/flutter analyze ./lib
+./flutter/bin/flutter analyze ./example/lib
+./flutter/bin/flutter analyze ./example/test
+./flutter/bin/flutter analyze ./example/test_driver
 
 
