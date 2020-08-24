@@ -16,7 +16,7 @@ cd testfairy-flutter
 
 # build
 cd example
-../flutter/bin/flutter -v build ios --simulator --no-codesign || echo Failing on purpose
+../../flutter/bin/flutter -v build ios --simulator --no-codesign || echo Failing on purpose
 mv ios/Podfile ios/_podfile
 echo "use_frameworks!" > ios/Podfile
 cat ios/_podfile >> ios/Podfile
