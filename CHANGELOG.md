@@ -1,3 +1,6 @@
+## 1.0.19
+* Fixed compilation errors due to network logging.
+
 ## 1.0.18
 * Adopted dartfmt for source formatting.
 
