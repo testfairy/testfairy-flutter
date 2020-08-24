@@ -10,7 +10,9 @@ brew update
 brew install --HEAD libimobiledevice
 brew install ideviceinstaller
 brew install ios-deploy
+cd ..
 git clone https://github.com/flutter/flutter.git -b stable --depth 1
+cd testfairy-flutter
 
 # build
 cd example
@@ -25,13 +27,13 @@ pod repo update
 cd ios
 pod install
 cd ..
-../flutter/bin/flutter -v build ios --simulator --no-codesign
+../../flutter/bin/flutter -v build ios --simulator --no-codesign
 cd ..
 
 # lint
-./flutter/bin/flutter analyze $PWD/lib
-./flutter/bin/flutter analyze $PWD/example/lib
-./flutter/bin/flutter analyze $PWD/example/test
-./flutter/bin/flutter analyze $PWD/example/test_driver
+../flutter/bin/flutter analyze $PWD/lib
+../flutter/bin/flutter analyze $PWD/example/lib
+../flutter/bin/flutter analyze $PWD/example/test
+../flutter/bin/flutter analyze $PWD/example/test_driver
 
 
