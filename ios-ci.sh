@@ -26,6 +26,7 @@ cd ios
 pod install
 cd ..
 ../flutter/bin/flutter -v build ios --simulator --no-codesign
+cd ..
 
 # lint
 ../flutter/bin/flutter analyze lib
