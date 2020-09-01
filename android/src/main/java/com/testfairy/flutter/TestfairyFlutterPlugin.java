@@ -166,6 +166,14 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 					beginWithOptions((String) args.get("appToken"), (Map) args.get("options"));
 					result.success(null);
 					break;
+				case "installFeedbackHandler":
+					installFeedbackHandler((String) call.arguments());
+					result.success(null);
+					break;
+				case "installCrashHandler":
+					installCrashHandler((String) call.arguments());
+					result.success(null);
+					break;
 				case "setServerEndpoint":
 					setServerEndpoint((String) call.arguments());
 					result.success(null);
@@ -476,6 +484,30 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				}
 
 				TestFairy.begin(context, appToken, options);
+
+				setExternalRectCapture();
+
+				return null;
+			}
+		});
+	}
+
+	private void installCrashHandler(final String appToken) {
+		withContext(new ContextConsumer<Void>() {
+			@Override
+			public Void consume(Context context) {
+				TestFairy.installCrashHandler(context, appToken);
+
+				return null;
+			}
+		});
+	}
+
+	private void installFeedbackHandler(final String appToken) {
+		withContext(new ContextConsumer<Void>() {
+			@Override
+			public Void consume(Context context) {
+				TestFairy.installFeedbackHandler(context, appToken);
 
 				setExternalRectCapture();
 

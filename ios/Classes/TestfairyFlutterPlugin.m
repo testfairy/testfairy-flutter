@@ -32,7 +32,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-+ (void)getHiddenRects {
++ (void)registerGetHiddenRects {
     [TestFairy setExternalRectCapture:^(void (^provider)(NSArray *rects)) {
         dispatch_async(dispatch_get_main_queue(), ^{
            id appDelegate = UIApplication.sharedApplication.delegate;
@@ -216,17 +216,19 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 - (void) begin:(NSString*)appToken {
     [TestFairy begin:appToken];
     
-    [TestfairyFlutterPlugin getHiddenRects];
+    [TestfairyFlutterPlugin registerGetHiddenRects];
 }
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options {
     [TestFairy begin:appToken withOptions:options];
     
-    [TestfairyFlutterPlugin getHiddenRects];
+    [TestfairyFlutterPlugin registerGetHiddenRects];
 }
 
 - (void) installFeedbackHandler:(NSString *)appToken {
     [TestFairy installFeedbackHandler:appToken];
+    
+    [TestfairyFlutterPlugin registerGetHiddenRects];
 }
 
 - (void) installCrashHandler:(NSString *)appToken {
