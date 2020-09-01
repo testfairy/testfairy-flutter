@@ -189,6 +189,12 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
                    emailFieldVisible:[args valueForKey:@"emailFieldVisible"]
                       emailMandatory:[args valueForKey:@"emailMandatory"]];
             result(nil);
+        } else if ([@"installCrashHandler" isEqualToString:call.method]) {
+            [self installCrashHandler:call.arguments];
+            result(nil);
+        } else if ([@"installFeedbackHandler" isEqualToString:call.method]) {
+            [self installFeedbackHandler:call.arguments];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -217,6 +223,14 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     [TestFairy begin:appToken withOptions:options];
     
     [TestfairyFlutterPlugin getHiddenRects];
+}
+
+- (void) installFeedbackHandler:(NSString *)appToken {
+    [TestFairy installFeedbackHandler:appToken];
+}
+
+- (void) installCrashHandler:(NSString *)appToken {
+    [TestFairy installCrashHandler:appToken];
 }
 
 - (void) setServerEndpoint:(NSString*)endpoint {

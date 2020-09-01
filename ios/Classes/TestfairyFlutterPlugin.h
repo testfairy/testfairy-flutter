@@ -79,4 +79,8 @@
 
 - (void) bringFlutterToFront;
 
+- (void) installCrashHandler:(NSString*)appToken;
+
+- (void) installFeedbackHandler:(NSString*)appToken;
+
 @end
