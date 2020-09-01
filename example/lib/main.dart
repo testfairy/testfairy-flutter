@@ -22,8 +22,9 @@ void main() {
       FlutterError.onError = (details) => TestFairy.logError(details.exception);
 
       // Call `await TestFairy.begin()` or any other setup code here.
-//        await TestFairy.setMaxSessionLength(60);
-//        await TestFairy.begin(APP_TOKEN);
+//      await TestFairy.setMaxSessionLength(60);
+//      await TestFairy.begin(APP_TOKEN);
+//      await TestFairy.installFeedbackHandler(APP_TOKEN);
 
       runApp(TestfairyExampleApp());
     } catch (error) {

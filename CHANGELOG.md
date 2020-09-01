@@ -1,3 +1,6 @@
+## 1.0.20
+* Added `installCrashHandler()` and `installFeedbackHandler()`.
+
 ## 1.0.19
 * Fixed compilation errors due to network logging.
 

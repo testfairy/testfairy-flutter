@@ -64,6 +64,25 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('beginWithOptions', args);
   }
 
+  /// Initialize crash reporting.
+  ///
+  /// No need to call this if begin() is also called.
+  static Future<void> installCrashHandler(String appToken) async {
+    TestFairyBase.prepareTwoWayInvoke();
+
+    await TestFairyBase.channel.invokeMethod('installCrashHandler', appToken);
+  }
+
+  /// Initialize shake gesture recognizer for feedbacks.
+  ///
+  /// No need to call this if begin() is also called.
+  static Future<void> installFeedbackHandler(String appToken) async {
+    TestFairyBase.prepareTwoWayInvoke();
+
+    await TestFairyBase.channel
+        .invokeMethod('installFeedbackHandler', appToken);
+  }
+
   /// Override the server endpoint address for using with on-premise installations
   /// and private cloud configuration.
   ///
