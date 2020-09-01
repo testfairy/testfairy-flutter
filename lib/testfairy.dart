@@ -79,7 +79,8 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> installFeedbackHandler(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    await TestFairyBase.channel.invokeMethod('installFeedbackHandler', appToken);
+    await TestFairyBase.channel
+        .invokeMethod('installFeedbackHandler', appToken);
   }
 
   /// Override the server endpoint address for using with on-premise installations
