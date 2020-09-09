@@ -14,13 +14,13 @@ import android.util.Log;
 import com.testfairy.FeedbackContent;
 import com.testfairy.FeedbackOptions;
 import com.testfairy.TestFairy;
+import com.testfairy.UserInteractionKind;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -48,7 +47,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  */
 public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
 
-	private static final long HIDDEN_RECT_RETREIVAL_THROTTLE = 128;
+	private static final long HIDDEN_RECT_RETRIEVAL_THROTTLE = 128;
 
 	private static class FlutterActivityMethodChannelPair {
 		public WeakReference<Activity> flutterActivityWeakReference;
@@ -152,6 +151,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 							((Number) args.get("responseSize")).longValue(),
 							(String) args.get("errorMessage")
 					);
+					result.success(null);
+					break;
+				case "addUserInteraction":
+					addUserInteraction((String) args.get("kind"), (String) args.get("label"), (Map) args.get("info"));
 					result.success(null);
 					break;
 				case "sendScreenshot":
@@ -387,10 +390,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 			if (methodChannel != null) {
 //				Log.i("TestFairy", "Getting hidden rects from Flutter");
 
-				if (System.currentTimeMillis() - lastTimeHiddenRectsSent > HIDDEN_RECT_RETREIVAL_THROTTLE) {
+				if (System.currentTimeMillis() - lastTimeHiddenRectsSent > HIDDEN_RECT_RETRIEVAL_THROTTLE) {
 					askDartForHiddenRects.run();
 				} else {
-					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETREIVAL_THROTTLE);
+					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETRIEVAL_THROTTLE);
 				}
 			}
 		}
@@ -709,6 +712,30 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 
 	private void disableAutoUpdate() {
 		TestFairy.disableAutoUpdate();
+	}
+
+	private void addUserInteraction(String kind, String label, final Map info) {
+		Map<String, String> sanitizedInfo = new HashMap<>();
+
+		if (info != null) {
+			if (info.containsKey("accessibilityLabel") && info.get("accessibilityLabel") != null) {
+				sanitizedInfo.put("accessibilityLabel", info.get("accessibilityLabel").toString());
+			}
+
+			if (info.containsKey("accessibilityIdentifier") && info.get("accessibilityIdentifier") != null) {
+				sanitizedInfo.put("accessibilityIdentifier", info.get("accessibilityIdentifier").toString());
+			}
+
+			if (info.containsKey("accessibilityHint") && info.get("accessibilityHint") != null) {
+				sanitizedInfo.put("accessibilityHint", info.get("accessibilityHint").toString());
+			}
+
+			if (info.containsKey("className") && info.get("className") != null) {
+				sanitizedInfo.put("className", info.get("className").toString());
+			}
+		}
+
+		TestFairy.addUserInteraction(UserInteractionKind.valueOf(kind.replaceAll("UserInteractionKind.", "")), label, sanitizedInfo);
 	}
 
 	private void addNetworkEvent(

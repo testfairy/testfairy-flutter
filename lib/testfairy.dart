@@ -5,6 +5,7 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+import 'package:testfairy/src/widget_detector.dart';
 
 import 'src/network_logging.dart';
 import 'src/testfairy_base.dart';
@@ -356,6 +357,22 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.hiddenWidgets.add(widgetKey);
   }
 
+  static Future<void> addUserInteraction(UserInteractionKind kind, String label, Map info) async {
+    if (Platform.isIOS) { // TODO : Implement this in iOS once native SDK is ready
+      return;
+    }
+
+    TestFairyBase.prepareTwoWayInvoke();
+
+    var args = {
+      'kind': kind.toString(),
+      'label': label,
+      'info': info
+    };
+
+    await TestFairyBase.channel.invokeMethod('addUserInteraction', args);
+  }
+
   /// Call this function to log your network events.
   /// See [httpOverrides] to automatically do this for all your http calls.
   static Future<void> addNetworkEvent(
@@ -444,4 +461,25 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
     return new TestFairyHttpOverrides();
   }
+}
+
+/// Used for detecting touch gestures on widgets and sends them to TestFairy.
+/// You must wrap your app's root widget with this to see user interactions in your session's timeline.
+///
+/// Borrowed and modified from https://github.com/leishuai/flutter_widget_detector
+class TestFairyGestureDetector extends StatefulWidget {
+  final Widget child;
+
+  TestFairyGestureDetector({this.child});
+
+  @override
+  State<StatefulWidget> createState() {
+    return TestFairyGestureDetectorState();
+  }
+}
+
+enum UserInteractionKind {
+  USER_INTERACTION_BUTTON_PRESSED,
+  USER_INTERACTION_BUTTON_LONG_PRESSED,
+  USER_INTERACTION_BUTTON_DOUBLE_PRESSED
 }
