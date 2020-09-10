@@ -26,7 +26,8 @@ void main() {
 //      await TestFairy.begin(APP_TOKEN);
 //      await TestFairy.installFeedbackHandler(APP_TOKEN);
 
-      runApp(TestfairyExampleApp());
+//      runApp(TestfairyExampleApp());
+      runApp(TestFairyGestureDetector(child: TestfairyExampleApp()));
     } catch (error) {
       TestFairy.logError(error);
     }

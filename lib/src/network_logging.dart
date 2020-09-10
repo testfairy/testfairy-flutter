@@ -396,4 +396,12 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   void writeln([Object obj = ""]) {
     this.wrappedRequest.writeln(obj);
   }
+
+  /** Modern Flutter
+  @Since("2.10")
+  @override
+  void abort([Object? exception, StackTrace? stackTrace]) {
+    this.wrappedRequest.abort(exception, stacktrace);
+  }
+  Modern Flutter **/
 }

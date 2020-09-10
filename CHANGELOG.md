@@ -1,3 +1,6 @@
+## 1.0.21
+* Added gesture detection for Android.
+
 ## 1.0.20
 * Added `installCrashHandler()` and `installFeedbackHandler()`.
 
