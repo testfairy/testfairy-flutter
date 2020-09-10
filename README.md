@@ -203,3 +203,7 @@ In your project root, run `flutter clean; cd ios; pod repo update; pod install; 
 
 ## Docs
 [Go to docs...](https://pub.dartlang.org/documentation/testfairy/latest/)
+
+## Credits
+
+* This library incorporates code pieces derived from [@leishuai](https://github.com/leishuai)'s [flutter_widget_detector](https://github.com/leishuai/flutter_widget_detector) library.

@@ -48,6 +48,9 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
 
 	private static final long HIDDEN_RECT_RETRIEVAL_THROTTLE = 128;
+	private static final String[] USER_INTERACTION_META_DATA_KEYS = new String[]{
+			"accessibilityLabel", "accessibilityIdentifier", "accessibilityHint", "className"
+	};
 
 	private static class FlutterActivityMethodChannelPair {
 		public WeakReference<Activity> flutterActivityWeakReference;
@@ -718,20 +721,10 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		Map<String, String> sanitizedInfo = new HashMap<>();
 
 		if (info != null) {
-			if (info.containsKey("accessibilityLabel") && info.get("accessibilityLabel") != null) {
-				sanitizedInfo.put("accessibilityLabel", info.get("accessibilityLabel").toString());
-			}
-
-			if (info.containsKey("accessibilityIdentifier") && info.get("accessibilityIdentifier") != null) {
-				sanitizedInfo.put("accessibilityIdentifier", info.get("accessibilityIdentifier").toString());
-			}
-
-			if (info.containsKey("accessibilityHint") && info.get("accessibilityHint") != null) {
-				sanitizedInfo.put("accessibilityHint", info.get("accessibilityHint").toString());
-			}
-
-			if (info.containsKey("className") && info.get("className") != null) {
-				sanitizedInfo.put("className", info.get("className").toString());
+			for (String key : USER_INTERACTION_META_DATA_KEYS) {
+				if (info.containsKey(key) && info.get(key) != null) {
+					sanitizedInfo.put(key, info.get(key).toString());
+				}
 			}
 		}
 
