@@ -357,18 +357,16 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.hiddenWidgets.add(widgetKey);
   }
 
-  static Future<void> addUserInteraction(UserInteractionKind kind, String label, Map info) async {
-    if (Platform.isIOS) { // TODO : Implement this in iOS once native SDK is ready
+  static Future<void> addUserInteraction(
+      UserInteractionKind kind, String label, Map info) async {
+    if (Platform.isIOS) {
+      // TODO : Implement this in iOS once native SDK is ready
       return;
     }
 
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
-      'kind': kind.toString(),
-      'label': label,
-      'info': info
-    };
+    var args = {'kind': kind.toString(), 'label': label, 'info': info};
 
     await TestFairyBase.channel.invokeMethod('addUserInteraction', args);
   }

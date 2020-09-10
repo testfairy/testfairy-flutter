@@ -203,15 +203,14 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
         if (!alreadyVisited) {
           List<_RenderObjectElement> localCreatedElements = [];
           elementsOfSameSize.forEach((e) {
-            if (e._isCreatedLocally())
-              localCreatedElements.add(e);
+            if (e._isCreatedLocally()) localCreatedElements.add(e);
           });
           if (localCreatedElements.length > 0) {
             alreadyVisited = true;
 
             // Build lambda to send to TestFairy
-            elementInspector = _buildElementInspector(
-                boundsRect, localCreatedElements.first);
+            elementInspector =
+                _buildElementInspector(boundsRect, localCreatedElements.first);
           }
         }
 
@@ -230,7 +229,6 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// Builds a deferred lambda to inspect given element, sends results to TestFairy native SDK
   Function _buildElementInspector(
       Rect boundsRect, _RenderObjectElement element) {
-
     // Common properties
     var widgetKey = element.widgetKeyString;
     var widgetType = element.widgetTypeString;
@@ -240,23 +238,26 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     // Extract text by traversing children
     var text = "";
     try {
-      dynamic widget = element.element.widget; // This will throw if we are not a UI widget
+      dynamic widget =
+          element.element.widget; // This will throw if we are not a UI widget
       dynamic child = widget.child; // This will throw if we are not a container
 
       while (child != null) {
         try {
-          if (child.data is String) { // If our children has data, we append it to the built text
+          if (child.data is String) {
+            // If our children has data, we append it to the built text
             text += child.data + " ";
           }
         } catch (_) {}
 
         try {
-          child = child.child; // Go deeper, throws if we are no longer a container
+          child =
+              child.child; // Go deeper, throws if we are no longer a container
         } catch (_) {
           child = null; // Stop searching, we are at the leaf node
         }
       }
-    } catch(_) {
+    } catch (_) {
       // If we reach here, it means the interacted widget is already a leaf node
       try {
         // If the leaf node is a Text widget, we can grab the text

@@ -62,8 +62,6 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
 //  GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
 
-
-
   @override
   void initState() {
     super.initState();
