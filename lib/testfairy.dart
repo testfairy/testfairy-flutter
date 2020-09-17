@@ -28,7 +28,7 @@ part 'package:testfairy/src/feedback_options.dart';
 ///
 ///         // Call `await TestFairy.begin()` or any other setup code here.
 ///
-///         runApp(TestfairyExampleApp());
+///         runApp(TestFairyGestureDetector(child: TestfairyExampleApp()));
 ///       } catch (error) {
 ///         TestFairy.logError(error);
 ///       }
@@ -67,16 +67,16 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Initialize crash reporting.
   ///
-  /// No need to call this if begin() is also called.
+  /// No need to call this if [begin] is also called.
   static Future<void> installCrashHandler(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     await TestFairyBase.channel.invokeMethod('installCrashHandler', appToken);
   }
 
-  /// Initialize shake gesture recognizer for feedbacks.
+  /// Initialize shake gesture recognizer for launching the feedback form.
   ///
-  /// No need to call this if begin() is also called.
+  /// No need to call this if [begin] is also called.
   static Future<void> installFeedbackHandler(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
 
@@ -108,7 +108,7 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('sendUserFeedback', feedback);
   }
 
-  /// Deprecated backward compatibility wrapper for [addEvent].
+  /// @Deprecated backward compatibility wrapper for [addEvent].
   /// Use [addEvent] unless really necessary.
   static Future<void> addCheckpoint(String name) async {
     TestFairyBase.prepareTwoWayInvoke();
@@ -124,7 +124,7 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('addEvent', name);
   }
 
-  /// Deprecated backward compability wrapper for [setUserId].
+  /// @Deprecated backward compatibility wrapper for [setUserId].
   /// Use [setUserId] unless really necessary.
   ///
   /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
@@ -135,7 +135,7 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('setCorrelationId', id);
   }
 
-  /// Deprecated backward compability wrapper for [setUserId] and [setAttribute].
+  /// @Deprecated backward compatibility wrapper for [setUserId] and [setAttribute].
   /// Use those unless really necessary.
   ///
   /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
@@ -147,7 +147,7 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('identifyWithTraits', args);
   }
 
-  /// Deprecated backward compability wrapper for [setUserId].
+  /// @Deprecated backward compatibility wrapper for [setUserId].
   /// Use [setUserId] unless really necessary.
   ///
   /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
@@ -186,7 +186,7 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Displays the feedback activity or view controller depending on your platform.
-  /// Must be called after begin.
+  /// Must be called after [begin].
   ///
   /// Allows users to provide feedback about the current session.
   /// All feedbacks will appear in your build report page, and in the recorded session page.
@@ -195,12 +195,11 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('showFeedbackForm');
   }
 
-  /// Stops the current session recording. Unlike 'pause', when
-  /// calling 'resume', a new session will be created and will be
-  /// linked to the previous recording. Useful if you want short
-  /// session recordings of specific use-cases of the app. Hidden
-  /// views and user identity will be applied to the new session
-  /// as well, if started.
+  /// Stops the current session recording. Unlike [pause], when
+  /// calling [resume], a new session will be created and linked
+  /// to the previous recording. Useful if you want short session
+  /// recordings of specific use-cases of the app. Hidden widgets
+  /// and user identity will be applied to the new session as well.
   static Future<void> stop() async {
     TestFairyBase.prepareTwoWayInvoke();
 
@@ -230,7 +229,7 @@ abstract class TestFairy extends TestFairyBase {
     await TestFairyBase.channel.invokeMethod('logError', error.toString());
   }
 
-  /// Send a VERBOSE log message  to TestFairy.
+  /// Send a VERBOSE log message to TestFairy.
   static Future<void> log(String message) async {
     TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('log', message);
@@ -252,7 +251,7 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Enables the ability to capture crashes.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   ///
   /// TestFairy crash handler is installed by default. Once installed
   /// it cannot be uninstalled.
@@ -262,7 +261,7 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Disables the ability to capture crashes.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   ///
   /// TestFairy crash handler is installed by default. Once installed
   /// it cannot be uninstalled.
@@ -272,7 +271,7 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Enables recording of a metric regardless of build settings.
-  /// Must be called be before begin.
+  /// Must be called be before [begin].
   ///
   /// Valid values include "cpu", "memory", "logcat", "battery", "network-requests"
   ///	A metric cannot be enabled and disabled at the same time, therefore
@@ -283,7 +282,7 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Disables recording of a metric regardless of build settings.
-  /// Must be called be before begin.
+  /// Must be called be before [begin].
   ///
   /// Valid values include “cpu”, “memory”, “logcat”, “battery”, “network-requests”
   /// A metric cannot be enabled and disabled at the same time, therefore
@@ -312,14 +311,14 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Disables the ability to capture video recording.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   static Future<void> disableVideo() async {
     TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableVideo');
   }
 
   /// Enables the ability to present the feedback form based on the method given.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   ///
   /// Valid values include “shake”, “screenshot” or “shake|screenshot”.
   /// If an unrecognized method is passed, the value defined in the build
@@ -331,14 +330,14 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Disables the ability to present users with feedback when devices is shaken,
   /// or if a screenshot is taken.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   static Future<void> disableFeedbackForm() async {
     TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableFeedbackForm');
   }
 
   /// Sets the maximum recording time.
-  /// Must be called before begin.
+  /// Must be called before [begin].
   ///
   /// Minimum value is 60 seconds, else the value defined in the build settings will be used.
   /// The maximum value is the lowest value between this value and the value defined in the build settings.
@@ -357,13 +356,13 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.hiddenWidgets.add(widgetKey);
   }
 
+  /// Adds a new user interaction to session timeline.
+  ///
+  /// If [TestFairyGestureDetector] is used, there is no need to call this method explicitly.
+  ///
+  /// Accepted info keys are "accessibilityLabel", "accessibilityIdentifier", "accessibilityHint" and "className"
   static Future<void> addUserInteraction(
       UserInteractionKind kind, String label, Map info) async {
-    if (Platform.isIOS) {
-      // TODO : Implement this in iOS once native SDK is ready
-      return;
-    }
-
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {'kind': kind.toString(), 'label': label, 'info': info};
@@ -464,7 +463,7 @@ abstract class TestFairy extends TestFairyBase {
 /// Used for detecting touch gestures on widgets and sends them to TestFairy.
 /// You must wrap your app's root widget with this to see user interactions in your session's timeline.
 ///
-/// Borrowed and modified from https://github.com/leishuai/flutter_widget_detector
+/// Example: `runApp(TestFairyGestureDetector(child: TestfairyExampleApp()));`
 class TestFairyGestureDetector extends StatefulWidget {
   final Widget child;
 
@@ -476,6 +475,7 @@ class TestFairyGestureDetector extends StatefulWidget {
   }
 }
 
+/// Describes the type of touch gesture being made
 enum UserInteractionKind {
   USER_INTERACTION_BUTTON_PRESSED,
   USER_INTERACTION_BUTTON_LONG_PRESSED,

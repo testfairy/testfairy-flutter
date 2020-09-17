@@ -19,6 +19,8 @@
 
 - (void) begin:(NSString*)appToken withOptions:(NSDictionary*)options;
 
+- (void) addUserInteraction:(NSString*)kind label:(NSString*)label info:(NSDictionary*)info;
+
 - (void) setServerEndpoint:(NSString*)endpoint;
 
 - (NSString*) version;

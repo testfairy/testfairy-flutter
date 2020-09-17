@@ -1,3 +1,6 @@
+## 1.0.22
+* Added gesture detection for iOS.
+
 ## 1.0.21
 * Added gesture detection for Android.
 
