@@ -96,6 +96,9 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         } else if ([@"beginWithOptions" isEqualToString:call.method]) {
             [self begin:[args valueForKey:@"appToken"] withOptions:[args valueForKey:@"options"]];
             result(nil);
+        } else if ([@"addUserInteraction" isEqualToString:call.method]) {
+            [self addUserInteraction:[args valueForKey:@"kind"] label:[args valueForKey:@"label"] info:[args valueForKey:@"info"]];
+            result(nil);
         } else if ([@"setServerEndpoint" isEqualToString:call.method]) {
             [self setServerEndpoint:call.arguments];
             result(nil);
@@ -223,6 +226,37 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     [TestFairy begin:appToken withOptions:options];
     
     [TestfairyFlutterPlugin registerGetHiddenRects];
+}
+
+- (void) addUserInteraction:(NSString*)kind label:(NSString*)label info:(NSDictionary*)info {
+    int interactionKind = 1; // Press as default
+    if ([kind isEqualToString:@"UserInteractionKind.USER_INTERACTION_BUTTON_PRESSED"]) {
+        interactionKind = 1;
+    } else if ([kind isEqualToString:@"UserInteractionKind.USER_INTERACTION_BUTTON_LONG_PRESSED"]) {
+        interactionKind = 8;
+    } else if ([kind isEqualToString:@"UserInteractionKind.USER_INTERACTION_BUTTON_DOUBLE_PRESSED"]) {
+        interactionKind = 9;
+    }
+    
+    NSMutableDictionary* sanitizedInfo = [NSMutableDictionary new];
+    
+    if ([info valueForKey:@"accessibilityLabel"] != nil) {
+        [sanitizedInfo setValue:[info valueForKey:@"accessibilityLabel"] forKey:@"accessibilityLabel"];
+    }
+    
+    if ([info valueForKey:@"accessibilityIdentifier"] != nil) {
+        [sanitizedInfo setValue:[info valueForKey:@"accessibilityIdentifier"] forKey:@"accessibilityIdentifier"];
+    }
+    
+    if ([info valueForKey:@"accessibilityHint"] != nil) {
+        [sanitizedInfo setValue:[info valueForKey:@"accessibilityHint"] forKey:@"accessibilityHint"];
+    }
+    
+    if ([info valueForKey:@"className"] != nil) {
+        [sanitizedInfo setValue:[info valueForKey:@"className"] forKey:@"className"];
+    }
+    
+    [TestFairy addUserInteraction:interactionKind label:label info:sanitizedInfo];
 }
 
 - (void) installFeedbackHandler:(NSString *)appToken {
