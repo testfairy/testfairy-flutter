@@ -1,5 +1,5 @@
 group 'com.testfairy.flutter'
-version '1.0.21'
+version '1.0.22'
 
 buildscript {
     repositories {
