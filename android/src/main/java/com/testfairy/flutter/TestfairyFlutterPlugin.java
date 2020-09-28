@@ -394,7 +394,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 //				Log.i("TestFairy", "Getting hidden rects from Flutter");
 
 				if (System.currentTimeMillis() - lastTimeHiddenRectsSent > HIDDEN_RECT_RETRIEVAL_THROTTLE) {
-					askDartForHiddenRects.run();
+					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).post(askDartForHiddenRects);
 				} else {
 					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETRIEVAL_THROTTLE);
 				}
@@ -661,6 +661,22 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		builder.setEmailMandatory(emailMandatory);
 
 		builder.setCallback(new FeedbackOptions.Callback() {
+
+			private void invokeChannel(final String methodName, final Object args) {
+				final FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+
+				if (activeFlutterViewMethodChannelPair != null) {
+					new Handler(activeFlutterViewMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).post(
+							new Runnable() {
+								@Override
+								public void run() {
+									activeFlutterViewMethodChannelPair.methodChannelWeakReference.get().invokeMethod(methodName, args);
+								}
+							}
+					);
+				}
+			}
+
 			@Override
 			public void onFeedbackSent(final FeedbackContent feedbackContent) {
 				withMethodChannel(new MethodChannelConsumer<Void>() {
@@ -673,7 +689,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 						feedbackContentMap.put("timestamp", (double) feedbackContent.getTimestamp());
 						feedbackContentMap.put("callId", callId);
 
-						channel.invokeMethod("callOnFeedbackSent", feedbackContentMap);
+						invokeChannel("callOnFeedbackSent", feedbackContentMap);
 						return null;
 					}
 				});
@@ -684,7 +700,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				withMethodChannel(new MethodChannelConsumer<Void>() {
 					@Override
 					public Void consume(MethodChannel channel) {
-						channel.invokeMethod("callOnFeedbackCancelled", callId);
+						invokeChannel("callOnFeedbackCancelled", callId);
 						return null;
 					}
 				});
@@ -703,7 +719,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 						feedbackContentMap.put("feedbackNo", feedbackNo);
 						feedbackContentMap.put("callId", callId);
 
-						channel.invokeMethod("callOnFeedbackFailed", feedbackContentMap);
+						invokeChannel("callOnFeedbackFailed", feedbackContentMap);
 						return null;
 					}
 				});
