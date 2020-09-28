@@ -1,7 +1,7 @@
 name: testfairy_flutter_example
 description: Demonstrates how to use the TestFairy plugin.
 publish_to: 'none'
-version: 1.0.22
+version: 1.0.23
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

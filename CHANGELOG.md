@@ -1,3 +1,6 @@
+## 1.0.23
+* Fixed Android UI thread exceptions.
+
 ## 1.0.22
 * Added gesture detection for iOS.
 

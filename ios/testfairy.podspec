@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'testfairy'
-  s.version          = '1.0.22'
+  s.version          = '1.0.23'
   s.summary          = 'TestFairy integration for Flutter, bundles with the native iOS SDK'
   s.description      = <<-DESC
 TestFairy flutter plugin.
