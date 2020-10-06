@@ -1,6 +1,6 @@
 name: testfairy
 description: TestFairy integration for Flutter, bundled with the native SDK
-version: 1.0.23
+version: 1.0.24
 homepage: https://testfairy.com
 
 environment:
