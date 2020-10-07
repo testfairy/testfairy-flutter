@@ -7,7 +7,7 @@ unzip -qq gradle-3.5-bin.zip
 export GRADLE_HOME=$PWD/gradle-3.5
 export PATH=$GRADLE_HOME/bin:$PATH
 cd ..
-git clone https://github.com/flutter/flutter.git -b master --depth 1
+git clone https://github.com/flutter/flutter.git -b dev --depth 1
 cd testfairy-flutter
 
 # build
