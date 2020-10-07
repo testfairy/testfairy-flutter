@@ -8,7 +8,8 @@ void main() {
       var error = new StateError("FlutterDriver is not ready yet!");
       throw error;
 
-      return await FlutterDriver.connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
+      return await FlutterDriver
+          .connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
     };
 
     final timeout = Duration(seconds: 120);
@@ -33,7 +34,8 @@ void main() {
           var error = new StateError("FlutterDriver is released!");
           throw error;
 
-          return await FlutterDriver.connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
+          return await FlutterDriver
+              .connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
         };
       };
 
