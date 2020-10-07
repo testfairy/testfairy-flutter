@@ -119,7 +119,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// Check which widget user tapped and return a lambda which inspects the widget to send findings to TestFairy
   Function? _detectElement(Offset position) {
     final RenderIgnorePointer renderIgnorePointer =
-        _ignorePointerKey.currentContext.findRenderObject()
+        _ignorePointerKey.currentContext!.findRenderObject()
             as RenderIgnorePointer;
     RenderBox? childRenderObject = renderIgnorePointer.child;
 
@@ -155,10 +155,10 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       // BoxHitTestEntry or SliverHitTestEntry
       dynamic testEntry = hitTestEntries[i];
       // Traverse parent of current element until it is next render object's element
-      Element ele = testEntry.target.debugCreator.element;
+      Element ele = testEntry.target.debugCreator.element as Element;
 
-      elements.add(_RenderObjectElement(
-          testEntry.target, ele)); // If you want to filter, inspect ele
+      elements.add(_RenderObjectElement(testEntry.target as RenderObject,
+          ele)); // If you want to filter, inspect ele
 
       dynamic nextTestEntry =
           (i + 1) < hitTestEntries.length ? hitTestEntries[i + 1] : null;
@@ -170,7 +170,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
                     .target.debugCreator.element) // Ignore debug widgets
           return false;
 
-        elements.add(_RenderObjectElement(testEntry.target,
+        elements.add(_RenderObjectElement(testEntry.target as RenderObject,
             ancestor)); // If you want to filter, inspect ancestor
         return true;
       });
@@ -245,7 +245,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
         try {
           if (child.data is String) {
             // If our children has data, we append it to the built text
-            text += child.data + " ";
+            text += child.data.toString() + " ";
           }
         } catch (_) {}
 
@@ -261,7 +261,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       try {
         // If the leaf node is a Text widget, we can grab the text
         dynamic textElement = element.element;
-        text = textElement.widget.data;
+        text = textElement.widget.data.toString();
       } catch (_) {}
     }
 
@@ -279,12 +279,15 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
         kind = UserInteractionKind.USER_INTERACTION_BUTTON_DOUBLE_PRESSED;
       }
 
-      TestFairy.addUserInteraction(kind, text, {
-        "className": widgetType,
-        "accessibilityHint": widgetString,
-        "accessibilityIdentifier": widgetKey,
-        "accessibilityLabel": elementString
-      });
+      TestFairy.addUserInteraction(
+          kind,
+          text,
+          {
+            "className": widgetType.toString(),
+            "accessibilityHint": widgetString.toString(),
+            "accessibilityIdentifier": widgetKey.toString(),
+            "accessibilityLabel": elementString.toString()
+          } as Map);
     };
   }
 
@@ -318,7 +321,7 @@ class _RenderObjectElement with WidgetInspectorService {
 
   _RenderObjectElement(this.renderObject, this.element);
 
-  Key get widgetKey => element.widget.key;
+  Key? get widgetKey => element.widget.key;
 
   String? get widgetKeyString {
     if (widgetKey is ValueKey) {
@@ -336,12 +339,12 @@ class _RenderObjectElement with WidgetInspectorService {
   /// In which file widget is constructed. Map keys: file, line, column
   Map get locationInfoMap {
     if (_jsonInfoMap == null) getJsonInfo();
-    return _jsonInfoMap!["creationLocation"];
+    return _jsonInfoMap!["creationLocation"] as Map;
   }
 
   String? get localFilePosition {
     if (_isCreatedLocally()) {
-      String filePath = locationInfoMap["file"];
+      String filePath = locationInfoMap["file"] as String;
       var pathPattern = RegExp('.*(/lib/.+)');
       filePath = pathPattern.firstMatch(filePath)!.group(1)!;
       return "file: $filePath, line: ${locationInfoMap["line"]}";
@@ -354,12 +357,12 @@ class _RenderObjectElement with WidgetInspectorService {
     //warning: consumes a lot of time
     WidgetInspectorService.instance.setSelection(element);
     String jsonStr =
-        WidgetInspectorService.instance.getSelectedWidget(null, null);
-    return _jsonInfoMap = json.decode(jsonStr);
+        WidgetInspectorService.instance.getSelectedWidget(null, "");
+    return _jsonInfoMap = json.decode(jsonStr) as Map?;
   }
 
   bool _isCreatedLocally() {
-    String fileLocation = locationInfoMap["file"];
+    String fileLocation = locationInfoMap["file"] as String;
     final String flutterFrameworkPath = "/packages/flutter/lib/src/";
     return !fileLocation.contains(flutterFrameworkPath);
   }
@@ -372,7 +375,7 @@ class _RenderObjectElement with WidgetInspectorService {
 
 /// A task run with delay, can be canceled before delayed duration
 class _CancelableTask {
-  Future? _future;
+  Future<void>? _future;
   bool _canceled = false;
 
   _CancelableTask(Duration delay, Function operation) {

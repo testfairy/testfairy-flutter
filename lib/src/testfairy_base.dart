@@ -17,13 +17,13 @@ abstract class TestFairyBase {
   static Future<dynamic> methodCallHandler(MethodCall call) async {
     switch (call.method) {
       case 'callOnFeedbackSent':
-        callOnFeedbackSent(call.arguments);
+        callOnFeedbackSent(call.arguments as Map);
         break;
       case 'callOnFeedbackCancelled':
-        callOnFeedbackCancelled(call.arguments);
+        callOnFeedbackCancelled(call.arguments as int);
         break;
       case 'callOnFeedbackFailed':
-        callOnFeedbackFailed(call.arguments);
+        callOnFeedbackFailed(call.arguments as Map);
         break;
       case 'getHiddenRects':
         return await getHiddenRects();
@@ -46,12 +46,12 @@ abstract class TestFairyBase {
   static List<GlobalKey> hiddenWidgets = [];
 
   static Future<List<Map<String, int>>> getHiddenRects() async {
-    await WidgetsBinding.instance.endOfFrame;
+    await WidgetsBinding.instance!.endOfFrame;
 
     List<Map<String, int>> rects = [];
 
     hiddenWidgets.forEach((gk) {
-      RenderBox ro = gk.currentContext.findRenderObject() as RenderBox;
+      RenderBox ro = gk.currentContext!.findRenderObject() as RenderBox;
 
       var pos = ro.localToGlobal(Offset.zero);
       pos = Offset(pos.dx * ui.window.devicePixelRatio,
@@ -59,7 +59,7 @@ abstract class TestFairyBase {
 //      print('Position is: ');
 //      print(pos.toString());
 
-      var size = gk.currentContext.size;
+      var size = gk.currentContext!.size!;
       size = Size(size.width * ui.window.devicePixelRatio,
           size.height * ui.window.devicePixelRatio);
 //      print('Size is: ');
@@ -81,11 +81,11 @@ abstract class TestFairyBase {
   // Feedback options callback mechanism
 
   static int feedbackOptionsIdCounter = 0;
-  static var feedbackOptionsCallbacks = {};
+  static var feedbackOptionsCallbacks = new Map<String, dynamic>();
 
   static void callOnFeedbackSent(Map args) {
-    var opts = FeedbackOptions(
-        args['email'], args['text'], args['timestamp'], args['feedbackNo']);
+    var opts = FeedbackOptions(args['email'] as String, args['text'] as String,
+        args['timestamp'] as double, args['feedbackNo'] as int);
 
 //    print(args['callId'].toString());
 
@@ -97,8 +97,8 @@ abstract class TestFairyBase {
   }
 
   static void callOnFeedbackFailed(Map args) {
-    var opts = FeedbackOptions(
-        args['email'], args['text'], args['timestamp'], args['feedbackNo']);
+    var opts = FeedbackOptions(args['email'] as String, args['text'] as String,
+        args['timestamp'] as double, args['feedbackNo'] as int);
 
     feedbackOptionsCallbacks[args['callId'].toString()]
         ['onFeedbackFailed'](opts);

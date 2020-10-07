@@ -23,7 +23,7 @@ abstract class TestFairyHttpClient extends HttpClient {
     if (wrappedClient == null) {
       return new _TestFairyHttpClient(new HttpClient(context: context));
     } else {
-      return new _TestFairyHttpClient(wrappedClient!);
+      return new _TestFairyHttpClient(wrappedClient);
     }
   }
 }
@@ -340,7 +340,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
           startTimeMillis, endTimeMillis, requestSize, res.contentLength, null);
 
       return res;
-    }).catchError((error) {
+    }).catchError((Object error) {
       int endTimeMillis = new DateTime.now().millisecondsSinceEpoch;
 
       TestFairy.addNetworkEvent(uri.toString(), method, -1, startTimeMillis,

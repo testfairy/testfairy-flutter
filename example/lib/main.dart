@@ -225,9 +225,9 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
   }
 
   // Call this inside a test if an error occurs
-  void setError(error) {
+  void setError(dynamic error) {
     setState(() {
-      errorMessage = error.toString();
+      errorMessage = error != null ? error.toString() : "Unknown error";
       print(errorMessage);
     });
 
@@ -254,13 +254,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print("A");
       await TestFairy.begin(APP_TOKEN);
       print("B");
-      await Future.delayed(const Duration(seconds: 20));
+      await Future<void>.delayed(const Duration(seconds: 20));
       print("C");
 
       // Test stuff here
 
       print("D");
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       print("E");
       await TestFairy.stop();
       print("F");
@@ -282,15 +282,15 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print('Calling begin,pause,resume,stop,begin,stop in this order.');
 
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.pause();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.resume();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 2));
-      await TestFairy.beginWithOptions(APP_TOKEN, {'metrics': 'cpu'});
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
+      await TestFairy.beginWithOptions(APP_TOKEN, {'metrics': 'cpu'} as Map);
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -309,13 +309,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
           'Setting dummy server endpoint expecting graceful offline sessions.');
       await TestFairy.setServerEndpoint("http://example.com");
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       await TestFairy.setServerEndpoint("https://api.TestFairy.com/services/");
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -332,12 +332,12 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Showing feedback form.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.sendUserFeedback("Dummy feedback from Flutter");
       await TestFairy.showFeedbackForm();
-      await Future.delayed(const Duration(seconds: 10));
+      await Future<void>.delayed(const Duration(seconds: 10));
       await TestFairy.bringFlutterToFront();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -354,16 +354,16 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       await TestFairy.enableFeedbackForm("shake");
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       print("Listening shakes for 20 seconds. ");
       print(
           "You can either shake your device manually during this time to open the feedback screen and wait for it to close automatically.");
       print("Or, you can skip this test by simply waiting a little more.");
-      await Future.delayed(const Duration(seconds: 20));
+      await Future<void>.delayed(const Duration(seconds: 20));
       print("No longer listening shakes");
       await TestFairy.disableFeedbackForm();
       await TestFairy.bringFlutterToFront();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -402,7 +402,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
     try {
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       var url = await TestFairy.getSessionUrl();
 
@@ -428,10 +428,10 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Adding some checkpoints.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.addCheckpoint("Hello-check-1");
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.addCheckpoint("Hello-check-2");
 
       await TestFairy.stop();
@@ -450,10 +450,10 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Adding some user events.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.addEvent("Hello-event-1");
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.addEvent("Hello-event-2");
 
       await TestFairy.stop();
@@ -473,50 +473,50 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print(
           'Setting correlation id and identifying multiple times, expecting graceful failures.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.setCorrelationId("1234567flutter");
 
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       ///
 
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.identify("1234567flutter");
 
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       ///
 
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.identifyWithTraits(
-          "1234567flutter", {'someTrait': 'helloTrait'});
+          "1234567flutter", {'someTrait': 'helloTrait'} as Map);
 
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       ///
 
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.setUserId("user1");
       await TestFairy.setUserId("user2");
       await TestFairy.setUserId("user3");
 
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       ///
       print('Setting some attributes and a screen name.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.setScreenName('TestfairyExampleApp-ScreenName');
       await TestFairy.setAttribute('dummyAttr', 'dummyValue');
@@ -537,7 +537,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Logging heavily expecting no visible stutter or crash.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       for (var i = 0; i < 1000; i++) {
         await TestFairy.log(i.toString());
@@ -563,7 +563,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Testing crash handlers, metrics and max session length.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       print('Last session crashed: ' +
           (await TestFairy.didLastSessionCrash()).toString());
@@ -577,13 +577,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.disableMetric('cpu');
 
       await TestFairy.stop();
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       print(
           'Setting up a short unsupported session length, expecting graceful fallback to default.');
       await TestFairy.setMaxSessionLength(3.0);
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 4));
+      await Future<void>.delayed(const Duration(seconds: 4));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -600,7 +600,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
     try {
       print('Testing feedback popup with custom options and callbacks.');
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       await TestFairy.setFeedbackOptions(onFeedbackSent: (fc) {
         print('onFeedbackSent: ' + fc.toString());
@@ -613,7 +613,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       print('Showing the feedback form. Enter some feedback and send/cancel.');
       print('Or wait 20 seconds to skip this test.');
-      await Future.delayed(const Duration(seconds: 20));
+      await Future<void>.delayed(const Duration(seconds: 20));
 
       await TestFairy.bringFlutterToFront();
 
@@ -634,12 +634,12 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       print('Testing network calls. Attempting GET to example.com');
 
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       var response = await http.get('https://example.com/');
       print(response.toString());
 
-      await Future.delayed(const Duration(seconds: 5));
+      await Future<void>.delayed(const Duration(seconds: 5));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -658,7 +658,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       await TestFairy.disableAutoUpdate();
       await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       var url = await TestFairy.getSessionUrl();
 

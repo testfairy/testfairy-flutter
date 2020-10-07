@@ -49,7 +49,7 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> begin(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    await TestFairyBase.channel.invokeMethod('begin', appToken);
+    await TestFairyBase.channel.invokeMethod<void>('begin', appToken);
   }
 
   /// Initialize a TestFairy session with fine grained options.
@@ -62,7 +62,7 @@ abstract class TestFairy extends TestFairyBase {
 
     var args = {'appToken': appToken, 'options': options};
 
-    await TestFairyBase.channel.invokeMethod('beginWithOptions', args);
+    await TestFairyBase.channel.invokeMethod<void>('beginWithOptions', args);
   }
 
   /// Initialize crash reporting.
@@ -71,7 +71,8 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> installCrashHandler(String appToken) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    await TestFairyBase.channel.invokeMethod('installCrashHandler', appToken);
+    await TestFairyBase.channel
+        .invokeMethod<void>('installCrashHandler', appToken);
   }
 
   /// Initialize shake gesture recognizer for launching the feedback form.
@@ -81,7 +82,7 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
 
     await TestFairyBase.channel
-        .invokeMethod('installFeedbackHandler', appToken);
+        .invokeMethod<void>('installFeedbackHandler', appToken);
   }
 
   /// Override the server endpoint address for using with on-premise installations
@@ -90,13 +91,17 @@ abstract class TestFairy extends TestFairyBase {
   /// Please contact support for more information about these products.
   static Future<void> setServerEndpoint(String endpoint) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('setServerEndpoint', endpoint);
+    await TestFairyBase.channel
+        .invokeMethod<void>('setServerEndpoint', endpoint);
   }
 
   /// Returns SDK version (x.x.x)
   static Future<String> getVersion() async {
     TestFairyBase.prepareTwoWayInvoke();
-    return await TestFairyBase.channel.invokeMethod('getVersion');
+
+    var version =
+        await TestFairyBase.channel.invokeMethod<String>('getVersion');
+    return version!;
   }
 
   /// Send a feedback on behalf of the user.
@@ -105,14 +110,15 @@ abstract class TestFairy extends TestFairyBase {
   /// Feedback will be associated with the current session.
   static Future<void> sendUserFeedback(String feedback) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('sendUserFeedback', feedback);
+    await TestFairyBase.channel
+        .invokeMethod<void>('sendUserFeedback', feedback);
   }
 
   /// @Deprecated backward compatibility wrapper for [addEvent].
   /// Use [addEvent] unless really necessary.
   static Future<void> addCheckpoint(String name) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('addCheckpoint', name);
+    await TestFairyBase.channel.invokeMethod<void>('addCheckpoint', name);
   }
 
   /// Marks an event in session. Use this text to tag a session with an event name.
@@ -121,7 +127,7 @@ abstract class TestFairy extends TestFairyBase {
   /// to better understand what your users experienced.
   static Future<void> addEvent(String name) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('addEvent', name);
+    await TestFairyBase.channel.invokeMethod<void>('addEvent', name);
   }
 
   /// @Deprecated backward compatibility wrapper for [setUserId].
@@ -132,7 +138,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> setCorrelationId(String id) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('setCorrelationId', id);
+    await TestFairyBase.channel.invokeMethod<void>('setCorrelationId', id);
   }
 
   /// @Deprecated backward compatibility wrapper for [setUserId] and [setAttribute].
@@ -144,7 +150,7 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> identifyWithTraits(String id, Map traits) async {
     var args = {'id': id, 'traits': traits};
 
-    await TestFairyBase.channel.invokeMethod('identifyWithTraits', args);
+    await TestFairyBase.channel.invokeMethod<void>('identifyWithTraits', args);
   }
 
   /// @Deprecated backward compatibility wrapper for [setUserId].
@@ -155,7 +161,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Can be called only once per session. Subsequent calls will be ignored.
   static Future<void> identify(String id) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('identify', id);
+    await TestFairyBase.channel.invokeMethod<void>('identify', id);
   }
 
   /// Use this to tell TestFairy who the user is.
@@ -164,7 +170,7 @@ abstract class TestFairy extends TestFairyBase {
   /// We recommend passing values such as email, phone number, or user id that your app may use.
   static Future<void> setUserId(String id) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('setUserId', id);
+    await TestFairyBase.channel.invokeMethod<void>('setUserId', id);
   }
 
   /// Records an attribute that will be added to the session.
@@ -175,14 +181,17 @@ abstract class TestFairy extends TestFairyBase {
 
     var args = {'key': key, 'value': value};
 
-    await TestFairyBase.channel.invokeMethod('setAttribute', args);
+    await TestFairyBase.channel.invokeMethod<void>('setAttribute', args);
   }
 
   /// Returns the address of the recorded session on TestFairy’s developer portal.
   /// Will return null if recording not yet started.
   static Future<String> getSessionUrl() async {
     TestFairyBase.prepareTwoWayInvoke();
-    return await TestFairyBase.channel.invokeMethod('getSessionUrl');
+
+    var sessionUrl =
+        await TestFairyBase.channel.invokeMethod<String>('getSessionUrl');
+    return sessionUrl!;
   }
 
   /// Displays the feedback activity or view controller depending on your platform.
@@ -192,7 +201,7 @@ abstract class TestFairy extends TestFairyBase {
   /// All feedbacks will appear in your build report page, and in the recorded session page.
   static Future<void> showFeedbackForm() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('showFeedbackForm');
+    await TestFairyBase.channel.invokeMethod<void>('showFeedbackForm');
   }
 
   /// Stops the current session recording. Unlike [pause], when
@@ -203,7 +212,7 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> stop() async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    await TestFairyBase.channel.invokeMethod('stop');
+    await TestFairyBase.channel.invokeMethod<void>('stop');
   }
 
   /// Resumes the recording of the current session.
@@ -211,7 +220,7 @@ abstract class TestFairy extends TestFairyBase {
   /// This method resumes a session after it was paused. Has no effect if already resumed.
   static Future<void> resume() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('resume');
+    await TestFairyBase.channel.invokeMethod<void>('resume');
   }
 
   /// Pauses the current session.
@@ -220,19 +229,20 @@ abstract class TestFairy extends TestFairyBase {
   /// Has no effect if already paused.
   static Future<void> pause() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('pause');
+    await TestFairyBase.channel.invokeMethod<void>('pause');
   }
 
   /// Send a VERBOSE [Error] or [Exception] to TestFairy.
   static Future<void> logError(dynamic error) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('logError', error.toString());
+    await TestFairyBase.channel
+        .invokeMethod<void>('logError', error.toString());
   }
 
   /// Send a VERBOSE log message to TestFairy.
   static Future<void> log(String message) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('log', message);
+    await TestFairyBase.channel.invokeMethod<void>('log', message);
   }
 
   /// Set a custom name for the current screen. Useful for applications that don't use more than one
@@ -241,13 +251,16 @@ abstract class TestFairy extends TestFairyBase {
   ///	This name is displayed for a given screenshot, and will override the name of the current screen.
   static Future<void> setScreenName(String name) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('setScreenName', name);
+    await TestFairyBase.channel.invokeMethod<void>('setScreenName', name);
   }
 
   /// Indicates in runtime whether your last session was crashed.
   static Future<bool> didLastSessionCrash() async {
     TestFairyBase.prepareTwoWayInvoke();
-    return await TestFairyBase.channel.invokeMethod('didLastSessionCrash');
+
+    var didCrash =
+        await TestFairyBase.channel.invokeMethod<bool>('didLastSessionCrash');
+    return didCrash!;
   }
 
   /// Enables the ability to capture crashes.
@@ -257,7 +270,7 @@ abstract class TestFairy extends TestFairyBase {
   /// it cannot be uninstalled.
   static Future<void> enableCrashHandler() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('enableCrashHandler');
+    await TestFairyBase.channel.invokeMethod<void>('enableCrashHandler');
   }
 
   /// Disables the ability to capture crashes.
@@ -267,7 +280,7 @@ abstract class TestFairy extends TestFairyBase {
   /// it cannot be uninstalled.
   static Future<void> disableCrashHandler() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('disableCrashHandler');
+    await TestFairyBase.channel.invokeMethod<void>('disableCrashHandler');
   }
 
   /// Enables recording of a metric regardless of build settings.
@@ -278,7 +291,7 @@ abstract class TestFairy extends TestFairyBase {
   /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> enableMetric(String metric) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('enableMetric', metric);
+    await TestFairyBase.channel.invokeMethod<void>('enableMetric', metric);
   }
 
   /// Disables recording of a metric regardless of build settings.
@@ -289,7 +302,7 @@ abstract class TestFairy extends TestFairyBase {
   /// if a metric is also disabled, the last call to enable to disable wins.
   static Future<void> disableMetric(String metric) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('disableMetric', metric);
+    await TestFairyBase.channel.invokeMethod<void>('disableMetric', metric);
   }
 
   /// Enables the ability to capture video recording regardless of build settings.
@@ -307,14 +320,14 @@ abstract class TestFairy extends TestFairyBase {
       'framesPerSecond': framesPerSecond
     };
 
-    await TestFairyBase.channel.invokeMethod('enableVideo', args);
+    await TestFairyBase.channel.invokeMethod<void>('enableVideo', args);
   }
 
   /// Disables the ability to capture video recording.
   /// Must be called before [begin].
   static Future<void> disableVideo() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('disableVideo');
+    await TestFairyBase.channel.invokeMethod<void>('disableVideo');
   }
 
   /// Enables the ability to present the feedback form based on the method given.
@@ -325,7 +338,8 @@ abstract class TestFairy extends TestFairyBase {
   /// settings will be used.
   static Future<void> enableFeedbackForm(String method) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('enableFeedbackForm', method);
+    await TestFairyBase.channel
+        .invokeMethod<void>('enableFeedbackForm', method);
   }
 
   /// Disables the ability to present users with feedback when devices is shaken,
@@ -333,7 +347,7 @@ abstract class TestFairy extends TestFairyBase {
   /// Must be called before [begin].
   static Future<void> disableFeedbackForm() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('disableFeedbackForm');
+    await TestFairyBase.channel.invokeMethod<void>('disableFeedbackForm');
   }
 
   /// Sets the maximum recording time.
@@ -344,7 +358,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Time is rounded to the nearest minute.
   static Future<void> setMaxSessionLength(double seconds) async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('setMaxSessionLength', seconds);
+    await TestFairyBase.channel
+        .invokeMethod<void>('setMaxSessionLength', seconds);
   }
 
   /// Hides a specific view from appearing in the video generated.
@@ -367,7 +382,7 @@ abstract class TestFairy extends TestFairyBase {
 
     var args = {'kind': kind.toString(), 'label': label, 'info': info};
 
-    await TestFairyBase.channel.invokeMethod('addUserInteraction', args);
+    await TestFairyBase.channel.invokeMethod<void>('addUserInteraction', args);
   }
 
   /// Call this function to log your network events.
@@ -394,14 +409,14 @@ abstract class TestFairy extends TestFairyBase {
       'errorMessage': errorMessage,
     };
 
-    await TestFairyBase.channel.invokeMethod('addNetworkEvent', args);
+    await TestFairyBase.channel.invokeMethod<void>('addNetworkEvent', args);
   }
 
   /// Brings Flutter activity or view controller to front.
   /// Can be used for testing native plugins.
   static Future<void> bringFlutterToFront() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('bringFlutterToFront');
+    await TestFairyBase.channel.invokeMethod<void>('bringFlutterToFront');
   }
 
   /// Customizes the feedback form.
@@ -437,13 +452,13 @@ abstract class TestFairy extends TestFairyBase {
 
     TestFairyBase.feedbackOptionsIdCounter++;
 
-    await TestFairyBase.channel.invokeMethod('setFeedbackOptions', args);
+    await TestFairyBase.channel.invokeMethod<void>('setFeedbackOptions', args);
   }
 
   /// Disables auto update prompts for current session.
   static Future<void> disableAutoUpdate() async {
     TestFairyBase.prepareTwoWayInvoke();
-    await TestFairyBase.channel.invokeMethod('disableAutoUpdate');
+    await TestFairyBase.channel.invokeMethod<void>('disableAutoUpdate');
   }
 
   /// Creates necessary overrides to be used with [HttpOverrides.runWithHttpOverrides].
@@ -475,9 +490,14 @@ class TestFairyGestureDetector extends StatefulWidget {
   }
 }
 
-/// Describes the type of touch gesture being made
+/// Describes the type of touch gestures
 enum UserInteractionKind {
+  /// A single finger tap action
   USER_INTERACTION_BUTTON_PRESSED,
+
+  /// A single finger long tap action
   USER_INTERACTION_BUTTON_LONG_PRESSED,
+
+  /// A single finger double tap action
   USER_INTERACTION_BUTTON_DOUBLE_PRESSED
 }

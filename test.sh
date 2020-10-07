@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 cd example
-flutter drive --target=test_driver/app.dart
+flutter drive --enable-experiment=non-nullable --no-sound-null-safety -v --target=test_driver/app.dart
 cd ..

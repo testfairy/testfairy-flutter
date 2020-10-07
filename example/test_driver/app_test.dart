@@ -3,7 +3,13 @@ import 'package:test/test.dart';
 
 void main() {
   group('Testfairy Plugin Tests', () {
-    FlutterDriver? driver;
+    var cleanUp = () {};
+    var drive = () async {
+      var error = new StateError("FlutterDriver is not ready yet!");
+      throw error;
+
+      return await FlutterDriver.connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
+    };
 
     final timeout = Duration(seconds: 120);
     final errorTextFinder = find.byValueKey('errorMessage');
@@ -12,15 +18,33 @@ void main() {
 
     // Connect to the Flutter driver before running any tests
     setUpAll(() async {
-      driver = await FlutterDriver.connect();
-      await driver!.waitUntilFirstFrameRasterized();
+      print("3 !");
+      FlutterDriver driver = await FlutterDriver.connect();
+      print("2 !");
+      await driver.waitUntilFirstFrameRasterized();
+      print("1 !");
+
+      cleanUp = () {
+        driver.close();
+
+        cleanUp = () {};
+
+        drive = () async {
+          var error = new StateError("FlutterDriver is released!");
+          throw error;
+
+          return await FlutterDriver.connect(); // Here for type inference (dart1-dart2 compatible syntax hack)
+        };
+      };
+
+      drive = () async {
+        return driver;
+      };
     });
 
     // Close the connection to the driver after the tests have completed
     tearDownAll(() async {
-      if (driver != null) {
-        driver!.close();
-      }
+      cleanUp();
     });
 
     // Helper test builder:
@@ -32,17 +56,19 @@ void main() {
         Function testCaseFunction,
         {bool scroll = true}) {
       test(testName, () async {
+        final driver = await drive();
+
         if (scroll) {
-          await driver!.scrollUntilVisible(scrollerFinder, testButtonFinder,
+          await driver.scrollUntilVisible(scrollerFinder, testButtonFinder,
               alignment: 0.5, timeout: Duration(seconds: 10));
         }
 
-        await driver!.tap(testButtonFinder, timeout: timeout);
+        await driver.tap(testButtonFinder, timeout: timeout);
 
         await testCaseFunction();
 
-        await driver!.waitForAbsent(testingFinder, timeout: timeout);
-        var x = await driver!.getText(errorTextFinder);
+        await driver.waitForAbsent(testingFinder, timeout: timeout);
+        var x = await driver.getText(errorTextFinder);
         print("$testName: $x");
 
         expect(x, 'No error yet.');
