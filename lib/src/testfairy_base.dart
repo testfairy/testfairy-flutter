@@ -51,7 +51,7 @@ abstract class TestFairyBase {
     List<Map<String, int>> rects = [];
 
     hiddenWidgets.forEach((gk) {
-      RenderBox ro = gk.currentContext.findRenderObject();
+      RenderBox ro = gk.currentContext.findRenderObject() as RenderBox;
 
       var pos = ro.localToGlobal(Offset.zero);
       pos = Offset(pos.dx * ui.window.devicePixelRatio,
@@ -84,12 +84,8 @@ abstract class TestFairyBase {
   static var feedbackOptionsCallbacks = {};
 
   static void callOnFeedbackSent(Map args) {
-    var opts = FeedbackOptions();
-
-    opts.email = args['email'];
-    opts.text = args['text'];
-    opts.timestamp = args['timestamp'];
-    opts.feedbackNo = args['feedbackNo'];
+    var opts = FeedbackOptions(
+        args['email'], args['text'], args['timestamp'], args['feedbackNo']);
 
 //    print(args['callId'].toString());
 
@@ -101,12 +97,8 @@ abstract class TestFairyBase {
   }
 
   static void callOnFeedbackFailed(Map args) {
-    var opts = FeedbackOptions();
-
-    opts.email = args['email'];
-    opts.text = args['text'];
-    opts.timestamp = args['timestamp'];
-    opts.feedbackNo = args['feedbackNo'];
+    var opts = FeedbackOptions(
+        args['email'], args['text'], args['timestamp'], args['feedbackNo']);
 
     feedbackOptionsCallbacks[args['callId'].toString()]
         ['onFeedbackFailed'](opts);

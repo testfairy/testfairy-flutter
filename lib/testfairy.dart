@@ -380,7 +380,7 @@ abstract class TestFairy extends TestFairyBase {
       int endTimeMillis,
       int requestSize,
       int responseSize,
-      String errorMessage) async {
+      String? errorMessage) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
@@ -406,8 +406,8 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Customizes the feedback form.
   static Future<void> setFeedbackOptions(
-      {String defaultText,
-      String browserUrl,
+      {String? defaultText,
+      String? browserUrl,
       bool emailFieldVisible: true,
       bool emailMandatory: false,
       Function(FeedbackOptions) onFeedbackSent: emptyFeedbackOptionsFunction,
@@ -465,7 +465,7 @@ abstract class TestFairy extends TestFairyBase {
 ///
 /// Example: `runApp(TestFairyGestureDetector(child: TestfairyExampleApp()));`
 class TestFairyGestureDetector extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
 
   TestFairyGestureDetector({this.child});
 

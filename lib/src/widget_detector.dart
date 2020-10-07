@@ -12,8 +12,8 @@ import 'package:testfairy/testfairy.dart';
 class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   final GlobalKey _ignorePointerKey = GlobalKey();
 
-  _CancelableTask _tapDetectionTask;
-  Function _inspectElement;
+  _CancelableTask? _tapDetectionTask;
+  Function? _inspectElement;
 
   int _lastPanDownTime = 0;
   int _detectedTapCount = 0;
@@ -39,7 +39,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 //    print("TestFairy: _handlePanCancel");
 
     if (_tapDetectionTask != null) {
-      _tapDetectionTask.cancel();
+      _tapDetectionTask!.cancel();
       _tapDetectionTask = null;
     }
 
@@ -89,7 +89,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 //    print("LongPress count:" + _detectedLongPressCount.toString());
 
     if (_tapDetectionTask != null) {
-      _tapDetectionTask.cancel();
+      _tapDetectionTask!.cancel();
       _tapDetectionTask = null;
     }
 
@@ -107,7 +107,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
     if (_inspectElement != null) {
       // If null, hit test was unsuccessful
-      _inspectElement(); // This is the guy who sends results to TestFairy
+      _inspectElement!(); // This is the guy who sends results to TestFairy
     }
 
     _inspectElement = null;
@@ -117,25 +117,26 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   }
 
   /// Check which widget user tapped and return a lambda which inspects the widget to send findings to TestFairy
-  Function _detectElement(Offset position) {
+  Function? _detectElement(Offset position) {
     final RenderIgnorePointer renderIgnorePointer =
-        _ignorePointerKey.currentContext.findRenderObject();
-    RenderBox childRenderObject = renderIgnorePointer.child;
+        _ignorePointerKey.currentContext.findRenderObject()
+            as RenderIgnorePointer;
+    RenderBox? childRenderObject = renderIgnorePointer.child;
 
     // Find root RenderBox
     while (childRenderObject is! RenderBox) {
-      RenderBox result;
-      childRenderObject.visitChildren((object) {
+      RenderBox? result;
+      childRenderObject?.visitChildren((object) {
         if (result != null) return;
         if (object is RenderBox) {
           result = object;
         }
-        childRenderObject = object;
+        childRenderObject = object as RenderBox;
       });
     }
 
     return _findHitWidget(
-        _hitTestPossibleElements(position, childRenderObject));
+        _hitTestPossibleElements(position, childRenderObject!));
   }
 
   /// For a given position and RenderBox, returns all hit widgets
@@ -144,7 +145,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     List<_RenderObjectElement> elements = <_RenderObjectElement>[];
 
     // Get hitTest candidates from RenderBox/RenderSliver hit test methods
-    HitTestResult testResult = BoxHitTestResult();
+    BoxHitTestResult testResult = BoxHitTestResult();
     // flaw: if renderObject doesn't implement hitTest or add itself to result, then we can't obtain it. Fix later!
     object.hitTest(testResult, position: position);
 
@@ -157,8 +158,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       Element ele = testEntry.target.debugCreator.element;
 
       elements.add(_RenderObjectElement(
-          renderObject: testEntry.target,
-          element: ele)); // If you want to filter, inspect ele
+          testEntry.target, ele)); // If you want to filter, inspect ele
 
       dynamic nextTestEntry =
           (i + 1) < hitTestEntries.length ? hitTestEntries[i + 1] : null;
@@ -170,9 +170,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
                     .target.debugCreator.element) // Ignore debug widgets
           return false;
 
-        elements.add(_RenderObjectElement(
-            renderObject: testEntry.target,
-            element: ancestor)); // If you want to filter, inspect ancestor
+        elements.add(_RenderObjectElement(testEntry.target,
+            ancestor)); // If you want to filter, inspect ancestor
         return true;
       });
     }
@@ -181,17 +180,17 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   }
 
   /// For a given list of hit results, finds the user facing widget
-  Function _findHitWidget(List<_RenderObjectElement> elements) {
-    RenderBox lastRenderBox;
+  Function? _findHitWidget(List<_RenderObjectElement> elements) {
+    RenderBox? lastRenderBox;
     List<_RenderObjectElement> elementsOfSameSize = [];
     bool alreadyVisited = false;
 
-    Function elementInspector;
+    Function? elementInspector;
     for (int i = 0; i < elements.length; i++) {
       _RenderObjectElement element = elements[i];
       if (element.renderObject is! RenderBox) continue;
 
-      RenderBox renderBox = element.renderObject;
+      RenderBox renderBox = element.renderObject as RenderBox;
       // Avoid repeated elements on same renderObject or its wrappers
       if (lastRenderBox != null && renderBox.size != lastRenderBox.size) {
         // Transform local coordinate to global
@@ -317,11 +316,11 @@ class _RenderObjectElement with WidgetInspectorService {
   RenderObject renderObject;
   Element element;
 
-  _RenderObjectElement({this.renderObject, this.element});
+  _RenderObjectElement(this.renderObject, this.element);
 
   Key get widgetKey => element.widget.key;
 
-  String get widgetKeyString {
+  String? get widgetKeyString {
     if (widgetKey is ValueKey) {
       return widgetKey.toString();
     }
@@ -332,25 +331,25 @@ class _RenderObjectElement with WidgetInspectorService {
 
   String get widgetTypeString => widgetType.toString();
 
-  Map _jsonInfoMap;
+  Map? _jsonInfoMap;
 
   /// In which file widget is constructed. Map keys: file, line, column
   Map get locationInfoMap {
     if (_jsonInfoMap == null) getJsonInfo();
-    return _jsonInfoMap["creationLocation"];
+    return _jsonInfoMap!["creationLocation"];
   }
 
-  String get localFilePosition {
+  String? get localFilePosition {
     if (_isCreatedLocally()) {
       String filePath = locationInfoMap["file"];
       var pathPattern = RegExp('.*(/lib/.+)');
-      filePath = pathPattern.firstMatch(filePath).group(1);
+      filePath = pathPattern.firstMatch(filePath)!.group(1)!;
       return "file: $filePath, line: ${locationInfoMap["line"]}";
     }
     return null;
   }
 
-  Map getJsonInfo() {
+  Map? getJsonInfo() {
     if (_jsonInfoMap != null) return _jsonInfoMap;
     //warning: consumes a lot of time
     WidgetInspectorService.instance.setSelection(element);
@@ -373,7 +372,7 @@ class _RenderObjectElement with WidgetInspectorService {
 
 /// A task run with delay, can be canceled before delayed duration
 class _CancelableTask {
-  Future _future;
+  Future? _future;
   bool _canceled = false;
 
   _CancelableTask(Duration delay, Function operation) {
@@ -390,7 +389,7 @@ class _CancelableTask {
 
   void waitTask() async {
     if (_future != null) {
-      await _future;
+      await _future!;
     }
   }
 }

@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('Testfairy Plugin Tests', () {
-    FlutterDriver driver;
+    FlutterDriver? driver;
 
     final timeout = Duration(seconds: 120);
     final errorTextFinder = find.byValueKey('errorMessage');
@@ -13,13 +13,13 @@ void main() {
     // Connect to the Flutter driver before running any tests
     setUpAll(() async {
       driver = await FlutterDriver.connect();
-      await driver.waitUntilFirstFrameRasterized();
+      await driver!.waitUntilFirstFrameRasterized();
     });
 
     // Close the connection to the driver after the tests have completed
     tearDownAll(() async {
       if (driver != null) {
-        driver.close();
+        driver!.close();
       }
     });
 
@@ -30,19 +30,19 @@ void main() {
     // 4. Asserts failure if error is found.
     void testfairyTest(String testName, SerializableFinder testButtonFinder,
         Function testCaseFunction,
-        {scroll: true}) {
+        {bool scroll = true}) {
       test(testName, () async {
         if (scroll) {
-          await driver.scrollUntilVisible(scrollerFinder, testButtonFinder,
+          await driver!.scrollUntilVisible(scrollerFinder, testButtonFinder,
               alignment: 0.5, timeout: Duration(seconds: 10));
         }
 
-        await driver.tap(testButtonFinder, timeout: timeout);
+        await driver!.tap(testButtonFinder, timeout: timeout);
 
         await testCaseFunction();
 
-        await driver.waitForAbsent(testingFinder, timeout: timeout);
-        var x = await driver.getText(errorTextFinder);
+        await driver!.waitForAbsent(testingFinder, timeout: timeout);
+        var x = await driver!.getText(errorTextFinder);
         print("$testName: $x");
 
         expect(x, 'No error yet.');
@@ -55,7 +55,7 @@ void main() {
     // 3. Asserts failure if error is found.
     void testfairyTestSimple(
         String testName, SerializableFinder testButtonFinder,
-        {scroll: true}) {
+        {bool scroll = true}) {
       testfairyTest(testName, testButtonFinder, () async {}, scroll: scroll);
     }
 

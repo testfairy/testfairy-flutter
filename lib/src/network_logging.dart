@@ -9,7 +9,7 @@ import 'package:testfairy/testfairy.dart';
 
 class TestFairyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     var clientToWrap = super.createHttpClient(context);
 
     return new TestFairyHttpClient(
@@ -19,11 +19,11 @@ class TestFairyHttpOverrides extends HttpOverrides {
 
 abstract class TestFairyHttpClient extends HttpClient {
   factory TestFairyHttpClient(
-      {SecurityContext context, HttpClient wrappedClient}) {
+      {SecurityContext? context, HttpClient? wrappedClient}) {
     if (wrappedClient == null) {
       return new _TestFairyHttpClient(new HttpClient(context: context));
     } else {
-      return new _TestFairyHttpClient(wrappedClient);
+      return new _TestFairyHttpClient(wrappedClient!);
     }
   }
 }
@@ -31,9 +31,7 @@ abstract class TestFairyHttpClient extends HttpClient {
 class _TestFairyHttpClient implements TestFairyHttpClient {
   HttpClient wrappedClient;
 
-  _TestFairyHttpClient(HttpClient wrappedClient) {
-    this.wrappedClient = wrappedClient;
-  }
+  _TestFairyHttpClient(this.wrappedClient);
 
   @override
   void set autoUncompress(bool autoUncompress) {
@@ -46,13 +44,13 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set connectionTimeout(Duration connectionTimeout) {
+  void set connectionTimeout(Duration? connectionTimeout) {
     this.wrappedClient.connectionTimeout = connectionTimeout;
   }
 
   @override
   Duration get connectionTimeout {
-    return this.wrappedClient.connectionTimeout;
+    return this.wrappedClient.connectionTimeout!;
   }
 
   @override
@@ -66,23 +64,23 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set maxConnectionsPerHost(int maxConnectionsPerHost) {
+  void set maxConnectionsPerHost(int? maxConnectionsPerHost) {
     this.wrappedClient.maxConnectionsPerHost = maxConnectionsPerHost;
   }
 
   @override
   int get maxConnectionsPerHost {
-    return this.wrappedClient.maxConnectionsPerHost;
+    return this.wrappedClient.maxConnectionsPerHost!;
   }
 
   @override
-  void set userAgent(String userAgent) {
+  void set userAgent(String? userAgent) {
     this.wrappedClient.userAgent = userAgent;
   }
 
   @override
   String get userAgent {
-    return this.wrappedClient.userAgent;
+    return this.wrappedClient.userAgent!;
   }
 
   @override
@@ -99,20 +97,20 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 
   @override
   void set authenticate(
-      Future<bool> Function(Uri url, String scheme, String realm) f) {
+      Future<bool> Function(Uri url, String scheme, String realm)? f) {
     this.wrappedClient.authenticate = f;
   }
 
   @override
   void set authenticateProxy(
-      Future<bool> Function(String host, int port, String scheme, String realm)
+      Future<bool> Function(String host, int port, String scheme, String realm)?
           f) {
     this.wrappedClient.authenticateProxy = f;
   }
 
   @override
   void set badCertificateCallback(
-      bool Function(X509Certificate cert, String host, int port) callback) {
+      bool Function(X509Certificate cert, String host, int port)? callback) {
     this.wrappedClient.badCertificateCallback = callback;
   }
 
@@ -139,7 +137,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set findProxy(String Function(Uri url) f) {
+  void set findProxy(String Function(Uri url)? f) {
     this.wrappedClient.findProxy = f;
   }
 
@@ -253,9 +251,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
 class _TestFairyClientHttpRequest implements HttpClientRequest {
   HttpClientRequest wrappedRequest;
 
-  _TestFairyClientHttpRequest(HttpClientRequest wrappedRequest) {
-    this.wrappedRequest = wrappedRequest;
-  }
+  _TestFairyClientHttpRequest(HttpClientRequest this.wrappedRequest);
 
   @override
   bool get bufferOutput {
@@ -323,7 +319,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void addError(Object error, [StackTrace stackTrace]) {
+  void addError(Object error, [StackTrace? stackTrace]) {
     this.wrappedRequest.addError(error, stackTrace);
   }
 
@@ -355,7 +351,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  HttpConnectionInfo get connectionInfo => this.wrappedRequest.connectionInfo;
+  HttpConnectionInfo? get connectionInfo => this.wrappedRequest.connectionInfo;
 
   @override
   List<Cookie> get cookies => this.wrappedRequest.cookies;
@@ -378,7 +374,7 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   Uri get uri => this.wrappedRequest.uri;
 
   @override
-  void write(Object obj) {
+  void write(Object? obj) {
     this.wrappedRequest.write(obj);
   }
 
@@ -393,15 +389,12 @@ class _TestFairyClientHttpRequest implements HttpClientRequest {
   }
 
   @override
-  void writeln([Object obj = ""]) {
+  void writeln([Object? obj = ""]) {
     this.wrappedRequest.writeln(obj);
   }
 
-  /** Modern Flutter
-  @Since("2.10")
   @override
   void abort([Object? exception, StackTrace? stackTrace]) {
-    this.wrappedRequest.abort(exception, stacktrace);
+    this.wrappedRequest.abort(exception, stackTrace);
   }
-  Modern Flutter **/
 }

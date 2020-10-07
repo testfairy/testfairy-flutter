@@ -3,16 +3,19 @@ part of testfairy;
 /// Feedback options returned after a feedback is sent.
 class FeedbackOptions {
   /// Feedback user's email.
-  String email;
+  final String email;
 
   /// Feedback message.
-  String text;
+  final String text;
 
   /// Timestamp in session.
-  double timestamp;
+  final double timestamp;
 
   /// Feedback number.
-  int feedbackNo = 0;
+  final int feedbackNo;
+
+  /// Constructor
+  FeedbackOptions(this.email, this.text, this.timestamp, this.feedbackNo);
 }
 
 /// Utility no argument function to use as an empty callback.
