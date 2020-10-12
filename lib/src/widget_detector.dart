@@ -1,11 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/foundation.dart';
-import 'dart:convert';
-import 'dart:async';
-
+import 'package:flutter/widgets.dart';
 import 'package:testfairy/testfairy.dart';
 
 /// State for the gesture detection wrapper
@@ -23,7 +23,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   void _handlePanDown(DragDownDetails event) {
 //    print("TestFairy: _handlePanDown");
 
-    _lastPanDownTime = new DateTime.now().millisecondsSinceEpoch;
+    _lastPanDownTime = DateTime.now().millisecondsSinceEpoch;
     _inspectElement = _detectElement(event.globalPosition);
   }
 
@@ -43,14 +43,14 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       _tapDetectionTask = null;
     }
 
-    int now = new DateTime.now().millisecondsSinceEpoch;
+    final int now = DateTime.now().millisecondsSinceEpoch;
     if (now - _lastPanDownTime < kLongPressTimeout.inMilliseconds) {
       _detectedTapCount++;
     } else {
       _detectedLongPressCount++;
     }
 
-    _tapDetectionTask = new _CancelableTask(kDoubleTapTimeout, _flush);
+    _tapDetectionTask = _CancelableTask(kDoubleTapTimeout, _flush);
   }
 
   /// Flutter calls this on an unconsumed tap
@@ -93,7 +93,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       _tapDetectionTask = null;
     }
 
-    bool useless = _detectedTapCount > 2 ||
+    final bool useless = _detectedTapCount > 2 ||
         (_detectedTapCount == 0 && _detectedLongPressCount == 0);
 
     if (discard || useless) {
@@ -126,11 +126,15 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     // Find root RenderBox
     while (childRenderObject is! RenderBox) {
       RenderBox? result;
-      childRenderObject?.visitChildren((object) {
-        if (result != null) return;
+      childRenderObject?.visitChildren((RenderObject object) {
+        if (result != null) {
+          return;
+        }
+
         if (object is RenderBox) {
           result = object;
         }
+
         childRenderObject = object as RenderBox;
       });
     }
@@ -142,25 +146,25 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// For a given position and RenderBox, returns all hit widgets
   List<_RenderObjectElement> _hitTestPossibleElements(
       Offset position, RenderBox object) {
-    List<_RenderObjectElement> elements = <_RenderObjectElement>[];
+    final List<_RenderObjectElement> elements = <_RenderObjectElement>[];
 
     // Get hitTest candidates from RenderBox/RenderSliver hit test methods
-    BoxHitTestResult testResult = BoxHitTestResult();
+    final BoxHitTestResult testResult = BoxHitTestResult();
     // flaw: if renderObject doesn't implement hitTest or add itself to result, then we can't obtain it. Fix later!
     object.hitTest(testResult, position: position);
 
-    List hitTestEntries = testResult.path.toList();
+    final List hitTestEntries = testResult.path.toList();
     // Get element of renderObject in order to get widget.key and runtimeType
     for (int i = 0; i < hitTestEntries.length; i++) {
       // BoxHitTestEntry or SliverHitTestEntry
-      dynamic testEntry = hitTestEntries[i];
+      final dynamic testEntry = hitTestEntries[i];
       // Traverse parent of current element until it is next render object's element
       Element ele = testEntry.target.debugCreator.element as Element;
 
       elements.add(_RenderObjectElement(testEntry.target as RenderObject,
           ele)); // If you want to filter, inspect ele
 
-      dynamic nextTestEntry =
+      final dynamic nextTestEntry =
           (i + 1) < hitTestEntries.length ? hitTestEntries[i + 1] : null;
       // We need to traverse up the elements tree until we meet element of render object of nextTestEntry
       ele.visitAncestorElements((Element ancestor) {
@@ -182,29 +186,33 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// For a given list of hit results, finds the user facing widget
   Function? _findHitWidget(List<_RenderObjectElement> elements) {
     RenderBox? lastRenderBox;
-    List<_RenderObjectElement> elementsOfSameSize = [];
+    final List<_RenderObjectElement> elementsOfSameSize = [];
     bool alreadyVisited = false;
 
     Function? elementInspector;
     for (int i = 0; i < elements.length; i++) {
-      _RenderObjectElement element = elements[i];
-      if (element.renderObject is! RenderBox) continue;
+      final _RenderObjectElement element = elements[i];
+      if (element.renderObject is! RenderBox) {
+        continue;
+      }
 
-      RenderBox renderBox = element.renderObject as RenderBox;
+      final RenderBox renderBox = element.renderObject as RenderBox;
       // Avoid repeated elements on same renderObject or its wrappers
       if (lastRenderBox != null && renderBox.size != lastRenderBox.size) {
         // Transform local coordinate to global
-        Matrix4 transform = lastRenderBox.getTransformTo(null);
-        Offset origin = MatrixUtils.transformPoint(transform, Offset.zero);
-        Rect boundsRect = origin & lastRenderBox.paintBounds.size;
+        final Matrix4 transform = lastRenderBox.getTransformTo(null);
+        final Offset origin = MatrixUtils.transformPoint(transform, Offset.zero);
+        final Rect boundsRect = origin & lastRenderBox.paintBounds.size;
 
         // Visit selected widget
         if (!alreadyVisited) {
-          List<_RenderObjectElement> localCreatedElements = [];
-          elementsOfSameSize.forEach((e) {
-            if (e._isCreatedLocally()) localCreatedElements.add(e);
+          final List<_RenderObjectElement> localCreatedElements = [];
+          elementsOfSameSize.forEach((_RenderObjectElement e) {
+            if (e._isCreatedLocally()) {
+              localCreatedElements.add(e);
+            }
           });
-          if (localCreatedElements.length > 0) {
+          if (localCreatedElements.isNotEmpty) {
             alreadyVisited = true;
 
             // Build lambda to send to TestFairy
@@ -228,24 +236,50 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// Builds a deferred lambda to inspect given element, sends results to TestFairy native SDK
   Function _buildElementInspector(
       Rect boundsRect, _RenderObjectElement element) {
+//    print("_buildElementInspector");
+
     // Common properties
-    var widgetKey = element.widgetKeyString;
-    var widgetType = element.widgetTypeString;
-    var elementString = element.toString();
-    var widgetString = element.element.toString();
+    String? widgetKey = element.widgetKeyString;
+    final String widgetType = element.widgetTypeString;
+    final String elementString = element.toString();
+    final String widgetString = element.element.toString();
 
     // Extract text by traversing children
-    var text = "";
+    String text = '';
     try {
-      dynamic widget =
-          element.element.widget; // This will throw if we are not a UI widget
-      dynamic child = widget.child; // This will throw if we are not a container
+      // Traverse through parents to find a usable widget key
+      if (widgetKey == null) {
+        element.element.visitAncestorElements((Element? parent) {
+          if (parent != null) {
+//            print('---\n' + parent.toString() + '\n----\n');
 
+            if (parent.widget.key != null && parent.widget.key is ValueKey) {
+              widgetKey = parent.widget.key.toString();
+
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+//        print("Widget Key: "  + (widgetKey ?? "none"));
+      } else {
+//        print("Widget Key: "  + widgetKey);
+      }
+
+      // Detect widget from element (an Element is an instance of a Widget)
+      final dynamic widget =
+          element.element.widget; // This will throw if we are not a UI widget
+
+      dynamic child = widget.child; // This will throw if we are not a container widget
+
+      // Traverse through children to build a Text representation of the hit widget
       while (child != null) {
         try {
           if (child.data is String) {
             // If our children has data, we append it to the built text
-            text += child.data.toString() + " ";
+            text += child.data.toString() + ' ';
           }
         } catch (_) {}
 
@@ -260,18 +294,22 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       // If we reach here, it means the interacted widget is already a leaf node
       try {
         // If the leaf node is a Text widget, we can grab the text
-        dynamic textElement = element.element;
+        final dynamic textElement = element.element;
         text = textElement.widget.data.toString();
       } catch (_) {}
     }
 
     // Clean up spaces
     text = text.trim();
+    
+    // Clean up debug markers
+    widgetKey = widgetKey?.replaceAll('[<\'', '');
+    widgetKey = widgetKey?.replaceAll('\'>]', '');
 
     // Since everything is already extracted above, calling the lambda below is
     // safe even when the widget is already destroyed ^^
     return () {
-      var kind = UserInteractionKind.USER_INTERACTION_BUTTON_PRESSED;
+      UserInteractionKind kind = UserInteractionKind.USER_INTERACTION_BUTTON_PRESSED;
 
       if (_detectedLongPressCount > 0) {
         kind = UserInteractionKind.USER_INTERACTION_BUTTON_LONG_PRESSED;
@@ -283,10 +321,10 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
           kind,
           text,
           {
-            "className": widgetType.toString(),
-            "accessibilityHint": widgetString.toString(),
-            "accessibilityIdentifier": widgetKey.toString(),
-            "accessibilityLabel": elementString.toString()
+            'className': widgetType.toString(),
+            'accessibilityHint': widgetString.toString(),
+            'accessibilityIdentifier': widgetKey.toString(),
+            'accessibilityLabel': elementString.toString()
           } as Map);
     };
   }
@@ -338,13 +376,16 @@ class _RenderObjectElement with WidgetInspectorService {
 
   /// In which file widget is constructed. Map keys: file, line, column
   Map get locationInfoMap {
-    if (_jsonInfoMap == null) getJsonInfo();
-    return _jsonInfoMap!["creationLocation"] as Map;
+    if (_jsonInfoMap == null) {
+      getJsonInfo();
+    }
+
+    return _jsonInfoMap!['creationLocation'] as Map;
   }
 
   String? get localFilePosition {
     if (_isCreatedLocally()) {
-      String filePath = locationInfoMap["file"] as String;
+      String filePath = locationInfoMap['file'] as String;
       var pathPattern = RegExp('.*(/lib/.+)');
       filePath = pathPattern.firstMatch(filePath)!.group(1)!;
       return "file: $filePath, line: ${locationInfoMap["line"]}";
@@ -353,23 +394,26 @@ class _RenderObjectElement with WidgetInspectorService {
   }
 
   Map? getJsonInfo() {
-    if (_jsonInfoMap != null) return _jsonInfoMap;
+    if (_jsonInfoMap != null) {
+      return _jsonInfoMap;
+    }
+
     //warning: consumes a lot of time
     WidgetInspectorService.instance.setSelection(element);
-    String jsonStr =
-        WidgetInspectorService.instance.getSelectedWidget(null, "");
+    final String jsonStr =
+        WidgetInspectorService.instance.getSelectedWidget(null, '');
     return _jsonInfoMap = json.decode(jsonStr) as Map?;
   }
 
   bool _isCreatedLocally() {
-    String fileLocation = locationInfoMap["file"] as String;
-    final String flutterFrameworkPath = "/packages/flutter/lib/src/";
+    final String fileLocation = locationInfoMap['file'] as String;
+    const String flutterFrameworkPath = '/packages/flutter/lib/src/';
     return !fileLocation.contains(flutterFrameworkPath);
   }
 
   @override
   String toString() {
-    return "renderObject: $renderObject, widgetKey: $widgetKey, widgetType: $widgetType";
+    return 'renderObject: $renderObject, widgetKey: $widgetKey, widgetType: $widgetType';
   }
 }
 
@@ -379,7 +423,7 @@ class _CancelableTask {
   bool _canceled = false;
 
   _CancelableTask(Duration delay, Function operation) {
-    this._future = Future.delayed(delay, () {
+    _future = Future<void>.delayed(delay, () {
       if (!_canceled) {
         operation();
       }

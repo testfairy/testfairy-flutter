@@ -23,7 +23,7 @@ void main() {
 
       // Call `await TestFairy.begin()` or any other setup code here.
 //      await TestFairy.setMaxSessionLength(60);
-//      await TestFairy.begin(APP_TOKEN);
+      await TestFairy.begin(APP_TOKEN);
 //      await TestFairy.installFeedbackHandler(APP_TOKEN);
 
 //      runApp(TestfairyExampleApp());
@@ -106,6 +106,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                                   print(
                                       "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                                 }),
+                            key: Key('clear_logs'),
                             child: Text('Clear Logs')),
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
