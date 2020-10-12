@@ -240,6 +240,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
     // Common properties
     String? widgetKey = element.widgetKeyString;
+    String? scrollableParentWidgetKey;
     final String widgetType = element.widgetTypeString;
     final String elementString = element.toString();
     final String widgetString = element.element.toString();
@@ -247,15 +248,31 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     // Extract text by traversing children
     String text = '';
     try {
-      // Traverse through parents to find a usable widget key
+      // Traverse through parents to find a usable widget key and scrollable parent
       if (widgetKey == null) {
         element.element.visitAncestorElements((Element? parent) {
           if (parent != null) {
 //            print('---\n' + parent.toString() + '\n----\n');
 
-            if (parent.widget.key != null && parent.widget.key is ValueKey) {
+            // Detect ancestor widget key
+            if (parent.widget.key != null && parent.widget.key is ValueKey && widgetKey == null) {
               widgetKey = parent.widget.key.toString();
+            }
 
+            // List of possible scrollable parent widget types
+            final bool parentIsScrollable =
+                parent.widget is ScrollView ||
+                parent.widget is CustomScrollView ||
+                parent.widget is SingleChildScrollView ||
+                parent.widget is PageView;
+
+            // Detect ancestor scrollable widget key
+            if (parentIsScrollable && parent.widget.key != null && parent.widget.key is ValueKey && scrollableParentWidgetKey == null) {
+              scrollableParentWidgetKey = parent.widget.key.toString();
+//              print('---\nScrollable key: ' + (scrollableParentWidgetKey ?? 'none') + '\n----\n');
+
+              // If we found a scrollable parent, there is no way we can find a key for the tapped widget,
+              // assume it's already found and stop visiting ancestor elements
               return false;
             }
           }
@@ -323,8 +340,9 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
           {
             'className': widgetType.toString(),
             'accessibilityHint': widgetString.toString(),
-            'accessibilityIdentifier': widgetKey.toString(),
-            'accessibilityLabel': elementString.toString()
+            'accessibilityIdentifier': (widgetKey ?? ""),
+            'accessibilityLabel': elementString.toString(),
+            'scrollableParentAccessibilityIdentifier': (scrollableParentWidgetKey ?? "")
           } as Map);
     };
   }
