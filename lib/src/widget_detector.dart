@@ -153,13 +153,13 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     // flaw: if renderObject doesn't implement hitTest or add itself to result, then we can't obtain it. Fix later!
     object.hitTest(testResult, position: position);
 
-    final List hitTestEntries = testResult.path.toList();
+    final List<HitTestEntry> hitTestEntries = testResult.path.toList();
     // Get element of renderObject in order to get widget.key and runtimeType
     for (int i = 0; i < hitTestEntries.length; i++) {
       // BoxHitTestEntry or SliverHitTestEntry
       final dynamic testEntry = hitTestEntries[i];
       // Traverse parent of current element until it is next render object's element
-      Element ele = testEntry.target.debugCreator.element as Element;
+      final Element ele = testEntry.target.debugCreator.element as Element;
 
       elements.add(_RenderObjectElement(testEntry.target as RenderObject,
           ele)); // If you want to filter, inspect ele
@@ -186,7 +186,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
   /// For a given list of hit results, finds the user facing widget
   Function? _findHitWidget(List<_RenderObjectElement> elements) {
     RenderBox? lastRenderBox;
-    final List<_RenderObjectElement> elementsOfSameSize = [];
+    final List<_RenderObjectElement> elementsOfSameSize =
+        <_RenderObjectElement>[];
     bool alreadyVisited = false;
 
     Function? elementInspector;
@@ -207,12 +208,18 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
         // Visit selected widget
         if (!alreadyVisited) {
-          final List<_RenderObjectElement> localCreatedElements = [];
-          elementsOfSameSize.forEach((_RenderObjectElement e) {
+          final List<_RenderObjectElement> localCreatedElements =
+              <_RenderObjectElement>[];
+
+          final Function(_RenderObjectElement) addToCreated =
+              (_RenderObjectElement e) {
             if (e._isCreatedLocally()) {
               localCreatedElements.add(e);
             }
-          });
+          };
+
+          elementsOfSameSize.forEach(addToCreated);
+
           if (localCreatedElements.isNotEmpty) {
             alreadyVisited = true;
 
@@ -341,17 +348,14 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
         kind = UserInteractionKind.USER_INTERACTION_BUTTON_DOUBLE_PRESSED;
       }
 
-      TestFairy.addUserInteraction(
-          kind,
-          text,
-          {
-            'className': widgetType.toString(),
-            'accessibilityHint': widgetString.toString(),
-            'accessibilityIdentifier': (widgetKey ?? ""),
-            'accessibilityLabel': elementString.toString(),
-            'scrollableParentAccessibilityIdentifier':
-                (scrollableParentWidgetKey ?? "")
-          } as Map);
+      TestFairy.addUserInteraction(kind, text, <String, String>{
+        'className': widgetType.toString(),
+        'accessibilityHint': widgetString.toString(),
+        'accessibilityIdentifier': (widgetKey ?? ''),
+        'accessibilityLabel': elementString.toString(),
+        'scrollableParentAccessibilityIdentifier':
+            (scrollableParentWidgetKey ?? '')
+      });
     };
   }
 
@@ -398,28 +402,28 @@ class _RenderObjectElement with WidgetInspectorService {
 
   String get widgetTypeString => widgetType.toString();
 
-  Map? _jsonInfoMap;
+  Map<dynamic, dynamic>? _jsonInfoMap;
 
   /// In which file widget is constructed. Map keys: file, line, column
-  Map get locationInfoMap {
+  Map<dynamic, dynamic> get locationInfoMap {
     if (_jsonInfoMap == null) {
       getJsonInfo();
     }
 
-    return _jsonInfoMap!['creationLocation'] as Map;
+    return _jsonInfoMap!['creationLocation'] as Map<dynamic, dynamic>;
   }
 
   String? get localFilePosition {
     if (_isCreatedLocally()) {
       String filePath = locationInfoMap['file'] as String;
-      var pathPattern = RegExp('.*(/lib/.+)');
+      final RegExp pathPattern = RegExp('.*(/lib/.+)');
       filePath = pathPattern.firstMatch(filePath)!.group(1)!;
       return "file: $filePath, line: ${locationInfoMap["line"]}";
     }
     return null;
   }
 
-  Map? getJsonInfo() {
+  Map<dynamic, dynamic>? getJsonInfo() {
     if (_jsonInfoMap != null) {
       return _jsonInfoMap;
     }
@@ -428,7 +432,7 @@ class _RenderObjectElement with WidgetInspectorService {
     WidgetInspectorService.instance.setSelection(element);
     final String jsonStr =
         WidgetInspectorService.instance.getSelectedWidget(null, '');
-    return _jsonInfoMap = json.decode(jsonStr) as Map?;
+    return _jsonInfoMap = json.decode(jsonStr) as Map<dynamic, dynamic>;
   }
 
   bool _isCreatedLocally() {

@@ -57,10 +57,14 @@ abstract class TestFairy extends TestFairyBase {
   /// Specify [options] as a [Map] controlling the current session
   /// "metrics": comma separated string of default metric options such as “cpu,memory,network-requests,shake,video,logs”
   /// "enableCrashReporter": [true] / [false] to enable crash handling. Default is true.
-  static Future<void> beginWithOptions(String appToken, Map options) async {
+  static Future<void> beginWithOptions(
+      String appToken, Map<String, dynamic> options) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {'appToken': appToken, 'options': options};
+    final Map<String, dynamic> args = <String, dynamic>{
+      'appToken': appToken,
+      'options': options
+    };
 
     await TestFairyBase.channel.invokeMethod<void>('beginWithOptions', args);
   }
@@ -99,8 +103,9 @@ abstract class TestFairy extends TestFairyBase {
   static Future<String> getVersion() async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var version =
+    final String? version =
         await TestFairyBase.channel.invokeMethod<String>('getVersion');
+
     return version!;
   }
 
@@ -147,8 +152,12 @@ abstract class TestFairy extends TestFairyBase {
   /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
   /// For example, setting correlation to the value of the user-id after they logged in.
   /// Can be called only once per session. Subsequent calls will be ignored.
-  static Future<void> identifyWithTraits(String id, Map traits) async {
-    var args = {'id': id, 'traits': traits};
+  static Future<void> identifyWithTraits(
+      String id, Map<String, dynamic> traits) async {
+    final Map<String, dynamic> args = <String, dynamic>{
+      'id': id,
+      'traits': traits
+    };
 
     await TestFairyBase.channel.invokeMethod<void>('identifyWithTraits', args);
   }
@@ -179,19 +188,23 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> setAttribute(String key, String value) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {'key': key, 'value': value};
+    final Map<String, String> args = <String, String>{
+      'key': key,
+      'value': value
+    };
 
     await TestFairyBase.channel.invokeMethod<void>('setAttribute', args);
   }
 
   /// Returns the address of the recorded session on TestFairy’s developer portal.
   /// Will return null if recording not yet started.
-  static Future<String> getSessionUrl() async {
+  static Future<String?> getSessionUrl() async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var sessionUrl =
+    final String? sessionUrl =
         await TestFairyBase.channel.invokeMethod<String>('getSessionUrl');
-    return sessionUrl!;
+
+    return sessionUrl;
   }
 
   /// Displays the feedback activity or view controller depending on your platform.
@@ -258,8 +271,9 @@ abstract class TestFairy extends TestFairyBase {
   static Future<bool> didLastSessionCrash() async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var didCrash =
+    final bool? didCrash =
         await TestFairyBase.channel.invokeMethod<bool>('didLastSessionCrash');
+
     return didCrash!;
   }
 
@@ -314,7 +328,7 @@ abstract class TestFairy extends TestFairyBase {
       String policy, String quality, double framesPerSecond) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
+    final Map<String, dynamic> args = <String, dynamic>{
       'policy': policy,
       'quality': quality,
       'framesPerSecond': framesPerSecond
@@ -377,10 +391,14 @@ abstract class TestFairy extends TestFairyBase {
   ///
   /// Accepted info keys are "accessibilityLabel", "accessibilityIdentifier", "accessibilityHint" and "className"
   static Future<void> addUserInteraction(
-      UserInteractionKind kind, String label, Map info) async {
+      UserInteractionKind kind, String label, Map<String, String> info) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {'kind': kind.toString(), 'label': label, 'info': info};
+    final Map<String, dynamic> args = <String, dynamic>{
+      'kind': kind.toString(),
+      'label': label,
+      'info': info
+    };
 
     await TestFairyBase.channel.invokeMethod<void>('addUserInteraction', args);
   }
@@ -398,7 +416,7 @@ abstract class TestFairy extends TestFairyBase {
       String? errorMessage) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
+    final Map<String, dynamic> args = <String, dynamic>{
       'uri': uri,
       'method': method,
       'code': code,
@@ -423,15 +441,15 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> setFeedbackOptions(
       {String? defaultText,
       String? browserUrl,
-      bool emailFieldVisible: true,
-      bool emailMandatory: false,
-      Function(FeedbackOptions) onFeedbackSent: emptyFeedbackOptionsFunction,
-      Function() onFeedbackCancelled: emptyFunction,
-      Function(FeedbackOptions) onFeedbackFailed:
+      bool emailFieldVisible = true,
+      bool emailMandatory = false,
+      Function(FeedbackOptions) onFeedbackSent = emptyFeedbackOptionsFunction,
+      Function() onFeedbackCancelled = emptyFunction,
+      Function(FeedbackOptions) onFeedbackFailed =
           emptyFeedbackOptionsFunction}) async {
     TestFairyBase.prepareTwoWayInvoke();
 
-    var args = {
+    final Map<String, dynamic> args = <String, dynamic>{
       'defaultText': defaultText,
       'browserUrl': browserUrl,
       'emailFieldVisible': emailFieldVisible,
@@ -439,16 +457,14 @@ abstract class TestFairy extends TestFairyBase {
       'callId': TestFairyBase.feedbackOptionsIdCounter
     };
 
-    var ifAbsent = () {
-      return {
+    TestFairyBase.feedbackOptionsCallbacks
+        .putIfAbsent(TestFairyBase.feedbackOptionsIdCounter.toString(), () {
+      return <String, dynamic>{
         'onFeedbackSent': onFeedbackSent,
         'onFeedbackCancelled': onFeedbackCancelled,
         'onFeedbackFailed': onFeedbackFailed
       };
-    };
-
-    TestFairyBase.feedbackOptionsCallbacks.putIfAbsent(
-        TestFairyBase.feedbackOptionsIdCounter.toString(), ifAbsent);
+    });
 
     TestFairyBase.feedbackOptionsIdCounter++;
 
@@ -471,7 +487,7 @@ abstract class TestFairy extends TestFairyBase {
   /// ```
   static HttpOverrides httpOverrides() {
     TestFairyBase.prepareTwoWayInvoke();
-    return new TestFairyHttpOverrides();
+    return TestFairyHttpOverrides();
   }
 }
 
@@ -482,7 +498,7 @@ abstract class TestFairy extends TestFairyBase {
 class TestFairyGestureDetector extends StatefulWidget {
   final Widget? child;
 
-  TestFairyGestureDetector({this.child});
+  const TestFairyGestureDetector({this.child});
 
   @override
   State<StatefulWidget> createState() {
