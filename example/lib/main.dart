@@ -108,6 +108,11 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                                   logs.clear();
                                   print(
                                       '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------');
+
+                                  Future<void>.delayed(
+                                      const Duration(seconds: 5), () async {
+                                    print(await TestFairy.getSessionUrl());
+                                  });
                                 }),
                             key: const Key('clear_logs'),
                             child: const Text('Clear Logs')),
