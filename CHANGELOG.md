@@ -1,3 +1,6 @@
+## 1.0.25
+* Upgraded to the latest native SDKs.
+
 ## 1.0.24
 * Upgraded to the latest native SDKs.
 
