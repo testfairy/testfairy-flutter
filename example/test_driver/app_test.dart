@@ -3,24 +3,44 @@ import 'package:test/test.dart';
 
 void main() {
   group('Testfairy Plugin Tests', () {
-    FlutterDriver driver;
+    Null Function() cleanUp = () {};
+    Future<FlutterDriver> Function() drive = () async {
+      final StateError error = StateError('FlutterDriver is not ready yet!');
+      throw error;
+    };
 
-    final timeout = Duration(seconds: 120);
-    final errorTextFinder = find.byValueKey('errorMessage');
-    final testingFinder = find.byValueKey('testing');
-    final scrollerFinder = find.byValueKey('scroller');
+    const Duration timeout = Duration(seconds: 120);
+    final SerializableFinder errorTextFinder = find.byValueKey('errorMessage');
+    final SerializableFinder testingFinder = find.byValueKey('testing');
+    final SerializableFinder scrollerFinder = find.byValueKey('scroller');
 
     // Connect to the Flutter driver before running any tests
     setUpAll(() async {
-      driver = await FlutterDriver.connect();
+      print('3 !');
+      final FlutterDriver driver = await FlutterDriver.connect();
+      print('2 !');
       await driver.waitUntilFirstFrameRasterized();
+      print('1 !');
+
+      cleanUp = () {
+        driver.close();
+
+        cleanUp = () {};
+
+        drive = () async {
+          final StateError error = StateError('FlutterDriver is released!');
+          throw error;
+        };
+      };
+
+      drive = () async {
+        return driver;
+      };
     });
 
     // Close the connection to the driver after the tests have completed
     tearDownAll(() async {
-      if (driver != null) {
-        driver.close();
-      }
+      cleanUp();
     });
 
     // Helper test builder:
@@ -30,11 +50,13 @@ void main() {
     // 4. Asserts failure if error is found.
     void testfairyTest(String testName, SerializableFinder testButtonFinder,
         Function testCaseFunction,
-        {scroll: true}) {
+        {bool scroll = true}) {
       test(testName, () async {
+        final FlutterDriver driver = await drive();
+
         if (scroll) {
           await driver.scrollUntilVisible(scrollerFinder, testButtonFinder,
-              alignment: 0.5, timeout: Duration(seconds: 10));
+              alignment: 0.5, timeout: const Duration(seconds: 10));
         }
 
         await driver.tap(testButtonFinder, timeout: timeout);
@@ -42,8 +64,8 @@ void main() {
         await testCaseFunction();
 
         await driver.waitForAbsent(testingFinder, timeout: timeout);
-        var x = await driver.getText(errorTextFinder);
-        print("$testName: $x");
+        final String x = await driver.getText(errorTextFinder);
+        print('$testName: $x');
 
         expect(x, 'No error yet.');
       });
@@ -55,7 +77,7 @@ void main() {
     // 3. Asserts failure if error is found.
     void testfairyTestSimple(
         String testName, SerializableFinder testButtonFinder,
-        {scroll: true}) {
+        {bool scroll = true}) {
       testfairyTest(testName, testButtonFinder, () async {}, scroll: scroll);
     }
 
