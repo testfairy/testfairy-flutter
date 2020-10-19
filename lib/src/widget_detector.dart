@@ -201,7 +201,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       if (lastRenderBox != null && renderBox.size != lastRenderBox.size) {
         // Transform local coordinate to global
         final Matrix4 transform = lastRenderBox.getTransformTo(null);
-        final Offset origin = MatrixUtils.transformPoint(transform, Offset.zero);
+        final Offset origin =
+            MatrixUtils.transformPoint(transform, Offset.zero);
         final Rect boundsRect = origin & lastRenderBox.paintBounds.size;
 
         // Visit selected widget
@@ -255,19 +256,23 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 //            print('---\n' + parent.toString() + '\n----\n');
 
             // Detect ancestor widget key
-            if (parent.widget.key != null && parent.widget.key is ValueKey && widgetKey == null) {
+            if (parent.widget.key != null &&
+                parent.widget.key is ValueKey &&
+                widgetKey == null) {
               widgetKey = parent.widget.key.toString();
             }
 
             // List of possible scrollable parent widget types
-            final bool parentIsScrollable =
-                parent.widget is ScrollView ||
+            final bool parentIsScrollable = parent.widget is ScrollView ||
                 parent.widget is CustomScrollView ||
                 parent.widget is SingleChildScrollView ||
                 parent.widget is PageView;
 
             // Detect ancestor scrollable widget key
-            if (parentIsScrollable && parent.widget.key != null && parent.widget.key is ValueKey && scrollableParentWidgetKey == null) {
+            if (parentIsScrollable &&
+                parent.widget.key != null &&
+                parent.widget.key is ValueKey &&
+                scrollableParentWidgetKey == null) {
               scrollableParentWidgetKey = parent.widget.key.toString();
 //              print('---\nScrollable key: ' + (scrollableParentWidgetKey ?? 'none') + '\n----\n');
 
@@ -289,7 +294,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       final dynamic widget =
           element.element.widget; // This will throw if we are not a UI widget
 
-      dynamic child = widget.child; // This will throw if we are not a container widget
+      dynamic child =
+          widget.child; // This will throw if we are not a container widget
 
       // Traverse through children to build a Text representation of the hit widget
       while (child != null) {
@@ -318,7 +324,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
     // Clean up spaces
     text = text.trim();
-    
+
     // Clean up debug markers
     widgetKey = widgetKey?.replaceAll('[<\'', '');
     widgetKey = widgetKey?.replaceAll('\'>]', '');
@@ -326,7 +332,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     // Since everything is already extracted above, calling the lambda below is
     // safe even when the widget is already destroyed ^^
     return () {
-      UserInteractionKind kind = UserInteractionKind.USER_INTERACTION_BUTTON_PRESSED;
+      UserInteractionKind kind =
+          UserInteractionKind.USER_INTERACTION_BUTTON_PRESSED;
 
       if (_detectedLongPressCount > 0) {
         kind = UserInteractionKind.USER_INTERACTION_BUTTON_LONG_PRESSED;
@@ -342,7 +349,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
             'accessibilityHint': widgetString.toString(),
             'accessibilityIdentifier': (widgetKey ?? ""),
             'accessibilityLabel': elementString.toString(),
-            'scrollableParentAccessibilityIdentifier': (scrollableParentWidgetKey ?? "")
+            'scrollableParentAccessibilityIdentifier':
+                (scrollableParentWidgetKey ?? "")
           } as Map);
     };
   }

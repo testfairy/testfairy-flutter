@@ -1,3 +1,6 @@
+## 2.0.0
+* Adopted Dart 2 as the new plugin language. 
+
 ## 1.0.25
 * Upgraded to the latest native SDKs.
 
