@@ -1,3 +1,6 @@
+## 2.0.1
+* Added scrollable widget detection for interactions.
+
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
 

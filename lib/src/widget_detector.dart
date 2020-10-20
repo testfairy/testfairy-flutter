@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -223,9 +225,14 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
           if (localCreatedElements.isNotEmpty) {
             alreadyVisited = true;
 
-            // Build lambda to send to TestFairy
-            elementInspector =
-                _buildElementInspector(boundsRect, localCreatedElements.first);
+            try {
+              // Build lambda to send to TestFairy
+              elementInspector = _buildElementInspector(
+                  boundsRect, localCreatedElements.first);
+            } catch (e, s) {
+              print(e);
+              print(s);
+            }
           }
         }
 
@@ -241,32 +248,31 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     return elementInspector;
   }
 
-  /// Builds a deferred lambda to inspect given element, sends results to TestFairy native SDK
-  Function _buildElementInspector(
-      Rect boundsRect, _RenderObjectElement element) {
-//    print("_buildElementInspector");
-
-    // Common properties
-    String? widgetKey = element.widgetKeyString;
+  static Map<String, dynamic> getPropertiesFromElement(Element element,
+      {bool assumeRoot = false}) {
+    final Key? widgetKey = element.widget.key;
     String? scrollableParentWidgetKey;
-    final String widgetType = element.widgetTypeString;
-    final String elementString = element.toString();
-    final String widgetString = element.element.toString();
+    String? widgetKeyString;
+    String text = '';
+    Element? scrollableParent;
+
+    if (widgetKey != null && widgetKey is ValueKey) {
+      widgetKeyString = widgetKey.toString();
+    }
 
     // Extract text by traversing children
-    String text = '';
     try {
       // Traverse through parents to find a usable widget key and scrollable parent
-      if (widgetKey == null) {
-        element.element.visitAncestorElements((Element? parent) {
+      if (!assumeRoot) {
+        element.visitAncestorElements((Element? parent) {
           if (parent != null) {
 //            print('---\n' + parent.toString() + '\n----\n');
 
             // Detect ancestor widget key
             if (parent.widget.key != null &&
                 parent.widget.key is ValueKey &&
-                widgetKey == null) {
-              widgetKey = parent.widget.key.toString();
+                widgetKeyString == null) {
+              widgetKeyString = parent.widget.key.toString();
             }
 
             // List of possible scrollable parent widget types
@@ -280,8 +286,12 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
                 parent.widget.key != null &&
                 parent.widget.key is ValueKey &&
                 scrollableParentWidgetKey == null) {
+              scrollableParent = parent;
               scrollableParentWidgetKey = parent.widget.key.toString();
-//              print('---\nScrollable key: ' + (scrollableParentWidgetKey ?? 'none') + '\n----\n');
+
+//              print('---\nScrollable key: ' +
+//                  (scrollableParentWidgetKey ?? 'none') +
+//                  '\n----\n');
 
               // If we found a scrollable parent, there is no way we can find a key for the tapped widget,
               // assume it's already found and stop visiting ancestor elements
@@ -292,49 +302,110 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
           return true;
         });
 
-//        print("Widget Key: "  + (widgetKey ?? "none"));
+//        print('Widget Key: ' + (widgetKeyString ?? 'none'));
       } else {
-//        print("Widget Key: "  + widgetKey);
+//        print('Widget Key2: ' + (widgetKeyString ?? 'none'));
       }
 
-      // Detect widget from element (an Element is an instance of a Widget)
-      final dynamic widget =
-          element.element.widget; // This will throw if we are not a UI widget
-
-      dynamic child =
-          widget.child; // This will throw if we are not a container widget
-
-      // Traverse through children to build a Text representation of the hit widget
-      while (child != null) {
-        try {
-          if (child.data is String) {
-            // If our children has data, we append it to the built text
-            text += child.data.toString() + ' ';
-          }
-        } catch (_) {}
+      Function(Element)? gatherText;
+      final Function(Element) _gatherText = (Element element) {
+        final dynamic widget =
+            element.widget; // This will throw if we are not a UI widget
 
         try {
-          child =
-              child.child; // Go deeper, throws if we are no longer a container
+          final dynamic _ =
+              widget.child; // This will throw if we are not a container widget
         } catch (_) {
-          child = null; // Stop searching, we are at the leaf node
+          // If we reach here, it means the interacted widget is already a leaf node
+          try {
+            // If the leaf node is a Text widget, we can grab the text
+            final dynamic textElement = element;
+
+            if (textElement.widget.data is String &&
+                _VisibilityInfo(element).visibleFraction > 0) {
+              final String content = textElement.widget.data.toString();
+
+//              print('visibileFraction for ($content): ' +
+//                  _VisibilityInfo(element).visibleFraction.toString());
+
+              text += content + ' ';
+            }
+          } catch (_) {
+//            print(e);
+          }
+//          print(x);
         }
-      }
-    } catch (_) {
-      // If we reach here, it means the interacted widget is already a leaf node
+
+        element.visitChildElements((Element e) {
+          gatherText?.call(e);
+        });
+      };
+      gatherText = _gatherText;
+
       try {
         // If the leaf node is a Text widget, we can grab the text
-        final dynamic textElement = element.element;
-        text = textElement.widget.data.toString();
-      } catch (_) {}
-    }
+        final dynamic textElement = element;
+        if (textElement.widget.data is String) {
+          text += textElement.widget.data.toString() + ' ';
+        }
+      } catch (_) {
+//        print(e);
+      }
+
+      // Recurse deeper
+      element.visitChildElements(gatherText);
+    } catch (_) {}
+
+    return <String, dynamic>{
+      'text': text.trim(),
+      'widgetKey': widgetKeyString,
+      'scrollableParentWidgetKey': scrollableParentWidgetKey,
+      'scrollableParent': scrollableParent
+    };
+  }
+
+  /// Builds a deferred lambda to inspect given element, sends results to TestFairy native SDK
+  Function _buildElementInspector(
+      Rect boundsRect, _RenderObjectElement element) {
+//    print("_buildElementInspector");
+
+    // Common properties
+    final String widgetType = element.widgetTypeString;
+    final String elementString = element.toString();
+    final String widgetString = element.element.toString();
+
+    final Map<String, dynamic> elementProps =
+        getPropertiesFromElement(element.element);
+
+    String? scrollableParentWidgetKey =
+        elementProps['scrollableParentWidgetKey'] as String?;
+    String textInScrollableParent = elementProps['scrollableParent'] != null
+        ? (getPropertiesFromElement(elementProps['scrollableParent'] as Element,
+            assumeRoot: true)['text'] as String)
+        : '';
+
+    String text = elementProps['text'] as String? ?? '';
+    String? widgetKey = elementProps['widgetKey'] as String?;
 
     // Clean up spaces
     text = text.trim();
+    textInScrollableParent = textInScrollableParent.trim();
 
     // Clean up debug markers
     widgetKey = widgetKey?.replaceAll('[<\'', '');
     widgetKey = widgetKey?.replaceAll('\'>]', '');
+    scrollableParentWidgetKey =
+        scrollableParentWidgetKey?.replaceAll('[<\'', '');
+    scrollableParentWidgetKey =
+        scrollableParentWidgetKey?.replaceAll('\'>]', '');
+
+    final String finalWidgetType = widgetType.toString();
+    final String finalAccessibilityHint = widgetString.toString();
+    final String finalAccessibilityIdentifier = (widgetKey ?? '');
+    final String finalAccessibilityLabel = elementString.toString();
+    final String finalScrollableParentAccessibilityIdentifier =
+        (scrollableParentWidgetKey ?? '');
+    final String finalTextInScrollableParent = textInScrollableParent;
 
     // Since everything is already extracted above, calling the lambda below is
     // safe even when the widget is already destroyed ^^
@@ -349,12 +420,13 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       }
 
       TestFairy.addUserInteraction(kind, text, <String, String>{
-        'className': widgetType.toString(),
-        'accessibilityHint': widgetString.toString(),
-        'accessibilityIdentifier': (widgetKey ?? ''),
-        'accessibilityLabel': elementString.toString(),
+        'className': finalWidgetType,
+        'accessibilityHint': finalAccessibilityHint,
+        'accessibilityIdentifier': finalAccessibilityIdentifier,
+        'accessibilityLabel': finalAccessibilityLabel,
         'scrollableParentAccessibilityIdentifier':
-            (scrollableParentWidgetKey ?? '')
+            finalScrollableParentAccessibilityIdentifier,
+        'textInScrollableParent': finalTextInScrollableParent
       });
     };
   }
@@ -468,5 +540,94 @@ class _CancelableTask {
     if (_future != null) {
       await _future!;
     }
+  }
+}
+
+/// Data passed to the [VisibilityDetector.onVisibilityChanged] callback.
+class _VisibilityInfo {
+  Size size;
+  Rect? visibleBounds;
+
+  /// Constructor.
+  ///
+  /// `key` corresponds to the [Key] used to construct the corresponding
+  /// [VisibilityDetector] widget.  Must not be null.
+  ///
+  /// If `size` or `visibleBounds` are omitted or null, the [VisibilityInfo]
+  /// will be initialized to [Offset.zero] or [Rect.zero] respectively.  This
+  /// will indicate that the corresponding widget is completely hidden.
+  _VisibilityInfo(Element element) : size = element.size ?? Size.zero {
+    final RenderBox renderBox = element.renderObject as RenderBox;
+    final Matrix4 transform = renderBox.getTransformTo(null);
+    final Offset origin = MatrixUtils.transformPoint(transform, Offset.zero);
+
+    visibleBounds = origin & renderBox.paintBounds.size;
+
+    final Rect intersectionWithScreen = visibleBounds?.intersect(Rect.fromLTRB(
+            0,
+            0,
+            ui.window.physicalSize.width / ui.window.devicePixelRatio,
+            ui.window.physicalSize.height / ui.window.devicePixelRatio)) ??
+        Rect.zero;
+
+//    print('-------');
+//    print('visibleBounds: ' + visibleBounds.toString());
+//    print('renderBox.paintBounds: ' + renderBox.paintBounds.toString());
+//    print('ui.window.physicalSize: ' + ui.window.physicalSize.toString());
+//    print(
+//        'ui.window.devicePixelRatio: ' + ui.window.devicePixelRatio.toString());
+//    print('intersectionWithScreen: ' + intersectionWithScreen.toString());
+//    print('-------');
+
+    if (intersectionWithScreen.size.width *
+                intersectionWithScreen.size.height ==
+            0 ||
+        intersectionWithScreen.right <= intersectionWithScreen.left ||
+        intersectionWithScreen.bottom <= intersectionWithScreen.top) {
+      visibleBounds = Rect.zero;
+    }
+  }
+
+  /// A fraction in the range \[0, 1\] that represents what proportion of the
+  /// widget is visible (assuming rectangular bounding boxes).
+  ///
+  /// 0 means not visible; 1 means fully visible.
+  double get visibleFraction {
+    final double visibleArea = _area(visibleBounds?.size ?? Size.zero);
+    final double maxVisibleArea = _area(size);
+
+    if (_floatNear(maxVisibleArea, 0)) {
+      // Avoid division-by-zero.
+      return 0;
+    }
+
+    double visibleFraction = visibleArea / maxVisibleArea;
+
+    if (_floatNear(visibleFraction, 0)) {
+      visibleFraction = 0;
+    } else if (_floatNear(visibleFraction, 1)) {
+      // The inexact nature of floating-point arithmetic means that sometimes
+      // the visible area might never equal the maximum area (or could even
+      // be slightly larger than the maximum).  Snap to the maximum.
+      visibleFraction = 1;
+    }
+
+    return visibleFraction;
+  }
+
+  /// The tolerance used to determine whether two floating-point values are
+  /// approximately equal.
+  static const double _kDefaultTolerance = 0.01;
+
+  /// Computes the area of a rectangle of the specified dimensions.
+  static double _area(Size size) {
+    return size.width * size.height;
+  }
+
+  /// Returns whether two floating-point values are approximately equal.
+  static bool _floatNear(double f1, double f2) {
+    final double absDiff = (f1 - f2).abs();
+    return absDiff <= _kDefaultTolerance ||
+        (absDiff / max(f1.abs(), f2.abs()) <= _kDefaultTolerance);
   }
 }
