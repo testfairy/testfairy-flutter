@@ -64,7 +64,7 @@ dependencies:
   testfairy: ^1.0.25
 ```
 
-For project who [migrate](https://dart.dev/dart-2) to Dart 2, make sure your project root has an *analysis_options.yaml* that looks similar to [this](https://github.com/testfairy/testfairy-flutter/blob/master/analysis_options.yaml). The important part is the enabled experiment in the top declaration.
+For projects that will [migrate](https://dart.dev/dart-2) to Dart 2, make sure the root directory has an *analysis_options.yaml* that looks similar to [this](https://github.com/testfairy/testfairy-flutter/blob/master/analysis_options.yaml). The important part is the enabled experiment in the top declaration.
 
 You also have to enable the same experiment in your run and test commands:
 
@@ -74,15 +74,15 @@ flutter run --enable-experiment=non-nullable --no-sound-null-safety
 flutter drive --enable-experiment=non-nullable --no-sound-null-safety -v --target=test_driver/app.dart
 ```
 
-Projects that donn't make the migration will otherwise get this error:
+Existing projects will otherwise get this error:
 ```
 Error: This requires the null safety language feature, which is experimental.
     You can enable the experiment using the '--enable-experiment=non-nullable' command line option.
 ```
 
-### How to compile with latest unreleased Flutter?
+### How to compile with latest Flutter and Dart 2?
 
-Flutter's master channel introduces new Dart syntax and has breaking changes in its SDK classes. These changes will show up similar to the following error when you compile your project.
+Flutter's latest stable channel introduces new Dart syntax and has breaking changes in its SDK classes. These changes will show up similar to the following error when you compile your project.
 
 ```
 ../pub.dartlang.org/testfairy-1.x.y/lib/src/network_logging.dart:253:7: 
@@ -103,7 +103,9 @@ Flutter's master channel introduces new Dart syntax and has breaking changes in 
            ^^^^^
 ```
 
-In order to use TestFairy with the latest unstable Flutter, you must clone this repo and use it as an offline dependency instead of the published version in pub.
+In order to use TestFairy with the latest **stable** Flutter channel, you must set the minimum version for the plugin as 2.0.0.
+
+In order to use TestFairy with the latest **unstable** Flutter channel, you must clone this repo and use it as an offline dependency instead of the published version in pub.
 
 1. Clone this [repo](https://github.com/testfairy/testfairy-flutter).
 
