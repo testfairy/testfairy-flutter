@@ -90,7 +90,7 @@ Error: This requires the null safety language feature, which is experimental.
 ```
 
 ### How to opt-out from Dart 2?
-Starting from 2.0.0, *testfairy* will only work with projects that use Dart 2 as the development language. If this transition is not suitable for your project, you can stay in TestFairy plugin 1.0.25 but that requires an upper limit on your Dart and Flutter version specified like this:
+Starting from 2.0.0, *testfairy-flutter* will only work with projects that use Dart 2 as the development language. If this transition is not suitable for your project, you can stay in TestFairy plugin 1.0.25 but that requires an upper limit on your Dart and Flutter version specified like this:
 
 ```
 environment:
