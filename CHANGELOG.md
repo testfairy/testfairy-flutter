@@ -1,3 +1,6 @@
+## 2.0.2
+* Upgraded to the latest native SDKs.
+
 ## 2.0.1
 * Added scrollable widget detection for interactions.
 
