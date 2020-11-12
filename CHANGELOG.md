@@ -1,3 +1,6 @@
+## 2.0.3
+* Performance optimizations for gesture detection.
+
 ## 2.0.2
 * Upgraded to the latest native SDKs.
 

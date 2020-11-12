@@ -170,14 +170,14 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
           (i + 1) < hitTestEntries.length ? hitTestEntries[i + 1] : null;
       // We need to traverse up the elements tree until we meet element of render object of nextTestEntry
       ele.visitAncestorElements((Element ancestor) {
-        if (nextTestEntry == null ||
-            ancestor ==
-                nextTestEntry
-                    .target.debugCreator.element) // Ignore debug widgets
+        // Ignore debug widgets
+        if (nextTestEntry == null || ancestor == nextTestEntry.target.debugCreator.element) {
           return false;
+        }
 
         elements.add(_RenderObjectElement(testEntry.target as RenderObject,
             ancestor)); // If you want to filter, inspect ancestor
+
         return true;
       });
     }
@@ -313,10 +313,10 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
             element.widget; // This will throw if we are not a UI widget
 
         try {
-          final dynamic _ =
-              widget.child; // This will throw if we are not a container widget
-        } catch (_) {
-          // If we reach here, it means the interacted widget is already a leaf node
+          // This will throw if we are not a container widget
+          final dynamic _ = widget.child;
+        } catch (/*x*/_) {
+          // If we reach here, it means currently interacted widget is already a leaf node
           try {
             // If the leaf node is a Text widget, we can grab the text
             final dynamic textElement = element;
@@ -330,30 +330,35 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
               text += content + ' ';
             }
-          } catch (_) {
+          } catch (/*e*/_) {
 //            print(e);
           }
 //          print(x);
         }
 
+        // Visit all children recursively
         element.visitChildElements((Element e) {
           gatherText?.call(e);
         });
       };
       gatherText = _gatherText;
 
+      bool textAlreadyFound = false;
       try {
-        // If the leaf node is a Text widget, we can grab the text
+        // If current element is a Text widget, we can grab the text
         final dynamic textElement = element;
         if (textElement.widget.data is String) {
           text += textElement.widget.data.toString() + ' ';
+          textAlreadyFound = true;
         }
       } catch (_) {
 //        print(e);
       }
 
       // Recurse deeper
-      element.visitChildElements(gatherText);
+      if (!textAlreadyFound) {
+        element.visitChildElements(gatherText);
+      }
     } catch (_) {}
 
     return <String, dynamic>{
@@ -374,8 +379,9 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     final String elementString = element.toString();
     final String widgetString = element.element.toString();
 
+    // TODO : don't assume root if scrollableParent is needed (add killswitch)
     final Map<String, dynamic> elementProps =
-        getPropertiesFromElement(element.element);
+        getPropertiesFromElement(element.element, assumeRoot: true);
 
     String? scrollableParentWidgetKey =
         elementProps['scrollableParentWidgetKey'] as String?;
