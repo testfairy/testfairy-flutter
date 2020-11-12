@@ -400,6 +400,8 @@ abstract class TestFairy extends TestFairyBase {
       'info': info
     };
 
+//    print(args);
+
     await TestFairyBase.channel.invokeMethod<void>('addUserInteraction', args);
   }
 
