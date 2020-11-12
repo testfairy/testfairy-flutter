@@ -2,12 +2,10 @@ library testfairy;
 
 import 'dart:async';
 import 'dart:core';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:testfairy/src/widget_detector.dart';
 
-import 'src/network_logging.dart';
 import 'src/testfairy_base.dart';
 
 part 'package:testfairy/src/feedback_options.dart';
@@ -18,8 +16,6 @@ part 'package:testfairy/src/feedback_options.dart';
 ///
 /// ```dart
 /// void main() {
-///   HttpOverrides.global = TestFairy.httpOverrides();
-///
 ///   runZonedGuarded(
 ///     () async {
 ///       try {
@@ -444,19 +440,6 @@ abstract class TestFairy extends TestFairyBase {
   static Future<void> disableAutoUpdate() async {
     TestFairyBase.prepareTwoWayInvoke();
     await TestFairyBase.channel.invokeMethod('disableAutoUpdate');
-  }
-
-  /// Creates necessary overrides to be used with [HttpOverrides.runWithHttpOverrides].
-  /// Use this if you need to log all your http requests by default.
-  ///
-  /// An example usage can be found below.
-  ///
-  /// ```dart
-  /// HttpOverrides.global = TestFairy.httpOverrides();
-  /// ```
-  static HttpOverrides httpOverrides() {
-    TestFairyBase.prepareTwoWayInvoke();
-    return new TestFairyHttpOverrides();
   }
 }
 

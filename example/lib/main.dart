@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:core';
-import 'dart:io';
 import 'dart:ui';
 import 'package:testfairy/testfairy.dart';
-import 'package:http/http.dart' as http;
 
 // App Globals
 const String APP_TOKEN = 'SDK-gLeZiE9i';
@@ -15,8 +13,6 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 
 // Test App initializations (You can copy and edit for your own app)
 void main() {
-  HttpOverrides.global = TestFairy.httpOverrides();
-
   runZonedGuarded(() async {
     try {
       FlutterError.onError = (details) => TestFairy.logError(details.exception);
@@ -186,12 +182,6 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                             key: Key('feedbackOptionsTests'),
                             child: Text('Feedback Options Tests')),
                         Text("HIDE ME FROM SCREENSHOTS", key: hideWidgetKey),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
-                            onPressed: onNetworkLogTests,
-                            key: Key("networkLogTests"),
-                            child: Text('Network Log Tests')),
                         FlatButton(
                             color: Color.fromRGBO(0, 100, 100, 1.0),
                             textColor: Color.fromRGBO(255, 255, 255, 1.0),
@@ -617,29 +607,6 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       await TestFairy.bringFlutterToFront();
 
-      await TestFairy.stop();
-    } catch (e) {
-      setError(e);
-    }
-
-    endTest();
-  }
-
-  void onNetworkLogTests() async {
-    if (testing) return;
-
-    beginTest("Network Log Test");
-
-    try {
-      print('Testing network calls. Attempting GET to example.com');
-
-      await TestFairy.begin(APP_TOKEN);
-      await Future.delayed(const Duration(seconds: 2));
-
-      var response = await http.get('https://example.com/');
-      print(response.toString());
-
-      await Future.delayed(const Duration(seconds: 5));
       await TestFairy.stop();
     } catch (e) {
       setError(e);

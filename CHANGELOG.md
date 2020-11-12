@@ -1,3 +1,21 @@
+## 2.0.4
+* Fixed lint errors.
+
+## 2.0.3
+* Performance optimizations for gesture detection.
+
+## 2.0.2
+* Upgraded to the latest native SDKs.
+
+## 2.0.1
+* Added scrollable widget detection for interactions.
+
+## 2.0.0
+* Adopted Dart 2 as the new plugin language. 
+
+## 1.0.26
+* Removed network logging (Dart 1 Compatbility) 
+
 ## 1.0.25
 * Upgraded to the latest native SDKs.
 
