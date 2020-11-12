@@ -1,3 +1,6 @@
+## 2.0.4
+* Fixed lint errors.
+
 ## 2.0.3
 * Performance optimizations for gesture detection.
 
