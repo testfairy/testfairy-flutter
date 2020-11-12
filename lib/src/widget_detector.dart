@@ -171,7 +171,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       // We need to traverse up the elements tree until we meet element of render object of nextTestEntry
       ele.visitAncestorElements((Element ancestor) {
         // Ignore debug widgets
-        if (nextTestEntry == null || ancestor == nextTestEntry.target.debugCreator.element) {
+        if (nextTestEntry == null ||
+            ancestor == nextTestEntry.target.debugCreator.element) {
           return false;
         }
 
@@ -315,7 +316,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
         try {
           // This will throw if we are not a container widget
           final dynamic _ = widget.child;
-        } catch (/*x*/_) {
+        } catch (/*x*/ _) {
           // If we reach here, it means currently interacted widget is already a leaf node
           try {
             // If the leaf node is a Text widget, we can grab the text
@@ -330,7 +331,7 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
 
               text += content + ' ';
             }
-          } catch (/*e*/_) {
+          } catch (/*e*/ _) {
 //            print(e);
           }
 //          print(x);
