@@ -1,3 +1,6 @@
+## 2.0.5
+* Updated changelog to reflect changes in Dart 1 branch
+
 ## 2.0.4
 * Fixed lint errors.
 
@@ -13,8 +16,11 @@
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
 
+## 1.0.27
+* Upgraded to the latest native SDKs.
+
 ## 1.0.26
-* Removed network logging (Dart 1 Compatbility) 
+* Removed network logging (Dart 1 Compatibility) 
 
 ## 1.0.25
 * Upgraded to the latest native SDKs.
