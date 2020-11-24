@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import com.testfairy.FeedbackContent;
 import com.testfairy.FeedbackOptions;
@@ -311,6 +312,9 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 					disableAutoUpdate();
 					result.success(null);
 					break;
+				case "hideWidget":
+					hideWidget();
+					result.success(null);
 				default:
 					result.notImplemented();
 					break;
@@ -516,6 +520,23 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				TestFairy.installFeedbackHandler(context, appToken);
 
 				setExternalRectCapture();
+
+				return null;
+			}
+		});
+	}
+
+	private boolean fakeHideViewCalledOnce = false;
+	private void hideWidget() {
+		if (fakeHideViewCalledOnce) {
+			return;
+		}
+
+		fakeHideViewCalledOnce = true;
+		withContext(new ContextConsumer<Void>() {
+			@Override
+			public Void consume(Context context) {
+				TestFairy.hideView(new View(context));
 
 				return null;
 			}

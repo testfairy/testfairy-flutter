@@ -6,6 +6,7 @@
 @end
 
 @implementation TestfairyFlutterPlugin {
+    BOOL fakeHideViewCalledOnce;
 }
 
 // Static
@@ -30,6 +31,8 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
     
     [registrar addMethodCallDelegate:instance channel:channel];
+    
+    instance->fakeHideViewCalledOnce = false;
 }
 
 + (void)registerGetHiddenRects {
@@ -198,6 +201,9 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         } else if ([@"installFeedbackHandler" isEqualToString:call.method]) {
             [self installFeedbackHandler:call.arguments];
             result(nil);
+        } else if ([@"hideWidget" isEqualToString:call.method]) {
+            [self hideWidget];
+            result(nil);
         } else {
             result(FlutterMethodNotImplemented);
         }
@@ -210,6 +216,17 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
     @finally {
     }
+}
+
+- (void) hideWidget {
+    if (self->fakeHideViewCalledOnce) {
+        return;
+    }
+    
+    self->fakeHideViewCalledOnce = true;
+    
+    UIView* dummyView = [[UIView alloc] initWithFrame:CGRectZero];
+    [TestFairy hideView:dummyView];
 }
 
 - (void) takeScreenshot {

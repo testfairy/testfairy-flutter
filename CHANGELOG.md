@@ -1,3 +1,6 @@
+## 2.0.7
+* Optimized screen capture performance when there are no hidden widgets.
+
 ## 2.0.6
 * Fixed Android screenshots on api level 24 and 25.
 
@@ -18,6 +21,9 @@
 
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
+
+## 1.0.29
+* Optimized screen capture performance when there are no hidden widgets.
 
 ## 1.0.28
 * Fixed Android screenshots on api level 24 and 25.
