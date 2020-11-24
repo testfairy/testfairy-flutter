@@ -1,3 +1,6 @@
+## 2.0.6
+* Fixed Android screenshots on api level 24 and 25.
+
 ## 2.0.5
 * Updated changelog to reflect changes in Dart 1 branch
 
@@ -15,6 +18,9 @@
 
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
+
+## 1.0.28
+* Fixed Android screenshots on api level 24 and 25.
 
 ## 1.0.27
 * Upgraded to the latest native SDKs.
