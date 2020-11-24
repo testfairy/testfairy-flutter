@@ -379,10 +379,12 @@ abstract class TestFairy extends TestFairyBase {
   /// Hides a specific view from appearing in the video generated.
   ///
   /// Provide the same [GlobalKey] you specify in your widget's [key] attribute.
-  static void hideWidget(GlobalKey widgetKey) {
+  static Future<void> hideWidget(GlobalKey widgetKey) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     TestFairyBase.hiddenWidgets.add(widgetKey);
+
+    await TestFairyBase.channel.invokeMethod<void>('hideWidget');
   }
 
   /// Adds a new user interaction to session timeline.
