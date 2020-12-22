@@ -1,7 +1,11 @@
+#!/usr/bin/env bash
+
 set -e
+set -x
 
 # prepare
 yes | sdkmanager "platforms;android-28"
+yes | sdkmanager "platforms;android-29"
 wget https://services.gradle.org/distributions/gradle-3.5-bin.zip
 unzip -qq gradle-3.5-bin.zip
 export GRADLE_HOME=$PWD/gradle-3.5
