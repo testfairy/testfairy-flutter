@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'dart:core';
 import 'dart:ui';
@@ -15,7 +16,9 @@ Function onNewLog = () {}; // This will be overridden once the app launches
 void main() {
   runZonedGuarded(() async {
     try {
-      FlutterError.onError = (details) => TestFairy.logError(details.exception);
+      if (WidgetsBinding.instance is RendererBinding) {
+//        FlutterError.onError = (details) => TestFairy.logError(details.exception);
+      }
 
       // Call `await TestFairy.begin()` or any other setup code here.
 //      await TestFairy.setMaxSessionLength(60);

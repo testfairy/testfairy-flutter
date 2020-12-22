@@ -11,5 +11,5 @@
 
 # Publish
 1. Bump up versions in these files: *ios/testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *CHANGELOG.md*.
-2. Run `dartfmt -w lib example/lib example/test example/test_driver`
+2. Run `dartfmt -w lib example/lib example/test example/test_driver example/integration_test`
 3. Publish to pub.

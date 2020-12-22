@@ -36,3 +36,4 @@ cd ..
 #../flutter/bin/flutter analyze $PWD/example/lib
 #../flutter/bin/flutter analyze $PWD/example/test
 #../flutter/bin/flutter analyze $PWD/example/test_driver
+#../flutter/bin/flutter analyze $PWD/example/integration_test
