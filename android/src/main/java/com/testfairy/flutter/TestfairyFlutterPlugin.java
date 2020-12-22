@@ -315,6 +315,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				case "hideWidget":
 					hideWidget();
 					result.success(null);
+					break;
 				default:
 					result.notImplemented();
 					break;
