@@ -7,9 +7,7 @@ alias pod="pod _1.7.5_"
 pod --version
 pip install six
 brew update
-brew install --HEAD libimobiledevice
-brew install ideviceinstaller
-brew install ios-deploy
+brew install automake autoconf libtool wget libimobiledevice ideviceinstaller ios-deploy
 cd ..
 git clone https://github.com/flutter/flutter.git -b dev --depth 1
 cd testfairy-flutter
