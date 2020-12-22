@@ -8,11 +8,10 @@ import '../lib/main.dart' as app;
 void main() {
   group('Testfairy Plugin Tests', () {
     Finder findByValueKey(String keyName) {
-      ValueKey<String> key = ValueKey<String>(keyName);
+      final ValueKey<String> key = ValueKey<String>(keyName);
       return find.byKey(key);
     }
 
-    const Duration timeout = Duration(seconds: 120);
     final Finder errorTextFinder = findByValueKey('errorMessage');
     final Finder testingFinder = findByValueKey('testing');
     final Finder scrollerFinder = findByValueKey('scroller');
@@ -44,9 +43,9 @@ void main() {
 
         await testCaseFunction();
 
-        bool testingFinderStillFinds = await tester.any(testingFinder);
+        bool testingFinderStillFinds = tester.any(testingFinder);
         for (int i = 0; i < 10; i++) {
-          testingFinderStillFinds = await tester.any(testingFinder);
+          testingFinderStillFinds = tester.any(testingFinder);
 
           if (!testingFinderStillFinds) {
             break;
