@@ -1,3 +1,7 @@
+## 2.0.8
+* Fixed an unnecessary log sent during calls to `hideWidget()`.
+* Updated native SDKs.
+
 ## 2.0.7
 * Optimized screen capture performance when there are no hidden widgets.
 
@@ -21,6 +25,11 @@
 
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
+
+## 1.0.30
+* Added `integration_test` examples.
+* Fixed an unnecessary log sent during calls to `hideWidget()`.
+* Updated native SDKs.
 
 ## 1.0.29
 * Optimized screen capture performance when there are no hidden widgets.
