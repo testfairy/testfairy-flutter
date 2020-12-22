@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+
 set -e
+set -x
 
 # prepare
 yes | gem uninstall --all cocoapods
