@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.testfairy.FeedbackContent;
 import com.testfairy.FeedbackOptions;
@@ -821,6 +822,25 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void crashOnPurpose() {
+		withActivity(new ActivityConsumer<Object>() {
+			@Override
+			public Object consume(Activity activity) {
+				activity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						// Crash on purpose
+						TestFairy.logThrowable(new RuntimeException("Failed assertion: line 419 pos 12: 'dxScroll != 0.0 || dyScroll != 0.0': is not true."));
+
+						throw new RuntimeException("Failed assertion: line 419 pos 12: 'dxScroll != 0.0 || dyScroll != 0.0': is not true.");
+					}
+				});
+
+				return null;
+			}
+		});
 	}
 
 	private static void saveImage(Bitmap finalBitmap, String image_name) {

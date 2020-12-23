@@ -34,7 +34,7 @@ void main() {
       test(testName, () async {
         if (scroll) {
           await driver.scrollUntilVisible(scrollerFinder, testButtonFinder,
-              alignment: 0.5, timeout: Duration(seconds: 10));
+              alignment: 0.5, timeout: Duration(seconds: 10), dxScroll: 10, dyScroll: 10);
         }
 
         await driver.tap(testButtonFinder, timeout: timeout);
