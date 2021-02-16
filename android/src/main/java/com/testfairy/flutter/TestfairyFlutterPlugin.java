@@ -50,7 +50,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 
 	private static final long HIDDEN_RECT_RETRIEVAL_THROTTLE = 128;
 	private static final String[] USER_INTERACTION_META_DATA_KEYS = new String[]{
-			"accessibilityLabel", "accessibilityIdentifier", "accessibilityHint", "className"
+			"accessibilityLabel", "accessibilityIdentifier", "accessibilityHint", "className", "scrollableParentAccessibilityIdentifier", "textInScrollableParent"
 	};
 
 	private static class FlutterActivityMethodChannelPair {

@@ -672,7 +672,8 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future<void>.delayed(const Duration(seconds: 2));
 
-      final http.Response response = await http.get('https://example.com/');
+      final Uri uri = Uri(path: 'https://example.com/');
+      final http.Response response = await http.get(uri);
       print(response.toString());
 
       await Future<void>.delayed(const Duration(seconds: 5));

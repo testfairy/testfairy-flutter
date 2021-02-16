@@ -261,6 +261,8 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
       widgetKeyString = widgetKey.toString();
     }
 
+//    print("getPropertiesFromElement");
+
     // Extract text by traversing children
     try {
       // Traverse through parents to find a usable widget key and scrollable parent
