@@ -4,9 +4,9 @@ set -e
 set -x
 
 # prepare
-#yes | gem uninstall --all cocoapods
-#gem install -n /usr/local/bin cocoapods -v 1.7.5
-#alias pod="pod _1.7.5_"
+yes | gem uninstall --all cocoapods
+gem install -n /usr/local/bin cocoapods -v 1.9.0
+alias pod="pod _1.9.0_"
 pod --version
 pip install six
 brew update || true
