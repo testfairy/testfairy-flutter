@@ -96,9 +96,11 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                         Text('-'),
                         Text(errorMessage, key: Key('errorMessage')),
                         Text('-'),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: () => setState(() {
                                   errorMessage = "No error yet.";
                                   logs.clear();
@@ -106,88 +108,116 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                                       "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                                 }),
                             child: Text('Clear Logs')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onCoolButton,
                             child: Text('Cool Button')),
                         Text('-'),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onLifecycleTests,
                             key: Key('lifecycleTests'),
                             child: Text('Lifecycle Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onServerEndpointTest,
                             key: Key('serverEndpointTest'),
                             child: Text('Server Endpoint Test')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onFeedbackTests,
                             key: Key('feedbackTests'),
                             child: Text('Feedback Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onFeedbackShakeTest,
                             key: Key('feedbackShakeTest'),
                             child: Text('Feedback Shake Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onVersionTest,
                             key: Key('versionTest'),
                             child: Text('Version Test')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onSessionUrlTest,
                             key: Key('sessionUrlTest'),
                             child: Text('Session Url Test')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onAddCheckpointTest,
                             key: Key('addCheckpointTest'),
                             child: Text('Add Checkpoint Test')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onAddEventTest,
                             key: Key('addEventTest'),
                             child: Text('Add Event Test')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onIdentityTests,
                             key: Key('identityTests'),
                             child: Text('Identity Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onLogTests,
                             key: Key('logTests'),
                             child: Text('Log Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onDeveloperOptionsTests,
                             key: Key('developerOptionsTests'),
                             child: Text('Developer Options Tests')),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onFeedbackOptionsTest,
                             key: Key('feedbackOptionsTests'),
                             child: Text('Feedback Options Tests')),
                         Text("HIDE ME FROM SCREENSHOTS", key: hideWidgetKey),
-                        FlatButton(
-                            color: Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                primary: Color.fromRGBO(255, 255, 255, 1.0),
+                                backgroundColor:
+                                    Color.fromRGBO(0, 100, 150, 1.0)),
                             onPressed: onDisableAutoUpdateTests,
                             key: Key("disableAutoUpdateTests"),
                             child: Text('Disable Auto Update Tests')),
