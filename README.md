@@ -189,7 +189,7 @@ Retry your build.
 
 Once your build is successful, you can update cocoapods back to its latest version. If the error reoccurs, you will have to revert back to 1.7.5 and retry the steps.
 
-4. **I see `Automatically assigning platform `ios` with version `8.0`` when I build.**
+4. **I see `Automatically assigning platform ios with version 8.0` when I build.**
 
 TestFairy supports iOS 9.0 and above. Please change the build target accordingly in your Xcode project.
 
