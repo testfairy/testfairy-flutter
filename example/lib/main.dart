@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 import 'package:testfairy/testfairy.dart';
@@ -101,9 +102,12 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                         const Text('-'),
                         Text(errorMessage, key: const Key('errorMessage')),
                         const Text('-'),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: () => setState(() {
                                   errorMessage = 'No error yet.';
                                   logs.clear();
@@ -117,94 +121,139 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                                 }),
                             key: const Key('clear_logs'),
                             child: const Text('Clear Logs')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onCoolButton,
                             child: const Text('Cool Button')),
                         const Text('-'),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onLifecycleTests,
                             key: const Key('lifecycleTests'),
                             child: const Text('Lifecycle Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onServerEndpointTest,
                             key: const Key('serverEndpointTest'),
                             child: const Text('Server Endpoint Test')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onFeedbackTests,
                             key: const Key('feedbackTests'),
                             child: const Text('Feedback Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onFeedbackShakeTest,
                             key: const Key('feedbackShakeTest'),
                             child: const Text('Feedback Shake Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onVersionTest,
                             key: const Key('versionTest'),
                             child: const Text('Version Test')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onSessionUrlTest,
                             key: const Key('sessionUrlTest'),
                             child: const Text('Session Url Test')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onAddCheckpointTest,
                             key: const Key('addCheckpointTest'),
                             child: const Text('Add Checkpoint Test')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onAddEventTest,
                             key: const Key('addEventTest'),
                             child: const Text('Add Event Test')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onIdentityTests,
                             key: const Key('identityTests'),
                             child: const Text('Identity Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onLogTests,
                             key: const Key('logTests'),
                             child: const Text('Log Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onDeveloperOptionsTests,
                             key: const Key('developerOptionsTests'),
                             child: const Text('Developer Options Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onFeedbackOptionsTest,
                             key: const Key('feedbackOptionsTests'),
                             child: const Text('Feedback Options Tests')),
                         Text('HIDE ME FROM SCREENSHOTS', key: hideWidgetKey),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onNetworkLogTests,
                             key: const Key('networkLogTests'),
                             child: const Text('Network Log Tests')),
-                        FlatButton(
-                            color: const Color.fromRGBO(0, 100, 100, 1.0),
-                            textColor: const Color.fromRGBO(255, 255, 255, 1.0),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromRGBO(0, 100, 100, 1.0),
+                                primary:
+                                    const Color.fromRGBO(255, 255, 255, 1.0)),
                             onPressed: onDisableAutoUpdateTests,
                             key: const Key('disableAutoUpdateTests'),
                             child: const Text('Disable Auto Update Tests')),
