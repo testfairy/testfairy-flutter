@@ -2,6 +2,7 @@ library testfairy;
 
 import 'dart:async';
 import 'dart:core';
+import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
 import 'package:testfairy/src/widget_detector.dart';
@@ -378,7 +379,11 @@ abstract class TestFairy extends TestFairyBase {
       int endTimeMillis,
       int requestSize,
       int responseSize,
-      String errorMessage) async {
+      String errorMessage,
+      {String requestHeaders,
+      Uint8List requestBodyBytes,
+      String responseHeaders,
+      Uint8List responseBodyBytes}) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     var args = {
@@ -390,6 +395,10 @@ abstract class TestFairy extends TestFairyBase {
       'requestSize': requestSize,
       'responseSize': responseSize,
       'errorMessage': errorMessage,
+      'requestHeaders': requestHeaders,
+      'requestBody': requestBodyBytes,
+      'responseHeaders': responseHeaders,
+      'responseBody': responseBodyBytes,
     };
 
     await TestFairyBase.channel.invokeMethod('addNetworkEvent', args);
