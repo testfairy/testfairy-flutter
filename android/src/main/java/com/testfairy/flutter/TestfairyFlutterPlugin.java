@@ -153,7 +153,11 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 							((Number) args.get("endTimeMillis")).longValue(),
 							((Number) args.get("requestSize")).longValue(),
 							((Number) args.get("responseSize")).longValue(),
-							(String) args.get("errorMessage")
+							(String) args.get("errorMessage"),
+							(String) args.get("requestHeaders"),
+							(byte[]) args.get("requestBody"),
+							(String) args.get("responseHeaders"),
+							(byte[]) args.get("responseBody")
 					);
 					result.success(null);
 					break;
@@ -470,6 +474,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 	// SDK mapping
 
 	private boolean fakeHideViewCalledOnce = false;
+
 	private void hideWidget() {
 		if (fakeHideViewCalledOnce) {
 			return;
@@ -777,19 +782,40 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 			long endTimeMillis,
 			long requestSize,
 			long responseSize,
-			String errorMessage
+			String errorMessage,
+			String requestHeaders,
+			byte[] requestBody,
+			String responseHeaders,
+			byte[] responseBody
 	) {
 		try {
-			TestFairy.addNetworkEvent(
-					new URI(uri),
-					method,
-					code,
-					startTimeMillis,
-					endTimeMillis,
-					requestSize,
-					responseSize,
-					errorMessage
-			);
+			if (requestHeaders == null && requestBody == null && responseHeaders == null && responseBody == null) {
+				TestFairy.addNetworkEvent(
+						new URI(uri),
+						method,
+						code,
+						startTimeMillis,
+						endTimeMillis,
+						requestSize,
+						responseSize,
+						errorMessage
+				);
+			} else {
+				TestFairy.addNetworkEvent(
+						new URI(uri),
+						method,
+						code,
+						startTimeMillis,
+						endTimeMillis,
+						requestSize,
+						responseSize,
+						errorMessage,
+						requestHeaders,
+						requestBody,
+						responseHeaders,
+						responseBody
+				);
+			}
 		} catch (URISyntaxException ignore) {
 		}
 	}

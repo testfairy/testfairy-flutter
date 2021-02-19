@@ -1,3 +1,6 @@
+## 2.0.9
+* Added support for request/response headers and bodies in `addNetworkEvent()`.
+
 ## 2.0.8
 * Fixed an unnecessary log sent during calls to `hideWidget()`.
 * Updated native SDKs.
@@ -25,6 +28,9 @@
 
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
+
+## 1.0.31
+* Added support for request/response headers and bodies in `addNetworkEvent()`.
 
 ## 1.0.30
 * Added `integration_test` examples.

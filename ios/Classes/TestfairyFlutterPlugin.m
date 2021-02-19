@@ -14,8 +14,8 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-            methodChannelWithName:@"testfairy"
-            binaryMessenger:[registrar messenger]];
+                                     methodChannelWithName:@"testfairy"
+                                     binaryMessenger:[registrar messenger]];
     TestfairyFlutterPlugin* instance = [[TestfairyFlutterPlugin alloc] init];
     
     if (viewControllerMethodChannelMapping == nil) {
@@ -38,36 +38,36 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 + (void)registerGetHiddenRects {
     [TestFairy setExternalRectCapture:^(void (^provider)(NSArray *rects)) {
         dispatch_async(dispatch_get_main_queue(), ^{
-           id appDelegate = UIApplication.sharedApplication.delegate;
-           
-           if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
-               FlutterAppDelegate* flutterAppDelegate = appDelegate;
-               NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
-               FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
-               
-               if (channel != nil) {
-                   [channel invokeMethod:@"getHiddenRects" arguments:nil result: ^(id result) {
-                       NSArray *dartRects = (NSArray*)result;
-                       NSMutableArray *rects = [NSMutableArray array];
-                       
-                       for (int i = 0; i < [dartRects count]; i++) {
-                           NSDictionary *dartRect = [dartRects objectAtIndex:i];
-                           CGFloat screenScale = [[UIScreen mainScreen] scale];
-                           
-                           NSNumber *left = [dartRect valueForKey:@"left"];
-                           NSNumber *top = [dartRect valueForKey:@"top"];
-                           NSNumber *right = [dartRect valueForKey:@"right"];
-                           NSNumber *bottom = [dartRect valueForKey:@"bottom"];
-                           
-                           CGRect rect = CGRectMake([left intValue] / screenScale, [top intValue] / screenScale, ([right intValue] - [left intValue]) / screenScale, ([bottom intValue] - [top intValue]) / screenScale);
-                           
-                           [rects addObject:[NSValue valueWithCGRect:rect]];
-                       }
-                       
-                       provider(rects);
-                   }];
-               }
-           }
+            id appDelegate = UIApplication.sharedApplication.delegate;
+            
+            if ([appDelegate isKindOfClass:[FlutterAppDelegate class]]) {             // check to see if response is `NSHTTPURLResponse`
+                FlutterAppDelegate* flutterAppDelegate = appDelegate;
+                NSString* currentViewControllerKey = [[NSNumber numberWithUnsignedLong:flutterAppDelegate.window.rootViewController.hash] stringValue];
+                FlutterMethodChannel* channel = [viewControllerMethodChannelMapping objectForKey:currentViewControllerKey];
+                
+                if (channel != nil) {
+                    [channel invokeMethod:@"getHiddenRects" arguments:nil result: ^(id result) {
+                        NSArray *dartRects = (NSArray*)result;
+                        NSMutableArray *rects = [NSMutableArray array];
+                        
+                        for (int i = 0; i < [dartRects count]; i++) {
+                            NSDictionary *dartRect = [dartRects objectAtIndex:i];
+                            CGFloat screenScale = [[UIScreen mainScreen] scale];
+                            
+                            NSNumber *left = [dartRect valueForKey:@"left"];
+                            NSNumber *top = [dartRect valueForKey:@"top"];
+                            NSNumber *right = [dartRect valueForKey:@"right"];
+                            NSNumber *bottom = [dartRect valueForKey:@"bottom"];
+                            
+                            CGRect rect = CGRectMake([left intValue] / screenScale, [top intValue] / screenScale, ([right intValue] - [left intValue]) / screenScale, ([bottom intValue] - [top intValue]) / screenScale);
+                            
+                            [rects addObject:[NSValue valueWithCGRect:rect]];
+                        }
+                        
+                        provider(rects);
+                    }];
+                }
+            }
         });
     }];
 }
@@ -84,11 +84,15 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
             [self addNetworkEvent:[args valueForKey:@"uri"]
                            method:[args valueForKey:@"method"]
                              code:[args valueForKey:@"code"]
-                startTimeMillis:[args valueForKey:@"startTimeMillis"]
-                  endTimeMillis:[args valueForKey:@"endTimeMillis"]
+                  startTimeMillis:[args valueForKey:@"startTimeMillis"]
+                    endTimeMillis:[args valueForKey:@"endTimeMillis"]
                       requestSize:[args valueForKey:@"requestSize"]
                      responseSize:[args valueForKey:@"responseSize"]
-                     errorMessage:[args valueForKey:@"errorMessage"]];
+                     errorMessage:[args valueForKey:@"errorMessage"]
+                   requestHeaders:[args valueForKey:@"requestHeaders"]
+                      requestBody:[args valueForKey:@"requestBody"]
+                  responseHeaders:[args valueForKey:@"responseHeaders"]
+                     responseBody:[args valueForKey:@"responseBody"]];
             result(nil);
         } else if ([@"takeScreenshot" isEqualToString:call.method]) {
             [self takeScreenshot];
@@ -226,13 +230,13 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     if (self->fakeHideViewCalledOnce) {
         return;
     }
-
+    
     self->fakeHideViewCalledOnce = true;
-
+    
     UIView* dummyView = [[UIView alloc] initWithFrame:CGRectZero];
     [TestFairy hideView:dummyView];
 }
-    
+
 - (void) begin:(NSString*)appToken {
     [TestFairy begin:appToken];
     
@@ -404,7 +408,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
 
 - (void) bringFlutterToFront {
     FlutterViewController *rootVC =
-        (FlutterViewController*)[[(FlutterAppDelegate*)[[UIApplication sharedApplication]delegate] window] rootViewController];
+    (FlutterViewController*)[[(FlutterAppDelegate*)[[UIApplication sharedApplication]delegate] window] rootViewController];
     
     UINavigationController* nav = rootVC.navigationController;
     if (nav != nil) {
@@ -414,7 +418,7 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
 }
 
-- (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage {
+- (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage requestHeaders:(NSString*)requestHeaders requestBody:(FlutterStandardTypedData*)requestBody responseHeaders:(NSString*)responseHeaders responseBody:(FlutterStandardTypedData*)responseBody {
     NSString* error = nil;
     if ([errorMessage isKindOfClass:[NSString class]]) {
         error = errorMessage;
@@ -422,14 +426,44 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
         error = @"";
     }
     
-    [TestFairy addNetwork:[NSURL URLWithString:uri]
-                   method:method
-                     code:[code intValue]
-        startTimeInMillis:[startTimeMillis longValue]
-          endTimeInMillis:[endTimeMillis longValue]
-              requestSize:[requestSize longValue]
-             responseSize:[responseSize longValue]
-             errorMessage:error];
+    if (
+        (requestHeaders == nil || requestHeaders == [NSNull null]) &&
+        (requestBody == nil || requestBody == [NSNull null]) &&
+        (responseHeaders == nil || responseHeaders == [NSNull null]) &&
+        (responseBody == nil || responseBody == [NSNull null])
+        ) {
+        
+        [TestFairy addNetwork:[NSURL URLWithString:uri]
+                       method:method
+                         code:[code intValue]
+            startTimeInMillis:[startTimeMillis longValue]
+              endTimeInMillis:[endTimeMillis longValue]
+                  requestSize:[requestSize longValue]
+                 responseSize:[responseSize longValue]
+                 errorMessage:error];
+    } else {
+        NSData* requestBodyData = nil;
+        if ([requestBody isKindOfClass:[FlutterStandardTypedData class]]) {
+            requestBodyData = [requestBody data];
+        }
+        
+        NSData* responseBodyData = nil;
+        if ([responseBody isKindOfClass:[FlutterStandardTypedData class]]) {
+            responseBodyData = [responseBody data];
+        }
+        
+        [TestFairy addNetwork:[NSURL URLWithString:uri]
+                       method:method code:[code intValue]
+            startTimeInMillis:[startTimeMillis longValue]
+              endTimeInMillis:[endTimeMillis longValue]
+                  requestSize:[requestSize longValue]
+                 responseSize:[responseSize longValue]
+                 errorMessage:error
+               requestHeaders:requestHeaders
+                  requestBody:requestBodyData
+              responseHeaders:responseHeaders
+                 responseBody:responseBodyData];
+    }
 }
 
 - (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory {
