@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'testfairy'
-  s.version          = '1.0.31'
+  s.version          = '1.0.32'
   s.summary          = 'TestFairy integration for Flutter, bundles with the native iOS SDK'
   s.description      = <<-DESC
 TestFairy flutter plugin.
@@ -12,12 +12,19 @@ TestFairy flutter plugin.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'TestFairy' => 'support@testfairy.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = ['Classes/**/*', 'TestFairy.xcframework/**/*.h']
+  s.public_header_files = ['Classes/**/*.h', 'TestFairy.xcframework/**/*.h']
   s.dependency 'Flutter'
-  s.dependency 'TestFairy', '1.26.9'
   s.static_framework = true
 
   s.ios.deployment_target = '9.0'
-end
 
+# We no longer need this since we embed the xcframework inside the plugin.
+# Keeping this here to indicate which SDK version we use
+#  s.dependency 'TestFairy', '1.27.4'
+
+  s.preserve_paths = 'TestFairy.xcframework'
+  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework TestFairy' }
+  s.vendored_frameworks = 'TestFairy.xcframework'
+
+end

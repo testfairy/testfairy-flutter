@@ -26,6 +26,8 @@ import 'dart:io';
 import 'package:testfairy/testfairy.dart';
 
 void main() {
+  HttpOverrides.global = TestFairy.httpOverrides();
+
   runZonedGuarded(
     () async {
       try {
@@ -54,8 +56,8 @@ void main() {
 ### How to update native SDKs?
 Run `pod repo update` and update the plugin in *pubspec.yaml*. Then run `cd ios; pod update TestFairy; cd ..`.
 
-### Dart 2 Support
-To be able to use TestFairy Flutter Plugin 2.+, you must have the environment specified below and upgrade your project code base to Dart 2 using [this guide](https://dart.dev/dart-2). 
+### Null-safe Dart Support
+To be able to use TestFairy Flutter Plugin 2.+, you must have the environment specified below and upgrade your project code base to null-safe Dart using [this](https://dart.dev/dart-2) and [this guide](https://flutter.dev/docs/null-safety). 
 
 ```
 environment:
@@ -73,13 +75,7 @@ flutter run --enable-experiment=non-nullable --no-sound-null-safety
 flutter drive --enable-experiment=non-nullable --no-sound-null-safety -v --target=test_driver/app.dart
 ```
 
-If this transition is not suitable for your project, you can stay in TestFairy plugin *1.0.29* but that requires an upper limit on your Dart and Flutter version specified like this:
-
-```
-environment:
-  sdk: ">=2.0.0 <2.1.0"
-  flutter: ">=1.0.0 <1.12.0"
-```
+If this transition is not suitable for your project, you can stay in TestFairy plugin *1.0.29*.
 
 Projects that don't make the migration will otherwise get this error:
 ```
@@ -87,23 +83,17 @@ Error: This requires the null safety language feature, which is experimental.
     You can enable the experiment using the '--enable-experiment=non-nullable' command line option.
 ```
 
-### How to opt-out from Dart 2?
-Starting from 2.0.0, *testfairy-flutter* will only work with projects that use Dart 2 as the development language. If this transition is not suitable for your project, you can stay in TestFairy plugin 1.0.29 but that requires an upper limit on your Dart and Flutter version specified like this:
-
-```
-environment:
-  sdk: ">=2.0.0 <2.1.0"
-  flutter: ">=1.0.0 <1.12.0"
-```
+### How to opt-out from null-safe Dart?
+Starting from 2.0.0, *testfairy-flutter* will only work with projects that use null-safe Dart as the development language. If this transition is not suitable for your project, you can stay in TestFairy plugin 1.0.X releases.
 
 ```
 dependencies:
-  testfairy: ^1.0.29
+  testfairy: ^1.0.32
 ```
 
-### How to compile with latest Flutter and Dart 2?
+### How to compile with latest Flutter and null-safe Dart?
 
-Flutter's latest stable channel introduces new Dart syntax and has breaking changes in its SDK classes. These changes will show up similar to the following error when you compile your project.
+Flutter's latest version introduces new Dart syntax and has breaking changes in its SDK classes. These changes will show up similar to the following error when you compile your project.
 
 ```
 ../pub.dartlang.org/testfairy-1.x.y/lib/src/network_logging.dart:253:7: 
