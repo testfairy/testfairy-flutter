@@ -1,3 +1,7 @@
+## 2.0.10
+* Updated native SDKs.
+* Fixed black screenshots in feedbacks.
+
 ## 2.0.9
 * Added support for request/response headers and bodies in `addNetworkEvent()`.
 
@@ -28,6 +32,10 @@
 
 ## 2.0.0
 * Adopted Dart 2 as the new plugin language. 
+
+## 1.0.32
+* Updated native SDKs.
+* Fixed black screenshots in feedbacks.
 
 ## 1.0.31
 * Added support for request/response headers and bodies in `addNetworkEvent()`.
