@@ -690,22 +690,24 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       List<FeedbackFormField> fields = [
         StringFeedbackFormField("fullname", "Your name", ""),
         TextAreaFeedbackFormField("bio", "Bio", "Tell us about yourself"),
-        SelectFeedbackFormField("country", "Country", <String, String>{
-          "Turkey": "+90",
-          "Canada": "+1",
-          "Israel": "+972"
-        }, "Canada")
+        SelectFeedbackFormField(
+            "country",
+            "Country",
+            <String, String>{"Turkey": "+90", "Canada": "+1", "Israel": "+972"},
+            "Canada")
       ];
 
       await TestFairy.setFeedbackOptions(
-        feedbackFormFields: fields,
+          feedbackFormFields: fields,
           onFeedbackSent: (FeedbackContent fc) {
-        print('onFeedbackSent: ' + fc.toString());
-      }, onFeedbackCancelled: () {
-        print('onFeedbackCancelled');
-      }, onFeedbackFailed: (FeedbackContent fc) {
-        print('onFeedbackFailed: ' + fc.toString());
-      });
+            print('onFeedbackSent: ' + fc.toString());
+          },
+          onFeedbackCancelled: () {
+            print('onFeedbackCancelled');
+          },
+          onFeedbackFailed: (FeedbackContent fc) {
+            print('onFeedbackFailed: ' + fc.toString());
+          });
       await TestFairy.showFeedbackForm();
 
       print('Showing the feedback form. Enter some feedback and send/cancel.');

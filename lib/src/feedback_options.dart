@@ -68,7 +68,8 @@ class TextAreaFeedbackFormField implements FeedbackFormField {
   final String defaultValue;
 
   /// Constructor
-  TextAreaFeedbackFormField(this.attribute, this.placeholder, this.defaultValue);
+  TextAreaFeedbackFormField(
+      this.attribute, this.placeholder, this.defaultValue);
 
   @override
   Map<String, dynamic> toMap() {
