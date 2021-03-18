@@ -687,14 +687,14 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future<void>.delayed(const Duration(seconds: 2));
 
-      List<FeedbackFormField> fields = [
-        StringFeedbackFormField("fullname", "Your name", ""),
-        TextAreaFeedbackFormField("bio", "Bio", "Tell us about yourself"),
+      final List<FeedbackFormField> fields = <FeedbackFormField>[
+        StringFeedbackFormField('fullname', 'Your name', ''),
+        TextAreaFeedbackFormField('bio', 'Bio', 'Tell us about yourself'),
         SelectFeedbackFormField(
-            "country",
-            "Country",
-            <String, String>{"Turkey": "+90", "Canada": "+1", "Israel": "+972"},
-            "Canada")
+            'country',
+            'Country',
+            <String, String>{'Turkey': '+90', 'Canada': '+1', 'Israel': '+972'},
+            'Canada')
       ];
 
       await TestFairy.setFeedbackOptions(
