@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
-import 'package:testfairy/testfairy.dart';
+import '../testfairy.dart';
 
 class TestFairyHttpOverrides extends HttpOverrides {
   @override

@@ -9,7 +9,7 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
 
 // Integrations
-- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory;
+- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory  takeScreenshotButtonVisible:(NSNumber*)takeScreenshotButtonVisible recordVideoButtonVisible:(NSNumber*)recordVideoButtonVisible feedbackFormFields:(NSArray*)feedbackFormFields;
     
 - (void) addNetworkEvent: (NSString*)uri method:(NSString*)method code:(NSNumber*)code startTimeMillis:(NSNumber*)startTimeMillis endTimeMillis:(NSNumber*)endTimeMillis requestSize:(NSNumber*)requestSize responseSize:(NSNumber*)responseSize errorMessage:(id)errorMessage requestHeaders:(NSString*)requestHeaders requestBody:(FlutterStandardTypedData*)requestBody responseHeaders:(NSString*)responseHeaders responseBody:(FlutterStandardTypedData*)responseBody;
 

@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:testfairy/testfairy.dart';
+import '../testfairy.dart';
 
 /// State for the gesture detection wrapper
 class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
@@ -382,7 +382,9 @@ class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {
     final String elementString = element.toString();
     final String widgetString = element.element.toString();
 
-    // TODO : don't assume root if scrollableParent is needed (add killswitch)
+    // TODO : (add killswitch) don't assume root if scrollableParent is needed,
+    // currently true so we disabled scrollable detection for the time being due
+    // to performance reason
     final Map<String, dynamic> elementProps =
         getPropertiesFromElement(element.element, assumeRoot: true);
 

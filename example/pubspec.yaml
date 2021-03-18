@@ -22,7 +22,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  testfairy:
+  testfairy_flutter:
     path: ../
 
   flutter_driver:

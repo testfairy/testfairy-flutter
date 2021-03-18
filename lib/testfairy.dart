@@ -6,12 +6,12 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
-import 'package:testfairy/src/widget_detector.dart';
+import './src/widget_detector.dart';
 
 import 'src/network_logging.dart';
 import 'src/testfairy_base.dart';
 
-part 'package:testfairy/src/feedback_options.dart';
+part './src/feedback_options.dart';
 
 /// This is the main entry point to TestFairy integration in Flutter.
 ///
@@ -471,7 +471,7 @@ abstract class TestFairy extends TestFairyBase {
       'takeScreenshotButtonVisible': takeScreenshotButtonVisible,
       'recordVideoButtonVisible': recordVideoButtonVisible,
       'feedbackFormFields': feedbackFormFields != null ? feedbackFormFields
-          .map((FeedbackFormField e) => e.toMap()) : null,
+          .map((FeedbackFormField e) => e.toMap()).toList(growable: false) : null,
       'callId': TestFairyBase.feedbackOptionsIdCounter
     };
 
