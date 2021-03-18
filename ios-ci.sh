@@ -17,7 +17,7 @@ cd testfairy-flutter
 # build
 cd example
 ../../flutter/bin/flutter -v build ios --no-codesign || echo Failing on purpose to validate that null safity is mandatory
-../../flutter/bin/flutter -v build ios --enable-experiment=non-nullable --no-sound-null-safety
+../../flutter/bin/flutter -v build ios --enable-experiment=non-nullable --no-sound-null-safety --no-codesign --profile
 cd ..
 
 # lint
