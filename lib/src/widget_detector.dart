@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import '../testfairy.dart';
+import '../testfairy_flutter.dart';
 
 /// State for the gesture detection wrapper
 class TestFairyGestureDetectorState extends State<TestFairyGestureDetector> {

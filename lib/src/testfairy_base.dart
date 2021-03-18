@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import '../testfairy.dart';
+import '../testfairy_flutter.dart';
 
 abstract class TestFairyBase {
   // Method Channel Internals

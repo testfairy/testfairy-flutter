@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
-import 'package:testfairy_flutter/testfairy.dart';
+import 'package:testfairy_flutter/testfairy_flutter.dart';
 
 // App Globals
 const String APP_TOKEN = 'SDK-gLeZiE9i';
