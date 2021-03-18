@@ -16,14 +16,18 @@ cd testfairy-flutter
 
 # build
 cd example
-../../flutter/bin/flutter -v build ios --no-codesign || echo Failing on purpose to validate that null safity is mandatory
-../../flutter/bin/flutter -v build ios --enable-experiment=non-nullable --no-sound-null-safety --no-codesign --profile
+../../flutter/bin/flutter -v build ios --no-codesign
+cd ../example-dart1
+../../flutter/bin/flutter -v build ios --no-codesign
 cd ..
+
 
 # lint
 ../flutter/bin/flutter analyze $PWD/lib
 #../flutter/bin/flutter analyze $PWD/example/lib
 #../flutter/bin/flutter analyze $PWD/example/test
 #../flutter/bin/flutter analyze $PWD/example/test_driver
-
+#../flutter/bin/flutter analyze $PWD/example-dart1/lib
+#../flutter/bin/flutter analyze $PWD/example-dart1/test
+#../flutter/bin/flutter analyze $PWD/example-dart1/test_driver
 

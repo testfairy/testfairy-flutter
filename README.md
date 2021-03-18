@@ -1,6 +1,6 @@
 # TestFairy-Flutter integration
 
-This is TestFairy integration for Flutter, bundles with the native SDK. 
+This is TestFairy integration for Flutter, bundled with the native SDK. 
 
 ## Installation
 Read installation docs at [pub.dartlang.org](https://pub.dartlang.org/packages/testfairy#-installing-tab-)
@@ -21,6 +21,8 @@ dependencies:
 
 ```dart
 // inside your main.dart
+
+// @dart = 2.12 
 import 'dart:async';
 import 'dart:io';
 import 'package:testfairy/testfairy.dart';
@@ -53,68 +55,9 @@ void main() {
 }
 ```
 
-### How to update native SDKs?
-Run `pod repo update` and update the plugin in *pubspec.yaml*. Then run `cd ios; pod update TestFairy; cd ..`.
-
-### Null-safe Dart Support
-To be able to use TestFairy Flutter Plugin 2.+, you must have the environment specified below and upgrade your project code base to null-safe Dart using [this](https://dart.dev/dart-2) and [this guide](https://flutter.dev/docs/null-safety). 
-
-```
-environment:
-  sdk: ">=2.10.0 <3.0.0"
-  flutter: ">=1.22.0 <2.0.0"
-```
-
-Make sure your project root has an *analysis_options.yaml* that looks similar to [this](https://github.com/testfairy/testfairy-flutter/blob/master/analysis_options.yaml). The important part is the enabled experiment in the top declaration.
-
-You also have to enable the same experiment in your run and test commands:
-
-```
-flutter run --enable-experiment=non-nullable --no-sound-null-safety
-
-flutter drive --enable-experiment=non-nullable --no-sound-null-safety -v --target=test_driver/app.dart
-```
-
-If this transition is not suitable for your project, you can stay in TestFairy plugin *1.0.29*.
-
-Projects that don't make the migration will otherwise get this error:
-```
-Error: This requires the null safety language feature, which is experimental.
-    You can enable the experiment using the '--enable-experiment=non-nullable' command line option.
-```
-
-### How to opt-out from null-safe Dart?
-Starting from 2.0.0, *testfairy-flutter* will only work with projects that use null-safe Dart as the development language. If this transition is not suitable for your project, you can stay in TestFairy plugin 1.0.X releases.
-
-```
-dependencies:
-  testfairy: ^1.0.32
-```
-
 ### How to compile with latest Flutter and null-safe Dart?
 
-Flutter's latest version introduces new Dart syntax and has breaking changes in its SDK classes. These changes will show up similar to the following error when you compile your project.
-
-```
-../pub.dartlang.org/testfairy-1.x.y/lib/src/network_logging.dart:253:7: 
-            Error: The non-abstract class '_TestFairyClientHttpRequest' is missing implementations for these members:
-
-     - HttpClientRequest.abort
-
-    Try to either
-     - provide an implementation,
-     - inherit an implementation from a superclass or mixin,
-     - mark the class as abstract, or
-     - provide a 'noSuchMethod' implementation.
-
-    class _TestFairyClientHttpRequest implements HttpClientRequest {
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    org-dartlang-sdk:///third_party/dart/sdk/lib/_http/http.dart:2045:8: Context: 'HttpClientRequest.abort' is defined here.
-      void abort([Object? exception, StackTrace? stackTrace]);
-           ^^^^^
-```
-
-In order to use TestFairy with the latest **stable** Flutter channel, you must set the minimum version for the plugin as 2.0.0.
+In order to use TestFairy with the latest **stable** Flutter channel, you must set the minimum version for the plugin as 2.1.0.
 
 In order to use TestFairy with the latest **unstable** Flutter channel, you must clone this repo and use it as an offline dependency instead of the published version in pub.
 
@@ -128,18 +71,9 @@ dependencies:
     path: ../testfairy-flutter # or "./testfairy-flutter" if you cloned it inside your main project as a child directory 
 ```
 
-3. Launch a terminal and run the following commands.
+3. Checkout **testfairy-flutter** to your VCS without including its **.git** directory.
 
-```bash
-cd path/to/testfairy-flutter
-sed  "s/Modern Flutter \*\*/\//" lib/src/network_logging.dart > lib/src/network_logging.temp
-sed  "s/\*\* Modern Flutter/\//" lib/src/network_logging.temp > lib/src/network_logging.dart
-rm -rf lib/src/network_logging.temp
-```
-
-4. Checkout **testfairy-flutter** to your VCS without including its **.git** directory.
-
-5. When there is a new update in this repo, delete **testfairy-flutter** and retry the steps.
+4. When there is a new update in this repo, delete **testfairy-flutter** and retry the steps.
 
 ### Troubleshoot
 1. **I see `Specs satisfying the TestFairy dependency were found, but they required a higher minimum deployment target.` when I build and iOS app.**

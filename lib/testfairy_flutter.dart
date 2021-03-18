@@ -1,3 +1,5 @@
+// @dart = 2.12
+
 library testfairy;
 
 import 'dart:async';

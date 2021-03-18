@@ -1,3 +1,4 @@
+// @dart = 2.12
 // ignore_for_file: avoid_return_types_on_setters
 
 import 'dart:async';
