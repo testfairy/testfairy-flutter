@@ -58,8 +58,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Specify [options] as a [Map] controlling the current session
   /// "metrics": comma separated string of default metric options such as “cpu,memory,network-requests,shake,video,logs”
   /// "enableCrashReporter": [true] / [false] to enable crash handling. Default is true.
-  static Future<void> beginWithOptions(
-      String appToken, Map<String, dynamic> options) async {
+  static Future<void> beginWithOptions(String appToken,
+      Map<String, dynamic> options) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     final Map<String, dynamic> args = <String, dynamic>{
@@ -105,7 +105,7 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
 
     final String? version =
-        await TestFairyBase.channel.invokeMethod<String>('getVersion');
+    await TestFairyBase.channel.invokeMethod<String>('getVersion');
 
     return version!;
   }
@@ -153,8 +153,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Sets a correlation identifier for this session. This value can be looked up via web dashboard.
   /// For example, setting correlation to the value of the user-id after they logged in.
   /// Can be called only once per session. Subsequent calls will be ignored.
-  static Future<void> identifyWithTraits(
-      String id, Map<String, dynamic> traits) async {
+  static Future<void> identifyWithTraits(String id,
+      Map<String, dynamic> traits) async {
     final Map<String, dynamic> args = <String, dynamic>{
       'id': id,
       'traits': traits
@@ -203,7 +203,7 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
 
     final String? sessionUrl =
-        await TestFairyBase.channel.invokeMethod<String>('getSessionUrl');
+    await TestFairyBase.channel.invokeMethod<String>('getSessionUrl');
 
     return sessionUrl;
   }
@@ -273,7 +273,7 @@ abstract class TestFairy extends TestFairyBase {
     TestFairyBase.prepareTwoWayInvoke();
 
     final bool? didCrash =
-        await TestFairyBase.channel.invokeMethod<bool>('didLastSessionCrash');
+    await TestFairyBase.channel.invokeMethod<bool>('didLastSessionCrash');
 
     return didCrash!;
   }
@@ -325,8 +325,8 @@ abstract class TestFairy extends TestFairyBase {
   /// Valid values for policy include “always” and “wifi”.
   /// Valid values for quality include “high”, “low”, “medium”.
   /// Values for fps must be between 0.1 and 2.0. Value will be rounded to the nearest frame.
-  static Future<void> enableVideo(
-      String policy, String quality, double framesPerSecond) async {
+  static Future<void> enableVideo(String policy, String quality,
+      double framesPerSecond) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     final Map<String, dynamic> args = <String, dynamic>{
@@ -393,8 +393,8 @@ abstract class TestFairy extends TestFairyBase {
   /// If [TestFairyGestureDetector] is used, there is no need to call this method explicitly.
   ///
   /// Accepted info keys are "accessibilityLabel", "accessibilityIdentifier", "accessibilityHint" and "className"
-  static Future<void> addUserInteraction(
-      UserInteractionKind kind, String label, Map<String, String> info) async {
+  static Future<void> addUserInteraction(UserInteractionKind kind, String label,
+      Map<String, String> info) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     final Map<String, dynamic> args = <String, dynamic>{
@@ -410,8 +410,7 @@ abstract class TestFairy extends TestFairyBase {
 
   /// Call this function to log your network events.
   /// See [httpOverrides] to automatically do this for all your http calls.
-  static Future<void> addNetworkEvent(
-      String uri,
+  static Future<void> addNetworkEvent(String uri,
       String method,
       int code,
       int startTimeMillis,
@@ -420,9 +419,9 @@ abstract class TestFairy extends TestFairyBase {
       int responseSize,
       String? errorMessage,
       {String? requestHeaders,
-      Uint8List? requestBodyBytes,
-      String? responseHeaders,
-      Uint8List? responseBodyBytes}) async {
+        Uint8List? requestBodyBytes,
+        String? responseHeaders,
+        Uint8List? responseBodyBytes}) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     final Map<String, dynamic> args = <String, dynamic>{
@@ -451,15 +450,17 @@ abstract class TestFairy extends TestFairyBase {
   }
 
   /// Customizes the feedback form.
-  static Future<void> setFeedbackOptions(
-      {String? defaultText,
-      String? browserUrl,
-      bool emailFieldVisible = true,
-      bool emailMandatory = false,
-      Function(FeedbackOptions) onFeedbackSent = emptyFeedbackOptionsFunction,
-      Function() onFeedbackCancelled = emptyFunction,
-      Function(FeedbackOptions) onFeedbackFailed =
-          emptyFeedbackOptionsFunction}) async {
+  static Future<void> setFeedbackOptions({String? defaultText,
+    String? browserUrl,
+    bool emailFieldVisible = true,
+    bool emailMandatory = false,
+    bool takeScreenshotButtonVisible = true,
+    bool recordVideoButtonVisible = true,
+    List<FeedbackFormField>? feedbackFormFields,
+    Function(FeedbackContent) onFeedbackSent = emptyFeedbackContentFunction,
+    Function() onFeedbackCancelled = emptyFunction,
+    Function(FeedbackContent) onFeedbackFailed =
+        emptyFeedbackContentFunction}) async {
     TestFairyBase.prepareTwoWayInvoke();
 
     final Map<String, dynamic> args = <String, dynamic>{
@@ -467,6 +468,10 @@ abstract class TestFairy extends TestFairyBase {
       'browserUrl': browserUrl,
       'emailFieldVisible': emailFieldVisible,
       'emailMandatory': emailMandatory,
+      'takeScreenshotButtonVisible': takeScreenshotButtonVisible,
+      'recordVideoButtonVisible': recordVideoButtonVisible,
+      'feedbackFormFields': feedbackFormFields != null ? feedbackFormFields
+          .map((FeedbackFormField e) => e.toMap()) : null,
       'callId': TestFairyBase.feedbackOptionsIdCounter
     };
 

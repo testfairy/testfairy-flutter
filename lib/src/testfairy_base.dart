@@ -84,7 +84,7 @@ abstract class TestFairyBase {
   static Map<String, dynamic> feedbackOptionsCallbacks = <String, dynamic>{};
 
   static void callOnFeedbackSent(Map<String, dynamic> args) {
-    final FeedbackOptions opts = FeedbackOptions(
+    final FeedbackContent opts = FeedbackContent(
         args['email'] as String,
         args['text'] as String,
         args['timestamp'] as double,
@@ -100,7 +100,7 @@ abstract class TestFairyBase {
   }
 
   static void callOnFeedbackFailed(Map<String, dynamic> args) {
-    final FeedbackOptions opts = FeedbackOptions(
+    final FeedbackContent opts = FeedbackContent(
         args['email'] as String,
         args['text'] as String,
         args['timestamp'] as double,

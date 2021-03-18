@@ -6,15 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
 import com.testfairy.FeedbackContent;
+import com.testfairy.FeedbackFormField;
 import com.testfairy.FeedbackOptions;
+import com.testfairy.FeedbackVerifier;
+import com.testfairy.SelectFeedbackFormField;
+import com.testfairy.StringFeedbackFormField;
 import com.testfairy.TestFairy;
+import com.testfairy.TextAreaFeedbackFormField;
 import com.testfairy.UserInteractionKind;
 
 import java.io.File;
@@ -28,12 +35,18 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 import java.util.function.Consumer;
 
 import androidx.annotation.Nullable;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -308,6 +321,9 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 							(String) args.get("browserUrl"),
 							(boolean) args.get("emailFieldVisible"),
 							(boolean) args.get("emailMandatory"),
+							(boolean) args.get("takeScreenshotButtonVisible"),
+							(boolean) args.get("recordVideoButtonVisible"),
+							(List<Map>) args.get("feedbackFormFields"),
 							(int) args.get("callId")
 					);
 					result.success(null);
@@ -506,6 +522,24 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				return null;
 			}
 		});
+
+		// TODO : This is just a sample to test thread behavior, it shows how it successfully waits a result from the dart side
+//		AsyncTask.execute(new Runnable() {
+//			@Override
+//			public void run() {
+//				List<Map<String, Integer>> result = invokeChannelForResult("getHiddenRects", null);
+//				Log.d("DIEGO", "Result: " + result.toString());
+//			}
+//		});
+
+		// TODO : This is just a sample to test UI thread behavior, it shows how it hands on synchronous calls
+//		new Handler(Looper.getMainLooper()).post(new Runnable() {
+//			@Override
+//			public void run() {
+//				List<Map<String, Integer>> result = invokeChannelForResult("getHiddenRects", null);
+//				Log.d("DIEGO", "Result: " + result.toString());
+//			}
+//		});
 	}
 
 	private void beginWithOptions(final String appToken, final Map options) {
@@ -679,30 +713,105 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		});
 	}
 
-	private void setFeedbackOptions(String defaultText, String browserUrl, boolean emailFieldVisible, boolean emailMandatory, final int callId) {
+	private void invokeChannel(final String methodName, final Object args, final Result callback) {
+		final FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
+
+		if (activeFlutterViewMethodChannelPair != null) {
+			new Handler(activeFlutterViewMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).post(
+					new Runnable() {
+						@Override
+						public void run() {
+							activeFlutterViewMethodChannelPair.methodChannelWeakReference.get().invokeMethod(methodName, args, callback);
+						}
+					}
+			);
+		}
+	}
+
+	private static class ValueHolder<T> {
+		public volatile T value;
+
+		public ValueHolder(T value) {
+			this.value = value;
+		}
+	}
+
+	private <T> T invokeChannelForResult(final String methodName, final Object args) {
+		final ValueHolder<T> value = new ValueHolder<>(null);
+		final FutureTask<T> completion = new FutureTask<>(new Callable<T>() {
+			@Override
+			public T call() throws Exception {
+				return null;
+			}
+		});
+
+		invokeChannel(methodName, args, new Result() {
+			@Override
+			public void success(@Nullable Object result) {
+				value.value = (T) result;
+				completion.run();
+			}
+
+			@Override
+			public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+				Log.e("TESTFAIRYSDK", "Flutter call to " + methodName + "() raised an error " + errorCode + ": " + (errorMessage != null ? errorCode : "N/A"));
+				completion.run();
+			}
+
+			@Override
+			public void notImplemented() {
+				completion.run();
+			}
+		});
+
+		try {
+			completion.get();
+		} catch (Throwable e) {
+			Log.w("TESTFAIRYSDK", "Flutter cannot communicate with the SDK synchronously", e);
+		}
+
+		return value.value;
+	}
+
+	private void invokeChannel(final String methodName, final Object args) {
+		invokeChannel(methodName, args, new Result() {
+			@Override
+			public void success(@Nullable Object result) {
+				// Ignore
+			}
+
+			@Override
+			public void error(String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
+				// Ignore
+			}
+
+			@Override
+			public void notImplemented() {
+				// Ignore
+			}
+		});
+	}
+
+	private void setFeedbackOptions(
+			String defaultText,
+			String browserUrl,
+			boolean emailFieldVisible,
+			boolean emailMandatory,
+			boolean takeScreenshotButtonVisible,
+			boolean recordVideoButtonVisible,
+			List<Map> feedbackFormFields,
+			final int callId
+	) {
 		FeedbackOptions.Builder builder = new FeedbackOptions.Builder();
 
 		if (defaultText != null) builder.setDefaultText(defaultText);
 		if (browserUrl != null) builder.setBrowserUrl(browserUrl);
 		builder.setEmailFieldVisible(emailFieldVisible);
 		builder.setEmailMandatory(emailMandatory);
+		builder.setTakeScreenshotButtonVisible(takeScreenshotButtonVisible);
+		builder.setRecordVideoButtonVisible(recordVideoButtonVisible);
 
 		builder.setCallback(new FeedbackOptions.Callback() {
-
-			private void invokeChannel(final String methodName, final Object args) {
-				final FlutterActivityMethodChannelPair activeFlutterViewMethodChannelPair = getActiveFlutterViewMethodChannelPair();
-
-				if (activeFlutterViewMethodChannelPair != null) {
-					new Handler(activeFlutterViewMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).post(
-							new Runnable() {
-								@Override
-								public void run() {
-									activeFlutterViewMethodChannelPair.methodChannelWeakReference.get().invokeMethod(methodName, args);
-								}
-							}
-					);
-				}
-			}
 
 			@Override
 			public void onFeedbackSent(final FeedbackContent feedbackContent) {
@@ -753,7 +862,49 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 			}
 		});
 
+		if (feedbackFormFields != null) {
+			List<FeedbackFormField> fields = new LinkedList<>();
+
+			for (Map f : feedbackFormFields) {
+				if (f.containsKey("type")) {
+					switch ((String) f.get("type")) {
+						case "StringFeedbackFormField":
+							fields.add(new StringFeedbackFormField(f.get("attribute").toString(), f.get("placeholder").toString(), f.get("defaultValue").toString()));
+							break;
+						case "TextAreaFeedbackFormField":
+							fields.add(new TextAreaFeedbackFormField(f.get("attribute").toString(), f.get("placeholder").toString(), f.get("defaultValue").toString()));
+							break;
+						case "SelectFeedbackFormField":
+							fields.add(new SelectFeedbackFormField(f.get("attribute").toString(), f.get("label").toString(), (Map<String, String>) f.get("values"), f.get("defaultValue").toString()));
+							break;
+						default:
+							break;
+					}
+				}
+			}
+
+			builder.setFeedbackFormFields(fields);
+		}
+
+//		builder.setFeedbackFormFields()
+//		builder.setFeedbackInterceptor()
+
 		TestFairy.setFeedbackOptions(builder.build());
+	}
+
+	// TODO
+	private void setFeedbackVerifier(final int callId) {
+		TestFairy.setFeedbackVerifier(new FeedbackVerifier() {
+			@Override
+			public boolean verifyFeedback(FeedbackContent feedbackContent) {
+				return false;
+			}
+
+			@Override
+			public String getVerificationFailedMessage() {
+				return null;
+			}
+		});
 	}
 
 	private void disableAutoUpdate() {
