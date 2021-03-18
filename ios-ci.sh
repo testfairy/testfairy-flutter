@@ -16,7 +16,7 @@ cd testfairy-flutter
 
 # build
 cd example
-../../flutter/bin/flutter -v build ios --no-codesign
+../../flutter/bin/flutter -v build ios --no-codesign > /dev/null
 cd ../example-dart1
 ../../flutter/bin/flutter -v build ios --no-codesign
 cd ..

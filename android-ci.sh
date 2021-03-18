@@ -15,7 +15,7 @@ cd testfairy-flutter
 
 # build
 cd example
-../../flutter/bin/flutter -v build apk
+../../flutter/bin/flutter -v build apk > /dev/null
 cd ../example-dart1
 ../../flutter/bin/flutter -v build apk
 cd ..
