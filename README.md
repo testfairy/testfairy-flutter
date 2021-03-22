@@ -1,4 +1,4 @@
-# TestFairy-Flutter integration
+# TestFairy Flutter Integration
 
 This is TestFairy integration for Flutter, bundled with the native SDK. 
 
