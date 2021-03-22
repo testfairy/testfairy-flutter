@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
 cd example
-flutter -v build ios --simulator --no-codesign --enable-experiment=non-nullable --no-sound-null-safety
+flutter -v build ios --simulator --no-codesign
+cd ..
+
+
+cd example-dart1
+flutter -v build ios --simulator --no-codesign
 cd ..
