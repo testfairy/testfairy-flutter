@@ -1,3 +1,8 @@
+## 2.1.0
+* Migrated project to testfairy_flutter. Please refer to [our docs](https://docs.testfairy.com/Platforms/Flutter.html) for new installation instructions.
+* Added feedback form field customization.
+* TestFairy Android SDK is now fetched from [maven.testfairy.com](https://maven.testfairy.com).
+
 ## 2.0.10
 * Updated native SDKs.
 * Fixed black screenshots in feedbacks.

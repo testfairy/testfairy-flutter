@@ -1,6 +1,6 @@
 analyzer:
-  enable-experiment:
-    - non-nullable
+#  enable-experiment:
+#    - non-nullable
   exclude: [
     # this test pretends to be part of dart:ui and results in lots of false
     # positives.

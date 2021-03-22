@@ -11,6 +11,13 @@ doc/
 *.iml
 .gradle
 .idea
+
 example/.idea
 example/android/testfairy-android-sdk-release
-example/.flutter-plugins-dependencies 
+example/.flutter-plugins-dependencies
+example/ios/Flutter/Flutter.podspec
+
+example-dart1/.idea
+example-dart1/android/testfairy-android-sdk-release
+example-dart1/.flutter-plugins-dependencies
+example-dart1/ios/Flutter/Flutter.podspec

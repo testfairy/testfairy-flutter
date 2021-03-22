@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-set -x
+set -ex
 
 # prepare
 yes | sdkmanager "platforms;android-28"
@@ -16,7 +15,9 @@ cd testfairy-flutter
 
 # build
 cd example
-../../flutter/bin/flutter -v build apk --enable-experiment=non-nullable --no-sound-null-safety
+../../flutter/bin/flutter -v build apk > /dev/null
+cd ../example-dart1
+../../flutter/bin/flutter -v build apk
 cd ..
 
 # lint
@@ -24,3 +25,6 @@ cd ..
 #../flutter/bin/flutter analyze $PWD/example/lib
 #../flutter/bin/flutter analyze $PWD/example/test
 #../flutter/bin/flutter analyze $PWD/example/test_driver
+#../flutter/bin/flutter analyze $PWD/example-dart1/lib
+#../flutter/bin/flutter analyze $PWD/example-dart1/test
+#../flutter/bin/flutter analyze $PWD/example-dart1/test_driver

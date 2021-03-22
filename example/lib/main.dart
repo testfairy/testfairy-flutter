@@ -1,3 +1,4 @@
+// @dart = 2.12
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
-import 'package:testfairy/testfairy.dart';
+import 'package:testfairy_flutter/testfairy_flutter.dart';
 
 // App Globals
 const String APP_TOKEN = 'SDK-gLeZiE9i';
@@ -456,6 +457,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       assert(version.split('.').length == 3);
 
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -483,6 +485,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
 
       assert(url!.contains('http'));
 
+      await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
     } catch (e) {
       setError(e);
@@ -685,13 +688,27 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future<void>.delayed(const Duration(seconds: 2));
 
-      await TestFairy.setFeedbackOptions(onFeedbackSent: (FeedbackOptions fc) {
-        print('onFeedbackSent: ' + fc.toString());
-      }, onFeedbackCancelled: () {
-        print('onFeedbackCancelled');
-      }, onFeedbackFailed: (FeedbackOptions fc) {
-        print('onFeedbackFailed: ' + fc.toString());
-      });
+      final List<FeedbackFormField> fields = <FeedbackFormField>[
+        StringFeedbackFormField('fullname', 'Your name', ''),
+        TextAreaFeedbackFormField('bio', 'Bio', 'Tell us about yourself'),
+        SelectFeedbackFormField(
+            'country',
+            'Country',
+            <String, String>{'Turkey': '+90', 'Canada': '+1', 'Israel': '+972'},
+            'Canada')
+      ];
+
+      await TestFairy.setFeedbackOptions(
+          feedbackFormFields: fields,
+          onFeedbackSent: (FeedbackContent fc) {
+            print('onFeedbackSent: ' + fc.toString());
+          },
+          onFeedbackCancelled: () {
+            print('onFeedbackCancelled');
+          },
+          onFeedbackFailed: (FeedbackContent fc) {
+            print('onFeedbackFailed: ' + fc.toString());
+          });
       await TestFairy.showFeedbackForm();
 
       print('Showing the feedback form. Enter some feedback and send/cancel.');

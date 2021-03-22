@@ -1,10 +1,11 @@
 group 'com.testfairy.flutter'
-version '2.0.10'
+version '2.1.0'
 
 buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.testfairy.com' }
     }
 
     dependencies {
@@ -16,6 +17,7 @@ rootProject.allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.testfairy.com' }
     }
 }
 
@@ -35,6 +37,6 @@ android {
 
 dependencies {
     // Swap lines to test unreleased sdk
-    implementation 'testfairy:testfairy-android-sdk:1.11.44@aar'
+    implementation 'com.testfairy:testfairy-android-sdk:1.12.1@aar'
 //    implementation project(':testfairy-android-sdk-release')
 }

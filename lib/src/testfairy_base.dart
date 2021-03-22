@@ -1,3 +1,4 @@
+// @dart = 2.12
 import 'dart:async';
 import 'dart:core';
 import 'dart:ui' as ui;
@@ -6,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:testfairy/testfairy.dart';
+import '../testfairy_flutter.dart';
 
 abstract class TestFairyBase {
   // Method Channel Internals
@@ -84,7 +85,7 @@ abstract class TestFairyBase {
   static Map<String, dynamic> feedbackOptionsCallbacks = <String, dynamic>{};
 
   static void callOnFeedbackSent(Map<String, dynamic> args) {
-    final FeedbackOptions opts = FeedbackOptions(
+    final FeedbackContent opts = FeedbackContent(
         args['email'] as String,
         args['text'] as String,
         args['timestamp'] as double,
@@ -100,7 +101,7 @@ abstract class TestFairyBase {
   }
 
   static void callOnFeedbackFailed(Map<String, dynamic> args) {
-    final FeedbackOptions opts = FeedbackOptions(
+    final FeedbackContent opts = FeedbackContent(
         args['email'] as String,
         args['text'] as String,
         args['timestamp'] as double,

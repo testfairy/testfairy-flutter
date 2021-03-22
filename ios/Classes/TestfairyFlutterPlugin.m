@@ -195,9 +195,13 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
             result(nil);
         } else if ([@"setFeedbackOptions" isEqualToString:call.method]) {
             [self setFeedbackOptions:[args valueForKey:@"defaultText"]
-                          browserUrl:nil
+                          browserUrl:[args valueForKey:@"browserUrl"]
                    emailFieldVisible:[args valueForKey:@"emailFieldVisible"]
-                      emailMandatory:[args valueForKey:@"emailMandatory"]];
+                      emailMandatory:[args valueForKey:@"emailMandatory"]
+         takeScreenshotButtonVisible:[args valueForKey:@"takeScreenshotButtonVisible"]
+            recordVideoButtonVisible:[args valueForKey:@"recordVideoButtonVisible"]
+                  feedbackFormFields:[args valueForKey:@"feedbackFormFields"]
+             ];
             result(nil);
         } else if ([@"installCrashHandler" isEqualToString:call.method]) {
             [self installCrashHandler:call.arguments];
@@ -466,24 +470,61 @@ NSMutableDictionary* viewControllerMethodChannelMapping;
     }
 }
 
-- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory {
-    NSMutableDictionary* feedbackOptions = [NSMutableDictionary new];
+//(boolean) args.get("takeScreenshotButtonVisible"),
+//(boolean) args.get("recordVideoButtonVisible"),
+//(List<Map>) args.get("feedbackFormFields")
+
+- (void) setFeedbackOptions: (NSString*)defaultText browserUrl:(NSString*)browserUrl emailFieldVisible:(NSNumber*)emailFieldVisible emailMandatory:(NSNumber*)emailMandatory  takeScreenshotButtonVisible:(NSNumber*)takeScreenshotButtonVisible recordVideoButtonVisible:(NSNumber*)recordVideoButtonVisible feedbackFormFields:(NSArray*)feedbackFormFields {
     
-    if (defaultText != nil && defaultText != [NSNull null]) {
-        [feedbackOptions setValue:defaultText forKey:@"defaultText"];
-    }
+    // TODO : browserUrl is not supported in iOS SDK yet
+    // TODO : takeScreenshotButtonVisible is not supported in iOS SDK yet
+    // TODO : recordVideoButtonVisible is not supported in iOS SDK yet
     
-    // TODO : Browser url is not supported in iOS SDK yet
-    
-    if (emailFieldVisible != nil && emailFieldVisible != [NSNull null]) {
-        [feedbackOptions setValue:emailFieldVisible forKey:@"isEmailVisible"];
-    }
-    
-    if (emailMandatory != nil && emailMandatory != [NSNull null]) {
-        [feedbackOptions setValue:emailMandatory forKey:@"isEmailMandatory"];
-    }
-    
-    [TestFairy setFeedbackOptions:feedbackOptions];
+    [TestFairy setTestFairyFeedbackOptions:[TestFairyFeedbackOptions createWithBlock:^(TestFairyFeedbackOptionsBuilder *builder) {
+        if (defaultText != nil && defaultText != [NSNull null]) {
+            builder.defaultText = defaultText;
+        }
+        
+        if (emailFieldVisible != nil && emailFieldVisible != [NSNull null]) {
+            builder.isEmailVisible = emailFieldVisible;
+        }
+        
+        if (emailMandatory != nil && emailMandatory != [NSNull null]) {
+            builder.isEmailMandatory = emailMandatory;
+        }
+        
+        if (feedbackFormFields != nil && feedbackFormFields != [NSNull null]) {
+            NSMutableArray* fields = [NSMutableArray new];
+            
+            for (int i = 0; i < [feedbackFormFields count]; i++) {
+                NSDictionary* fieldDict = [feedbackFormFields objectAtIndex:i];
+                
+                NSString* type = [fieldDict objectForKey:@"type"];
+                if (type != nil) {
+                    if ([type isEqualToString:@"StringFeedbackFormField"]) {
+                        id f = [[TestFairyStringFeedbackFormField alloc] initWithAttribute:[fieldDict objectForKey:@"attribute"]
+                                                                                     label:[fieldDict objectForKey:@"placeholder"]
+                                                                               placeholder:nil // TODO : handle this better when Android catches up
+                                                                              defaultValue:[fieldDict objectForKey:@"defaultValue"]];
+                        [fields addObject:f];
+                    } else if ([type isEqualToString:@"TextAreaFeedbackFormField"]) {
+                        id f = [[TestFairyTextAreaFeedbackFormField alloc] initWithAttribute:[fieldDict objectForKey:@"attribute"]
+                                                                                 placeholder:[fieldDict objectForKey:@"placeholder"]
+                                                                                defaultValue:[fieldDict objectForKey:@"defaultValue"]];
+                        [fields addObject:f];
+                    } else if ([type isEqualToString:@"SelectFeedbackFormField"]) {
+                        id f = [[TestFairySelectFeedbackFormField alloc] initWithAttribute:[fieldDict objectForKey:@"attribute"]
+                                                                                     label:[fieldDict objectForKey:@"label"]
+                                                                                    values:[fieldDict objectForKey:@"values"]
+                                                                              defaultValue:[fieldDict objectForKey:@"defaultValue"]];
+                        [fields addObject:f];
+                    }
+                }
+            }
+            
+            builder.feedbackFormFields = fields;
+        }
+    }]];
 }
 
 @end
