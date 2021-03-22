@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
 cd example
-flutter -v build apk --enable-experiment=non-nullable --no-sound-null-safety
+flutter -v build apk
+cd ..
+
+cd example-dart1
+flutter -v build apk
 cd ..
