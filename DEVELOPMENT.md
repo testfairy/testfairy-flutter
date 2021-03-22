@@ -10,6 +10,6 @@
 9. Run `./docs.sh` to generate documentation for offline usage.
 
 # Publish
-1. Bump up versions in these files: *ios/testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *CHANGELOG.md*.
-2. Run `dart format lib example/lib example/test example/test_driver`
+1. Bump up versions in these files: *ios/testfairy.podspec*, *android/build.gradle*, *pubspec.yaml*, *example/pubspec.yaml*, *example-dart1/pubspec.yaml*, *CHANGELOG.md*.
+2. Run `dart format lib example/lib example/test example/test_driver example-dart1/lib example-dart1/test example-dart1/test_driver`
 3. Publish to pub.
