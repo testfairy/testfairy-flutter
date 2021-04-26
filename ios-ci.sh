@@ -18,7 +18,8 @@ cd testfairy-flutter
 cd example
 ../../flutter/bin/flutter -v build ios --no-codesign > /dev/null
 cd ../example-dart1
-../../flutter/bin/flutter -v build ios --no-codesign
+# We don't actually want to redirect stdout to /dev/null but Travis complains due to length of the build logs
+../../flutter/bin/flutter -v build ios --no-codesign > /dev/null
 cd ..
 
 
