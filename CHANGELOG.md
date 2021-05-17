@@ -1,3 +1,6 @@
+## 2.1.2
+* Updated native SDKs.
+
 ## 2.1.1
 * Fixed README in pub landing page.
 
