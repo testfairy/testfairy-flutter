@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-channel: [ 'stable', 'beta', 'dev' ]
+        flutter-channel: [ 'stable', 'beta' ]
 
     steps:
       - uses: actions/checkout@v1
