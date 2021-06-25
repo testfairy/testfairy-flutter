@@ -96,21 +96,19 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set authenticate(
-      Future<bool> Function(Uri url, String scheme, String realm)? f) {
+  void set authenticate(Future<bool> f(Uri url, String scheme, String realm)?) {
     wrappedClient.authenticate = f;
   }
 
   @override
   void set authenticateProxy(
-      Future<bool> Function(String host, int port, String scheme, String realm)?
-          f) {
+      Future<bool> f(String host, int port, String scheme, String realm)?) {
     wrappedClient.authenticateProxy = f;
   }
 
   @override
   void set badCertificateCallback(
-      bool Function(X509Certificate cert, String host, int port)? callback) {
+      bool callback(X509Certificate cert, String host, int port)?) {
     wrappedClient.badCertificateCallback = callback;
   }
 
@@ -134,7 +132,7 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set findProxy(String Function(Uri url)? f) {
+  void set findProxy(String f(Uri url)?) {
     wrappedClient.findProxy = f;
   }
 
