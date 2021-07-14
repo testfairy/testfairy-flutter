@@ -1,6 +1,8 @@
 name: Release TestFairy SDK for Flutter
-
-on: [push]
+on:
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
   release:
@@ -23,3 +25,5 @@ jobs:
           PUB_DEV_PUBLISH_EXPIRATION: ${{ secrets.PUB_DEV_PUBLISH_EXPIRATION }}
       - name: Check Publish Warnings
         run: pub publish --dry-run
+      - name: Publish Package
+        run: pub publish -f
