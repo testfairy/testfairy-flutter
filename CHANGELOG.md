@@ -1,3 +1,6 @@
+## 2.2.0
+* Added support for Flutter 2.5 and updated native SDKs.
+
 ## 2.1.2
 * Updated native SDKs.
 
