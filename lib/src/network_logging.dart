@@ -96,13 +96,14 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
-  void set authenticate(Future<bool> f(Uri url, String scheme, String realm)?) {
+  void set authenticate(
+      Future<bool> f(Uri url, String scheme, String? realm)?) {
     wrappedClient.authenticate = f;
   }
 
   @override
   void set authenticateProxy(
-      Future<bool> f(String host, int port, String scheme, String realm)?) {
+      Future<bool> f(String host, int port, String scheme, String? realm)?) {
     wrappedClient.authenticateProxy = f;
   }
 

@@ -1,5 +1,5 @@
 group 'com.testfairy.flutter'
-version '2.1.2'
+version '2.2.0'
 
 buildscript {
     repositories {
@@ -37,6 +37,6 @@ android {
 
 dependencies {
     // Swap lines to test unreleased sdk
-    implementation 'com.testfairy:testfairy-android-sdk:1.12.9@aar'
+    implementation 'com.testfairy:testfairy-android-sdk:1.12.13@aar'
 //    implementation project(':testfairy-android-sdk-release')
 }
