@@ -1,6 +1,7 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ abstract class TestFairyBase {
     //      print('Size is: ');
     //      print(size.toString());
 
-    final int topPadding = ui.window.padding.top > 0
+    final int topPadding = ui.window.padding.top > 0 && Platform.isAndroid
         ? (ui.window.padding.top + kTextTabBarHeight).toInt()
         : 0;
 
