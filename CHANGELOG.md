@@ -1,3 +1,6 @@
+## 2.2.1
+* Fixed a bug where enabling video polluted logs on Android.
+
 ## 2.2.0
 * Added support for Flutter 2.5 and updated native SDKs.
 

@@ -1,11 +1,13 @@
 // @dart = 2.12
 import 'dart:async';
 import 'dart:core';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/foundation/node.dart';
 import 'package:flutter/widgets.dart';
 import '../testfairy_flutter.dart';
 
@@ -47,9 +49,10 @@ abstract class TestFairyBase {
   static List<GlobalKey> hiddenWidgets = <GlobalKey>[];
 
   static Map<String, int> getRect(GlobalKey gk) {
-    final RenderBox ro = gk.currentContext!.findRenderObject() as RenderBox;
+    final RenderBox hiddenRenderBox =
+        gk.currentContext!.findRenderObject() as RenderBox;
 
-    Offset pos = ro.localToGlobal(Offset.zero);
+    Offset pos = hiddenRenderBox.localToGlobal(Offset.zero);
     pos = Offset(pos.dx * ui.window.devicePixelRatio,
         pos.dy * ui.window.devicePixelRatio);
     //      print('Position is: ');
@@ -61,11 +64,15 @@ abstract class TestFairyBase {
     //      print('Size is: ');
     //      print(size.toString());
 
+    final int topPadding = ui.window.padding.top > 0 && Platform.isAndroid
+        ? (ui.window.padding.top + kTextTabBarHeight).toInt()
+        : 0;
+
     return <String, int>{
       'left': pos.dx.toInt(),
-      'top': pos.dy.toInt(),
+      'top': pos.dy.toInt() + topPadding,
       'right': pos.dx.toInt() + size.width.toInt(),
-      'bottom': pos.dy.toInt() + size.height.toInt()
+      'bottom': pos.dy.toInt() + size.height.toInt() + topPadding
     };
   }
 

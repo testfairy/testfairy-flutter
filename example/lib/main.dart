@@ -63,15 +63,15 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
   String errorMessage = 'No error yet.';
   String testName = '';
   bool testing = false;
-  GlobalKey hideWidgetKey = GlobalKey();
 
-//  GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
+  GlobalKey hiddenWidgetKey = GlobalKey();
+  // GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
 
   @override
   void initState() {
     super.initState();
 
-    TestFairy.hideWidget(hideWidgetKey);
+    TestFairy.hideWidget(hiddenWidgetKey);
 
     onNewLog = () => setState(() {});
 
@@ -239,7 +239,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
                             onPressed: onFeedbackOptionsTest,
                             key: const Key('feedbackOptionsTests'),
                             child: const Text('Feedback Options Tests')),
-                        Text('HIDE ME FROM SCREENSHOTS', key: hideWidgetKey),
+                        Text('HIDE ME FROM SCREENSHOTS', key: hiddenWidgetKey),
                         TextButton(
                             style: TextButton.styleFrom(
                                 backgroundColor:
