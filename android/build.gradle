@@ -37,6 +37,6 @@ android {
 
 dependencies {
     // Swap lines to test unreleased sdk
-    implementation 'com.testfairy:testfairy-android-sdk:1.12.13@aar'
+    implementation 'com.testfairy:testfairy-android-sdk:1.12.14@aar'
 //    implementation project(':testfairy-android-sdk-release')
 }

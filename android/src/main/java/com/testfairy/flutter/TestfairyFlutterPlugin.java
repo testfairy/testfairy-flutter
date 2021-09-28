@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -403,6 +404,7 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 
 		if (activeFlutterActivityMethodChannelPair != null) {
 			final MethodChannel methodChannel = activeFlutterActivityMethodChannelPair.methodChannelWeakReference.get();
+			final Activity activity = activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get();
 
 			final Runnable askDartForHiddenRects = new Runnable() {
 				@Override
@@ -411,13 +413,13 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 				}
 			};
 
-			if (methodChannel != null) {
+			if (methodChannel != null && activity != null) {
 //				Log.i("TestFairy", "Getting hidden rects from Flutter");
 
 				if (System.currentTimeMillis() - lastTimeHiddenRectsSent > HIDDEN_RECT_RETRIEVAL_THROTTLE) {
-					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).post(askDartForHiddenRects);
+					new Handler(activity.getMainLooper()).post(askDartForHiddenRects);
 				} else {
-					new Handler(activeFlutterActivityMethodChannelPair.flutterActivityWeakReference.get().getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETRIEVAL_THROTTLE);
+					new Handler(activity.getMainLooper()).postDelayed(askDartForHiddenRects, HIDDEN_RECT_RETRIEVAL_THROTTLE);
 				}
 			}
 		}
@@ -493,10 +495,18 @@ public class TestfairyFlutterPlugin implements MethodCallHandler, FlutterPlugin,
 		}
 
 		fakeHideViewCalledOnce = true;
-		withContext(new ContextConsumer<Void>() {
+		withActivity(new ActivityConsumer<Void>() {
 			@Override
-			public Void consume(Context context) {
-				TestFairy.hideView(new View(context));
+			public Void consume(Activity activity) {
+				View v = new View(activity);
+				v.setId(-1);
+				v.setVisibility(View.INVISIBLE);
+				v.setClickable(false);
+
+				ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView();
+				decor.addView(v, new ViewGroup.LayoutParams(1, 1));
+
+				TestFairy.hideView(v);
 
 				return null;
 			}
