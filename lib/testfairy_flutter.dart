@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.17
 
 library testfairy;
 

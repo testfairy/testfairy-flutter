@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.17
 // ignore_for_file: avoid_return_types_on_setters
 
 import 'dart:convert';
@@ -221,6 +221,19 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
     return wrappedClient.putUrl(url).then((HttpClientRequest req) {
       return _TestFairyClientHttpRequest(req);
     });
+  }
+
+  @override
+  set connectionFactory(
+      Future<ConnectionTask<Socket>> Function(
+              Uri url, String? proxyHost, int? proxyPort)?
+          f) {
+    wrappedClient.connectionFactory = f;
+  }
+
+  @override
+  set keyLog(Function(String line)? callback) {
+    wrappedClient.keyLog = callback;
   }
 }
 

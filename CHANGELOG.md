@@ -1,3 +1,6 @@
+## 3.0.0
+* Added support for Flutter ^3.0.0
+
 ## 2.2.1
 * Fixed a bug where enabling video polluted logs on Android.
 

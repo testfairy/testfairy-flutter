@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.17
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
@@ -64,6 +64,7 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
   bool testing = false;
 
   GlobalKey hiddenWidgetKey = GlobalKey();
+
   // GlobalKey hiddenWidgetKey = GlobalKey(debugLabel: 'hideMe');
 
   @override

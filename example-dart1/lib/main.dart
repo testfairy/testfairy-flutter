@@ -1,4 +1,4 @@
-// @dart = 2.9
+// @dart = 2.17
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
@@ -23,7 +23,7 @@ void main() {
   runZonedGuarded(() async {
     try {
       FlutterError.onError = (FlutterErrorDetails details) =>
-          TestFairy.logError(details?.exception ?? 'Unknown error');
+          TestFairy.logError(details.exception);
 
       // Call `await TestFairy.begin()` or any other setup code here.
 //      await TestFairy.setMaxSessionLength(60);
@@ -476,13 +476,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future<void>.delayed(const Duration(seconds: 2));
 
-      final String url = await TestFairy.getSessionUrl();
+      final String? url = await TestFairy.getSessionUrl();
 
       assert(url != null);
 
       print('Session Url: ' + (url ?? 'null'));
 
-      assert(url.contains('http'));
+      assert(url!.contains('http'));
 
       await Future<void>.delayed(const Duration(seconds: 2));
       await TestFairy.stop();
@@ -764,13 +764,13 @@ class _TestfairyExampleAppState extends State<TestfairyExampleApp> {
       await TestFairy.begin(APP_TOKEN);
       await Future<void>.delayed(const Duration(seconds: 2));
 
-      final String url = await TestFairy.getSessionUrl();
+      final String? url = await TestFairy.getSessionUrl();
 
       assert(url != null);
 
       print('Session Url: ' + (url ?? 'null'));
 
-      assert(url.contains('http'));
+      assert(url!.contains('http'));
 
       await TestFairy.stop();
     } catch (e) {

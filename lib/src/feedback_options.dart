@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.17
 part of testfairy;
 
 /// Feedback content returned after a feedback is sent.

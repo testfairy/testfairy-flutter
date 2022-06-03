@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.17
 import 'dart:core';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -73,7 +73,7 @@ abstract class TestFairyBase {
   }
 
   static Future<List<Map<String, int>>> getHiddenRects() async {
-    await WidgetsBinding.instance!.endOfFrame;
+    await WidgetsBinding.instance.endOfFrame;
 
     final List<Map<String, int>> rects =
         hiddenWidgets.map(getRect).toList(growable: false);

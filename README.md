@@ -22,8 +22,8 @@ dependencies:
 ```dart
 // inside your main.dart
 
-// @dart = 2.12 
-// You can use other dart versions but we suggest 2.12 for better compile time checks.
+// @dart = 2.17.0 
+// You can use other dart versions but we suggest 2.17.0 for better compile time checks.
 import 'dart:async';
 import 'dart:io';
 import 'package:testfairy_flutter/testfairy_flutter.dart';
@@ -58,7 +58,7 @@ void main() {
 
 ### How to compile with latest Flutter and null-safe Dart?
 
-In order to use TestFairy with the latest **stable** Flutter channel, you must set the minimum version for the plugin as 2.1.0.
+In order to use TestFairy with the latest **stable** Flutter channel, you must set the minimum version for the plugin as 3.0.0.
 
 In order to use TestFairy with the latest **unstable** Flutter channel, you must clone this repo and use it as an offline dependency instead of the published version in pub.
 
