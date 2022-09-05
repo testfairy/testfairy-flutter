@@ -128,9 +128,9 @@ Retry your build.
 
 Once your build is successful, you can update cocoapods back to its latest version. If the error reoccurs, you will have to revert back to 1.7.5 and retry the steps.
 
-- **I see `Automatically assigning platform ios with version 8.0` when I build.**
+- **I see `Automatically assigning platform ios with version X.Y` when I build.**
 
-TestFairy supports iOS 9.0 and above. Please change the build target accordingly in your Xcode project.
+TestFairy supports iOS 11.0 and above. Please change the build target accordingly in your Xcode project.
 
 - **I see `Looks like TestFairy has an upgrade to do... 1.X.Y+hotfixZ is the latest stable branch` or errors related to Jetifier in the logs when I call an SDK method.**
 
@@ -138,10 +138,10 @@ Migrate your Android project to AndroidX by following [this](https://flutter.dev
 
 - **I see `Undefined symbols for architecture` error during compilation.**
 
-You must use frameworks and specify a platform version of at least `9.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
+You must use frameworks and specify a platform version of at least `11.0` in your generated iOS project's Podfile. Please make the following changes in *ios/Podfile* and rebuild.
 ```
 target 'Runner' do
-  platform :ios, '9.0'   ####################################### <--- add this and specify at least 9.0
+  platform :ios, '11.0'   ####################################### <--- add this and specify at least 11.0
 
   use_frameworks!        ####################################### <--- add this, and try building if there is 
                          #######################################      no Swift code or plugin in the project.
