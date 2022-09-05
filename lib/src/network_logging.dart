@@ -48,6 +48,19 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   }
 
   @override
+  set connectionFactory(
+      Future<ConnectionTask<Socket>> Function(
+              Uri url, String? proxyHost, int? proxyPort)?
+          connectionFactory) {
+    wrappedClient.connectionFactory = connectionFactory;
+  }
+
+  @override
+  set keyLog(Function(String line)? keyLog) {
+    wrappedClient.keyLog = keyLog;
+  }
+
+  @override
   Duration get connectionTimeout {
     return wrappedClient.connectionTimeout!;
   }

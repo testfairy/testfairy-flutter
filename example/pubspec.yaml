@@ -1,11 +1,11 @@
 name: testfairy_flutter_example
 description: Demonstrates how to use the TestFairy plugin.
 publish_to: 'none'
-version: 2.2.1
+version: 3.0.0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.22.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:

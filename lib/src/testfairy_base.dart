@@ -73,7 +73,7 @@ abstract class TestFairyBase {
   }
 
   static Future<List<Map<String, int>>> getHiddenRects() async {
-    await WidgetsBinding.instance!.endOfFrame;
+    await WidgetsBinding.instance.endOfFrame;
 
     final List<Map<String, int>> rects =
         hiddenWidgets.map(getRect).toList(growable: false);

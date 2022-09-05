@@ -12,7 +12,7 @@ pod --version
 cd example
 flutter -v build ios --no-codesign > /dev/null
 cd ../example-dart1
-# We don't actually want to redirect stdout to /dev/null but Travis complains due to length of the build logs
+# We don't actually want to redirect stdout to /dev/null but CI complains due to length of the build logs
 flutter -v build ios --no-codesign > /dev/null
 cd ..
 
