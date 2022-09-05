@@ -1,4 +1,4 @@
-// @dart = 2.12
+// @dart = 2.18
 // ignore_for_file: avoid_return_types_on_setters
 
 import 'dart:convert';
@@ -45,6 +45,19 @@ class _TestFairyHttpClient implements TestFairyHttpClient {
   @override
   void set connectionTimeout(Duration? connectionTimeout) {
     wrappedClient.connectionTimeout = connectionTimeout;
+  }
+
+  @override
+  set connectionFactory(
+      Future<ConnectionTask<Socket>> Function(
+              Uri url, String? proxyHost, int? proxyPort)?
+          connectionFactory) {
+    wrappedClient.connectionFactory = connectionFactory;
+  }
+
+  @override
+  set keyLog(Function(String line)? keyLog) {
+    wrappedClient.keyLog = keyLog;
   }
 
   @override

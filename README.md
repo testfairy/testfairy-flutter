@@ -22,7 +22,7 @@ dependencies:
 ```dart
 // inside your main.dart
 
-// @dart = 2.12 
+// @dart = 2.18 
 // You can use other dart versions but we suggest 2.12 for better compile time checks.
 import 'dart:async';
 import 'dart:io';
@@ -184,3 +184,4 @@ In your project root, run `flutter clean; cd ios; pod repo update; pod install; 
 ## Credits
 
 * This library incorporates code pieces derived from [@leishuai](https://github.com/leishuai)'s [flutter_widget_detector](https://github.com/leishuai/flutter_widget_detector) library.
+* Special thanks to [@Peterkrol12](https://github.com/Peterkrol12) for the contribution for Flutter 3 support.
