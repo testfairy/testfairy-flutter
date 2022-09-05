@@ -10,7 +10,7 @@ Include the library and run your main app like this.
 
 Make sure your project is [AndroidX](https://flutter.dev/docs/development/androidx-migration) compatible. 
 
-Minimum supported iOS target is 9.0.
+Minimum supported iOS target is 11.0.
 
 ```yaml
 # inside pubspec.yaml
